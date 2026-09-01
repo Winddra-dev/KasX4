@@ -9,9 +9,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- Firebase SDKs (Ditambah Auth) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-16 antialiased">
@@ -29,26 +27,10 @@
         </div>
       </div>
 
-      <!-- Status Engine & Auth Login -->
-      <div class="flex items-center gap-3">
-        <div id="status-badge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-          <span id="status-text">Connecting to server...</span>
-        </div>
-
-        <!-- Tombol Login -->
-        <button id="btn-login" onclick="loginGoogle()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 rounded-full text-xs font-semibold text-white transition-all flex items-center gap-1.5">
-          <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Login Admin
-        </button>
-
-        <!-- Profil Admin (Sembunyi kalau belum login) -->
-        <div id="user-profile" class="hidden items-center gap-2 bg-slate-800 border border-slate-600 p-1 pr-3 rounded-full">
-          <img id="user-avatar" src="" class="w-6 h-6 rounded-full border border-indigo-500">
-          <div class="flex flex-col">
-            <span class="text-[9px] font-bold text-emerald-400">Admin Aktif</span>
-            <button onclick="logout()" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold leading-none text-left">Logout</button>
-          </div>
-        </div>
+      <!-- Status Engine -->
+      <div id="status-badge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span id="status-text">Connecting to server...</span>
       </div>
     </div>
   </header>
@@ -60,12 +42,12 @@
       <div>
         <span class="inline-block px-3 py-1 text-[11px] font-semibold text-indigo-300 bg-indigo-500/20 rounded-full border border-indigo-500/30 mb-2">Tahun Ajaran 2026/2027</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Transparansi Kas Kelas X-4</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">Mode Publik: Hanya bisa melihat data. Login sebagai Bendahara untuk mengedit.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">Kelola keuangan kelas, transaksi massal, hingga catatan denda siswa secara otomatis dan real-time.</p>
       </div>
 
       <!-- Quick Action Navigation Tabs -->
       <nav class="flex flex-wrap gap-2 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700/60 w-full md:w-auto">
-        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all">Dashboard</button>
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-semibold rounded-xl transition-all">Dashboard</button>
         <button onclick="switchTab('multi')" id="tab-multi" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all">Multi Input</button>
         <button onclick="switchTab('denda')" id="tab-denda" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all">Kas Denda</button>
         <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all">Rekap Perminggu</button>
@@ -120,17 +102,8 @@
 
     <!-- ================= TAB 1: DASHBOARD ================= -->
     <div id="content-dashboard" class="tab-content grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- Form Input Satuan (Dengan Gembok Overlay) -->
-      <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl lg:col-span-1 h-fit shadow-lg space-y-4 relative overflow-hidden">
-        
-        <!-- Overlay Lock (Muncul jika belum login) -->
-        <div id="lock-single" class="admin-overlay absolute inset-0 bg-slate-900/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center border border-slate-700/50 rounded-2xl">
-          <i data-lucide="lock" class="w-8 h-8 text-slate-400 mb-2"></i>
-          <p class="text-xs text-slate-200 font-bold">Mode Publik (Lihat Saja)</p>
-          <p class="text-[10px] text-slate-400 mt-1 text-center px-4">Login dengan akun admin di atas<br>untuk mencatat transaksi.</p>
-        </div>
-
+      <!-- Form Input Satuan -->
+      <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl lg:col-span-1 h-fit shadow-lg space-y-4">
         <h3 class="text-md font-bold text-white flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-400"></i> Catat Transaksi Satuan
         </h3>
@@ -143,23 +116,28 @@
               <button type="button" id="btn-single-keluar" onclick="setSingleType('keluar')" class="py-2 text-xs font-semibold rounded-xl bg-slate-700 text-slate-300 border border-slate-600">Pengeluaran</button>
             </div>
           </div>
+
           <div>
             <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Tanggal</label>
             <input type="date" id="single-date" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
           </div>
+
           <div id="single-absen-field">
             <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Nomor Absen Siswa (1 - 28)</label>
             <input type="number" id="single-absen" min="1" max="28" placeholder="Contoh: 12" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
             <p id="single-preview" class="text-[11px] text-indigo-400 font-medium mt-1 min-h-[1rem]"></p>
           </div>
+
           <div>
             <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Jumlah (Rp)</label>
             <input type="number" id="single-amount" required min="1000" placeholder="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
           </div>
+
           <div>
             <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Catatan</label>
             <input type="text" id="single-note" placeholder="Kas Minggu ke-1 / Pembelian Spidol" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
           </div>
+
           <button type="submit" id="btn-submit-single" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
             <i data-lucide="check" class="w-4 h-4"></i> Simpan Transaksi
           </button>
@@ -196,21 +174,13 @@
 
     <!-- ================= TAB 2: MULTIPLE TRANSACTION ================= -->
     <div id="content-multi" class="tab-content hidden space-y-6">
-      <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl shadow-lg space-y-4 relative overflow-hidden">
-        
-        <!-- Overlay Lock -->
-        <div id="lock-multi" class="admin-overlay absolute inset-0 bg-slate-900/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center border border-slate-700/50 rounded-2xl">
-          <i data-lucide="lock" class="w-8 h-8 text-slate-400 mb-2"></i>
-          <p class="text-sm text-slate-200 font-bold">Akses Ditolak (Mode Publik)</p>
-          <p class="text-xs text-slate-400 mt-1">Gunakan tombol 'Login Admin' untuk membuka form multi-input.</p>
-        </div>
-
+      <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl shadow-lg space-y-4">
         <div class="flex justify-between items-center border-b border-slate-700/60 pb-4">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2">
-              <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i> Input Multiple Transaksi
+              <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i> Input Multiple Transaksi Sekaligus
             </h3>
-            <p class="text-xs text-slate-400">Tambahkan banyak data dalam satu waktu.</p>
+            <p class="text-xs text-slate-400">Tambahkan banyak pemasukan / pengeluaran dalam satu waktu.</p>
           </div>
           <button onclick="addMultiRow()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5">
             <i data-lucide="plus" class="w-4 h-4"></i> Tambah Baris
@@ -230,9 +200,12 @@
                   <th class="py-2 px-2 text-center">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="multi-rows-container" class="divide-y divide-slate-700/50"></tbody>
+              <tbody id="multi-rows-container" class="divide-y divide-slate-700/50">
+                <!-- Multi Rows via JS -->
+              </tbody>
             </table>
           </div>
+
           <button type="submit" id="btn-submit-multi" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
             <i data-lucide="save" class="w-4 h-4"></i> Simpan Semua Transaksi Multi
           </button>
@@ -242,46 +215,60 @@
 
     <!-- ================= TAB 3: KAS DENDA ================= -->
     <div id="content-denda" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- Form Input Denda (Lock) -->
-      <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl lg:col-span-1 h-fit shadow-lg space-y-4 relative overflow-hidden">
-        
-        <div id="lock-denda" class="admin-overlay absolute inset-0 bg-slate-900/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center border border-slate-700/50 rounded-2xl">
-          <i data-lucide="lock" class="w-8 h-8 text-slate-400 mb-2"></i>
-          <p class="text-xs text-slate-200 font-bold">Admin Only</p>
-          <p class="text-[10px] text-slate-400 mt-1">Hanya admin yang bisa input denda.</p>
-        </div>
-
+      <!-- Form Input Denda -->
+      <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl lg:col-span-1 h-fit shadow-lg space-y-4">
         <h3 class="text-md font-bold text-white flex items-center gap-2">
-          <i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Catat Denda
+          <i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Catat Pelanggaran & Denda
         </h3>
+
         <form id="form-denda" class="space-y-4">
-          <div><label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Tanggal</label><input type="date" id="denda-date" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:border-amber-500"></div>
-          <div><label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Absen</label><input type="number" id="denda-absen" required min="1" max="28" placeholder="Contoh: 5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:border-amber-500"><p id="denda-preview" class="text-[11px] text-amber-400 font-medium mt-1 min-h-[1rem]"></p></div>
-          <div><label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Nominal</label><input type="number" id="denda-amount" required min="1000" placeholder="2000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:border-amber-500"></div>
-          <div><label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Alasan</label><input type="text" id="denda-reason" required placeholder="Terlambat piket" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:border-amber-500"></div>
-          <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold flex justify-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Simpan Denda</button>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Tanggal Denda</label>
+            <input type="date" id="denda-date" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Nomor Absen Siswa (1 - 28)</label>
+            <input type="number" id="denda-absen" required min="1" max="28" placeholder="Contoh: 5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+            <p id="denda-preview" class="text-[11px] text-amber-400 font-medium mt-1 min-h-[1rem]"></p>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Nominal Denda (Rp)</label>
+            <input type="number" id="denda-amount" required min="1000" placeholder="2000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 uppercase mb-1">Alasan Denda</label>
+            <input type="text" id="denda-reason" required placeholder="Terlambat / Tidak piket" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <button type="submit" id="btn-submit-denda" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-amber-600/30 transition-all flex items-center justify-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Simpan Catatan Denda
+          </button>
         </form>
       </section>
 
-      <!-- Daftar Denda (Terbuka untuk semua, tapi tombol Bayarnya butuh admin) -->
+      <!-- Daftar Denda & Pembayaran -->
       <section class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl lg:col-span-2 shadow-lg space-y-4">
         <h3 class="text-md font-bold text-white flex items-center gap-2">
           <i data-lucide="list" class="w-5 h-5 text-amber-400"></i> Rekapitulasi Kas Denda Terpisah
         </h3>
+
         <div class="overflow-x-auto max-h-[380px] overflow-y-auto">
           <table class="w-full text-left text-xs">
             <thead class="bg-slate-900/80 sticky top-0 text-slate-400 uppercase">
               <tr>
                 <th class="py-3 px-3">Tanggal</th>
                 <th class="py-3 px-3">Siswa</th>
-                <th class="py-3 px-3">Alasan & Nominal</th>
+                <th class="py-3 px-3">Alasan</th>
+                <th class="py-3 px-3">Nominal</th>
                 <th class="py-3 px-3">Status</th>
-                <th class="py-3 px-3 text-center">Aksi (Admin)</th>
+                <th class="py-3 px-3 text-center">Aksi Bayar</th>
               </tr>
             </thead>
             <tbody id="denda-table-body" class="divide-y divide-slate-700/50 text-slate-300">
-              <!-- JS Render -->
+              <!-- Denda Rows via JS -->
             </tbody>
           </table>
         </div>
@@ -297,6 +284,7 @@
           </h3>
           <p class="text-xs text-slate-400">Target per minggu: Rp 140.000 (28 Siswa)</p>
         </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
@@ -312,16 +300,11 @@
   </main>
 
   <script>
-    // ===============================================
-    // KONFIGURASI FIREBASE (SUDAH DIKOREKSI URL-NYA)
-    // ===============================================
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDCfPEYWlVflCjA3cWsHiX5BYwxcI-Th24",
       authDomain: "kas-x4-26-27.firebaseapp.com",
-      
-      // ✅ DATABASE URL ASIA SOUTHEAST (SINGAPURA)
-      databaseURL: "https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app",
-      
+      databaseURL: "https://kas-x4-26-27-default-rtdb.firebaseio.com",
       projectId: "kas-x4-26-27",
       storageBucket: "kas-x4-26-27.firebasestorage.app",
       messagingSenderId: "359255072501",
@@ -331,81 +314,14 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const auth = firebase.auth();
     const kasRef = db.ref('transaksi_kas');
     const dendaRef = db.ref('kas_denda');
 
-    // ===============================================
-    // SISTEM LOGIN & OTORISASI (Seperti Canva)
-    // ===============================================
-    const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com"];
-    let isAdmin = false;
-
-    // Trigger Login Google
-    function loginGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(err => {
-        alert("Gagal login: " + err.message);
-      });
-    }
-
-    // Trigger Logout
-    function logout() {
-      auth.signOut();
-    }
-
-    // Pendeteksi Status Login (Auto-Check)
-    auth.onAuthStateChanged((user) => {
-      const btnLogin = document.getElementById('btn-login');
-      const profile = document.getElementById('user-profile');
-      const avatar = document.getElementById('user-avatar');
-      
-      if (user) {
-        // Cek apakah email yang login adalah admin terdaftar
-        if (ALLOWED_ADMINS.includes(user.email)) {
-          isAdmin = true;
-          btnLogin.classList.add('hidden');
-          profile.classList.remove('hidden');
-          profile.classList.add('flex');
-          avatar.src = user.photoURL;
-          toggleFormLocks(false); // Buka gembok
-        } else {
-          // Kalau nyoba login pakai email lain, langsung ditendang
-          alert("AKSES DITOLAK: Akun email ini bukan Bendahara / Admin kelas.");
-          auth.signOut();
-        }
-      } else {
-        isAdmin = false;
-        btnLogin.classList.remove('hidden');
-        profile.classList.add('hidden');
-        profile.classList.remove('flex');
-        toggleFormLocks(true); // Kunci gembok
-      }
-      renderAll(); // Render ulang tabel agar tombol aksi admin terupdate
-    });
-
-    // Fungsi Kunci/Buka Form Input
-    function toggleFormLocks(isLocked) {
-      const overlays = document.querySelectorAll('.admin-overlay');
-      overlays.forEach(el => {
-        if (isLocked) {
-          el.classList.remove('hidden');
-          el.classList.add('flex');
-        } else {
-          el.classList.add('hidden');
-          el.classList.remove('flex');
-        }
-      });
-    }
-
-
-    // ===============================================
-    // DATA KELAS & LOGIKA APLIKASI
-    // ===============================================
     const TOTAL_SISWA = 28;
     const TARIF_MINGGU = 5000;
     const START_SEMESTER = new Date("2026-07-13");
     const TOTAL_MINGGU = 16;
+
     const daftarSiswa = {};
     for (let i = 1; i <= TOTAL_SISWA; i++) {
       daftarSiswa[i] = { nama: `Siswa Absen ${i}`, wa: "6281234567890" };
@@ -415,13 +331,14 @@
     let localTx = [];
     let localDenda = [];
 
+    // Set Default Today Dates
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('single-date').value = today;
     document.getElementById('denda-date').value = today;
 
     lucide.createIcons();
 
-    // Cek Koneksi Server
+    // Connection Status Engine
     db.ref(".info/connected").on("value", (snap) => {
       const badge = document.getElementById('status-badge');
       const text = document.getElementById('status-text');
@@ -434,18 +351,22 @@
       }
     });
 
+    // Tab Switcher
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.className = 'tab-btn px-4 py-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all');
       document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+
       document.getElementById(`tab-${tab}`).className = 'tab-btn active px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all';
       document.getElementById(`content-${tab}`).classList.remove('hidden');
     }
 
+    // Single Form Type Switch
     function setSingleType(type) {
       singleType = type;
       const bM = document.getElementById('btn-single-masuk');
       const bK = document.getElementById('btn-single-keluar');
       const fA = document.getElementById('single-absen-field');
+
       if (type === 'masuk') {
         bM.className = 'py-2 text-xs font-semibold rounded-xl bg-indigo-600 text-white border border-indigo-500';
         bK.className = 'py-2 text-xs font-semibold rounded-xl bg-slate-700 text-slate-300 border border-slate-600';
@@ -457,140 +378,279 @@
       }
     }
 
+    // Auto Preview Absen Single & Denda
     document.getElementById('single-absen').addEventListener('input', (e) => {
-      document.getElementById('single-preview').innerText = daftarSiswa[e.target.value] ? `Siswa: ${daftarSiswa[e.target.value].nama}` : '';
+      const p = document.getElementById('single-preview');
+      p.innerText = daftarSiswa[e.target.value] ? `Siswa: ${daftarSiswa[e.target.value].nama}` : '';
     });
     document.getElementById('denda-absen').addEventListener('input', (e) => {
-      document.getElementById('denda-preview').innerText = daftarSiswa[e.target.value] ? `Siswa: ${daftarSiswa[e.target.value].nama}` : '';
+      const p = document.getElementById('denda-preview');
+      p.innerText = daftarSiswa[e.target.value] ? `Siswa: ${daftarSiswa[e.target.value].nama}` : '';
     });
 
+    // Single Form Submit
     document.getElementById('form-single').addEventListener('submit', (e) => {
       e.preventDefault();
-      if(!isAdmin) return alert("Hanya admin yang bisa submit!");
-      const d = document.getElementById('single-date').value;
-      const ab = parseInt(document.getElementById('single-absen').value);
-      const am = parseInt(document.getElementById('single-amount').value);
-      const no = document.getElementById('single-note').value;
-      let nama = daftarSiswa[ab] ? daftarSiswa[ab].nama : `Absen ${ab}`;
-      let desc = singleType === 'masuk' && ab ? `[Absen ${ab} - ${nama}] ${no || 'Kas'}` : (no || 'Pengeluaran');
-      const dObj = new Date(d);
-      kasRef.push({ timestamp: dObj.getTime(), dateStr: dObj.toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'}), type: singleType, absen: singleType==='masuk'&&ab?ab:null, amount: am, description: desc })
-        .then(() => { e.target.reset(); document.getElementById('single-date').value = today; document.getElementById('single-preview').innerText = ''; });
+      const dateVal = document.getElementById('single-date').value;
+      const absen = parseInt(document.getElementById('single-absen').value);
+      const amount = parseInt(document.getElementById('single-amount').value);
+      const note = document.getElementById('single-note').value;
+
+      let nama = daftarSiswa[absen] ? daftarSiswa[absen].nama : `Absen ${absen}`;
+      let desc = singleType === 'masuk' && absen ? `[Absen ${absen} - ${nama}] ${note || 'Kas'}` : (note || 'Pengeluaran Kas');
+
+      const dObj = new Date(dateVal);
+      kasRef.push({
+        timestamp: dObj.getTime(),
+        dateStr: dObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+        type: singleType,
+        absen: singleType === 'masuk' && absen ? absen : null,
+        amount: amount,
+        description: desc
+      }).then(() => {
+        e.target.reset();
+        document.getElementById('single-date').value = today;
+        document.getElementById('single-preview').innerText = '';
+      });
     });
 
+    // Multi Transaction Rows Handler
     function addMultiRow() {
       const container = document.getElementById('multi-rows-container');
       const tr = document.createElement('tr');
       tr.className = "multi-row";
       tr.innerHTML = `
-        <td class="py-2 px-1"><select class="m-type bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200"><option value="masuk">Pemasukan</option><option value="keluar">Pengeluaran</option></select></td>
+        <td class="py-2 px-1">
+          <select class="m-type bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200">
+            <option value="masuk">Pemasukan</option>
+            <option value="keluar">Pengeluaran</option>
+          </select>
+        </td>
         <td class="py-2 px-1"><input type="date" value="${today}" class="m-date bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200"></td>
         <td class="py-2 px-1"><input type="number" min="1" max="28" placeholder="Absen" class="m-absen w-16 bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200"></td>
         <td class="py-2 px-1"><input type="number" placeholder="5000" class="m-amount bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200" required></td>
         <td class="py-2 px-1"><input type="text" placeholder="Catatan" class="m-note bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200"></td>
-        <td class="py-2 px-1 text-center"><button type="button" onclick="this.closest('tr').remove()" class="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+        <td class="py-2 px-1 text-center">
+          <button type="button" onclick="this.closest('tr').remove()" class="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        </td>
       `;
       container.appendChild(tr);
       lucide.createIcons();
     }
-    addMultiRow();
+    addMultiRow(); // Initial Row
 
+    // Submit Multi Form
     document.getElementById('form-multi').addEventListener('submit', (e) => {
       e.preventDefault();
-      if(!isAdmin) return alert("Hanya admin yang bisa submit!");
       const rows = document.querySelectorAll('.multi-row');
       const promises = [];
+
       rows.forEach(r => {
-        const t = r.querySelector('.m-type').value, dVal = r.querySelector('.m-date').value, ab = parseInt(r.querySelector('.m-absen').value), am = parseInt(r.querySelector('.m-amount').value), no = r.querySelector('.m-note').value;
-        if (am) {
-          let nama = daftarSiswa[ab] ? daftarSiswa[ab].nama : `Absen ${ab}`;
-          let desc = t === 'masuk' && ab ? `[Absen ${ab} - ${nama}] ${no || 'Kas'}` : (no || 'Pengeluaran');
-          promises.push(kasRef.push({ timestamp: new Date(dVal).getTime(), dateStr: new Date(dVal).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}), type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc }));
+        const type = r.querySelector('.m-type').value;
+        const dateVal = r.querySelector('.m-date').value;
+        const absen = parseInt(r.querySelector('.m-absen').value);
+        const amount = parseInt(r.querySelector('.m-amount').value);
+        const note = r.querySelector('.m-note').value;
+
+        if (amount) {
+          let nama = daftarSiswa[absen] ? daftarSiswa[absen].nama : `Absen ${absen}`;
+          let desc = type === 'masuk' && absen ? `[Absen ${absen} - ${nama}] ${note || 'Kas'}` : (note || 'Pengeluaran');
+          const dObj = new Date(dateVal);
+
+          promises.push(kasRef.push({
+            timestamp: dObj.getTime(),
+            dateStr: dObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+            type: type,
+            absen: type === 'masuk' && absen ? absen : null,
+            amount: amount,
+            description: desc
+          }));
         }
       });
-      Promise.all(promises).then(() => { document.getElementById('multi-rows-container').innerHTML = ''; addMultiRow(); switchTab('dashboard'); });
+
+      Promise.all(promises).then(() => {
+        document.getElementById('multi-rows-container').innerHTML = '';
+        addMultiRow();
+        switchTab('dashboard');
+      });
     });
 
+    // Form Denda Submit
     document.getElementById('form-denda').addEventListener('submit', (e) => {
       e.preventDefault();
-      if(!isAdmin) return alert("Hanya admin yang bisa submit!");
-      const d = document.getElementById('denda-date').value, ab = parseInt(document.getElementById('denda-absen').value), am = parseInt(document.getElementById('denda-amount').value), rz = document.getElementById('denda-reason').value;
-      dendaRef.push({ timestamp: new Date(d).getTime(), dateStr: new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}), absen: ab, nama: daftarSiswa[ab]?daftarSiswa[ab].nama:`Absen ${ab}`, amount: am, reason: rz, status: 'Unpaid' })
-        .then(() => { e.target.reset(); document.getElementById('denda-date').value = today; document.getElementById('denda-preview').innerText = ''; });
+      const dateVal = document.getElementById('denda-date').value;
+      const absen = parseInt(document.getElementById('denda-absen').value);
+      const amount = parseInt(document.getElementById('denda-amount').value);
+      const reason = document.getElementById('denda-reason').value;
+
+      const dObj = new Date(dateVal);
+      dendaRef.push({
+        timestamp: dObj.getTime(),
+        dateStr: dObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+        absen: absen,
+        nama: daftarSiswa[absen] ? daftarSiswa[absen].nama : `Absen ${absen}`,
+        amount: amount,
+        reason: reason,
+        status: 'Unpaid'
+      }).then(() => {
+        e.target.reset();
+        document.getElementById('denda-date').value = today;
+        document.getElementById('denda-preview').innerText = '';
+      });
     });
 
-    function payDenda(key, ab, n, am, rz) {
-      if(!isAdmin) return alert("Maaf, pelunasan denda hanya bisa diklik oleh admin.");
-      if(!confirm(`Konfirmasi: Apakah ${n} (Absen ${ab}) sudah membayar denda sebesar Rp${am}?`)) return;
-      
-      const tStr = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
-      dendaRef.child(key).update({ status: 'Paid', paidAt: tStr }).then(() => {
-        kasRef.push({ timestamp: Date.now(), dateStr: tStr, type: 'masuk', absen: ab, amount: am, description: `[Denda Lunas - ${n}] ${rz}` });
+    // Pay Denda Handler
+    function payDenda(key, absen, nama, amount, reason) {
+      const todayStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+      // Update Denda Status
+      dendaRef.child(key).update({
+        status: 'Paid',
+        paidAt: todayStr
+      }).then(() => {
+        // Automatically Insert into Main Kas
+        kasRef.push({
+          timestamp: Date.now(),
+          dateStr: todayStr,
+          type: 'masuk',
+          absen: absen,
+          amount: amount,
+          description: `[Denda - Absen ${absen} ${nama}] ${reason}`
+        });
       });
     }
 
-    kasRef.on('value', (s) => { const d = s.val(); localTx = []; if (d) { Object.keys(d).forEach(k => localTx.push({ id: k, ...d[k] })); localTx.sort((a, b) => b.timestamp - a.timestamp); } renderAll(); });
-    dendaRef.on('value', (s) => { const d = s.val(); localDenda = []; if (d) { Object.keys(d).forEach(k => localDenda.push({ id: k, ...d[k] })); localDenda.sort((a, b) => b.timestamp - a.timestamp); } renderAll(); });
+    // Realtime Listeners
+    kasRef.on('value', (snap) => {
+      const data = snap.val();
+      localTx = [];
+      if (data) {
+        Object.keys(data).forEach(k => localTx.push({ id: k, ...data[k] }));
+        localTx.sort((a, b) => b.timestamp - a.timestamp);
+      }
+      renderAll();
+    });
 
+    dendaRef.on('value', (snap) => {
+      const data = snap.val();
+      localDenda = [];
+      if (data) {
+        Object.keys(data).forEach(k => localDenda.push({ id: k, ...data[k] }));
+        localDenda.sort((a, b) => b.timestamp - a.timestamp);
+      }
+      renderAll();
+    });
+
+    // Render All Views
     function renderAll() {
-      let totM = 0, totK = 0, totD = 0, totBayar = {};
-      for (let i = 1; i <= TOTAL_SISWA; i++) totBayar[i] = 0;
+      let totalMasuk = 0, totalKeluar = 0, totalDendaPaid = 0;
+      let totalBayarSiswa = {};
+      for (let i = 1; i <= TOTAL_SISWA; i++) totalBayarSiswa[i] = 0;
 
-      const tb = document.getElementById('tx-table-body');
-      tb.innerHTML = localTx.length === 0 ? '<tr><td colspan="3" class="text-center py-6 text-slate-500">Belum ada data.</td></tr>' : '';
+      // Render Main Table
+      const tbody = document.getElementById('tx-table-body');
+      tbody.innerHTML = localTx.length === 0 ? '<tr><td colspan="3" class="text-center py-6 text-slate-500">Belum ada data.</td></tr>' : '';
 
       localTx.forEach(t => {
-        if (t.type === 'masuk') { totM += t.amount; if (t.absen) totBayar[t.absen] += t.amount; } else totK += t.amount;
-        tb.insertAdjacentHTML('beforeend', `<tr><td class="py-2 px-3 text-slate-400">${t.dateStr}</td><td class="py-2 px-3 text-slate-200">${t.description}</td><td class="py-2 px-3 text-right font-bold ${t.type==='masuk'?'text-emerald-400':'text-rose-400'}">${t.type==='masuk'?'+':'-'} Rp ${t.amount.toLocaleString('id-ID')}</td></tr>`);
+        if (t.type === 'masuk') {
+          totalMasuk += t.amount;
+          if (t.absen && totalBayarSiswa[t.absen] !== undefined) totalBayarSiswa[t.absen] += t.amount;
+        } else totalKeluar += t.amount;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-400">${t.dateStr}</td>
+          <td class="py-2.5 px-3 font-medium text-slate-200">${t.description}</td>
+          <td class="py-2.5 px-3 text-right font-bold ${t.type === 'masuk' ? 'text-emerald-400' : 'text-rose-400'}">
+            ${t.type === 'masuk' ? '+' : '-'} Rp ${t.amount.toLocaleString('id-ID')}
+          </td>
+        `;
+        tbody.appendChild(tr);
       });
 
-      const dtb = document.getElementById('denda-table-body');
-      dtb.innerHTML = localDenda.length === 0 ? '<tr><td colspan="5" class="text-center py-6 text-slate-500">Aman, belum ada denda kelas.</td></tr>' : '';
+      // Render Denda Table
+      const dTbody = document.getElementById('denda-table-body');
+      dTbody.innerHTML = localDenda.length === 0 ? '<tr><td colspan="6" class="text-center py-6 text-slate-500">Belum ada catatan denda.</td></tr>' : '';
 
       localDenda.forEach(d => {
-        if (d.status === 'Paid') totD += d.amount;
-        
-        // Cek admin untuk memunculkan tombol bayar
-        let actionHTML = '-';
-        if (d.status === 'Unpaid') {
-            if(isAdmin) {
-                actionHTML = `<button onclick="payDenda('${d.id}', ${d.absen}, '${d.nama}', ${d.amount}, '${d.reason}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-semibold">Tandai Lunas</button>`;
-            } else {
-                actionHTML = `<span class="text-[9px] text-slate-500 italic">Hubungi Admin</span>`;
-            }
-        }
+        if (d.status === 'Paid') totalDendaPaid += d.amount;
 
-        dtb.insertAdjacentHTML('beforeend', `<tr><td class="py-2 px-3 text-slate-400">${d.dateStr}</td><td class="py-2 px-3 text-slate-200">Absen ${d.absen} - ${d.nama}</td><td class="py-2 px-3 text-slate-400 text-[11px]">${d.reason}<br><b class="text-amber-400">Rp ${d.amount.toLocaleString()}</b></td><td class="py-2 px-3"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase ${d.status==='Paid'?'bg-emerald-500/20 text-emerald-400':'bg-rose-500/20 text-rose-400'}">${d.status==='Paid'?`Lunas`:'Belum'}</span></td><td class="py-2 px-3 text-center">${actionHTML}</td></tr>`);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-400">${d.dateStr}</td>
+          <td class="py-2.5 px-3 font-medium text-slate-200">Absen ${d.absen} - ${d.nama}</td>
+          <td class="py-2.5 px-3 text-slate-400">${d.reason}</td>
+          <td class="py-2.5 px-3 font-bold text-amber-400">Rp ${d.amount.toLocaleString('id-ID')}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${d.status === 'Paid' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
+              ${d.status === 'Paid' ? `Lunas (${d.paidAt})` : 'Belum Bayar'}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            ${d.status === 'Unpaid' ? `
+              <button onclick="payDenda('${d.id}', ${d.absen}, '${d.nama}', ${d.amount}, '${d.reason}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-semibold transition-all">
+                Bayar Denda
+              </button>
+            ` : '-'}
+          </td>
+        `;
+        dTbody.appendChild(tr);
       });
 
-      document.getElementById('stat-masuk').innerText = `Rp ${totM.toLocaleString('id-ID')}`;
-      document.getElementById('stat-keluar').innerText = `Rp ${totK.toLocaleString('id-ID')}`;
-      document.getElementById('stat-total').innerText = `Rp ${(totM - totK).toLocaleString('id-ID')}`;
-      document.getElementById('stat-denda').innerText = `Rp ${totD.toLocaleString('id-ID')}`;
+      // Update Summary Cards
+      document.getElementById('stat-masuk').innerText = `Rp ${totalMasuk.toLocaleString('id-ID')}`;
+      document.getElementById('stat-keluar').innerText = `Rp ${totalKeluar.toLocaleString('id-ID')}`;
+      document.getElementById('stat-total').innerText = `Rp ${(totalMasuk - totalKeluar).toLocaleString('id-ID')}`;
+      document.getElementById('stat-denda').innerText = `Rp ${totalDendaPaid.toLocaleString('id-ID')}`;
 
-      renderRekapTable(totBayar);
-      lucide.createIcons();
+      renderRekapTable(totalBayarSiswa);
     }
 
-    function renderRekapTable(tM) {
-      const hd = document.getElementById('rekap-header'), bd = document.getElementById('rekap-body'), ft = document.getElementById('rekap-footer');
-      let hStr = `<th class="py-2 px-2 border border-slate-700">Ab.</th><th class="py-2 px-2 border border-slate-700 min-w-[120px]">Nama</th>`;
-      for (let m=1;m<=TOTAL_MINGGU;m++) { let d=new Date(START_SEMESTER); d.setDate(d.getDate()+(m-1)*7); hStr+=`<th class="py-2 px-1 border border-slate-700 text-center text-[9px]">Mg ${m}<br><span class="text-[7px] text-slate-500">${d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit'})}</span></th>`; }
-      hd.innerHTML = hStr + `<th class="py-2 px-2 border border-slate-700 text-right">Total</th>`;
-      
-      bd.innerHTML = ''; let tW = new Array(TOTAL_MINGGU).fill(0);
-      for (let s=1;s<=TOTAL_SISWA;s++) {
-        let b = tM[s] || 0, rStr = `<td class="py-1 px-2 border border-slate-700 font-bold text-center">${s}</td><td class="py-1 px-2 border border-slate-700 text-[11px]">${daftarSiswa[s].nama}</td>`;
-        for (let m=0;m<TOTAL_MINGGU;m++) {
-          if (b >= TARIF_MINGGU) { rStr+=`<td class="py-1 px-1 border border-slate-700 text-center text-emerald-400">✓</td>`; b-=TARIF_MINGGU; tW[m]+=TARIF_MINGGU; }
-          else if (b > 0) { rStr+=`<td class="py-1 px-1 border border-slate-700 text-center text-amber-400 text-[8px]">${b/1000}k</td>`; tW[m]+=b; b=0; }
-          else { rStr+=`<td class="py-1 px-1 border border-slate-700 text-center text-slate-600">-</td>`; }
-        }
-        bd.insertAdjacentHTML('beforeend', `<tr>${rStr}<td class="py-1 px-2 border border-slate-700 text-right font-bold text-indigo-400">Rp ${(tM[s]||0).toLocaleString()}</td></tr>`);
+    // Render Rekap Perminggu
+    function renderRekapTable(totalMap) {
+      const thead = document.getElementById('rekap-header');
+      const tbody = document.getElementById('rekap-body');
+      const tfoot = document.getElementById('rekap-footer');
+
+      let hHTML = `<th class="py-2 px-2 border border-slate-700">Absen</th><th class="py-2 px-2 border border-slate-700 min-w-[120px]">Nama</th>`;
+      for (let m = 1; m <= TOTAL_MINGGU; m++) {
+        let d = new Date(START_SEMESTER);
+        d.setDate(d.getDate() + (m - 1) * 7);
+        hHTML += `<th class="py-2 px-2 border border-slate-700 text-center text-[10px]">Mgt ${m}<br><span class="text-[8px] text-slate-500">${d.toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit'})}</span></th>`;
       }
-      let fStr = `<td colspan="2" class="py-2 px-2 border border-slate-700 text-right">TOTAL:</td>`;
-      tW.forEach(t => fStr+=`<td class="py-2 px-1 border border-slate-700 text-center text-[8px] text-indigo-300">Rp${t/1000}k</td>`);
-      ft.innerHTML = fStr + `<td class="py-2 px-2 border border-slate-700 text-right text-emerald-400 font-bold">Rp ${tW.reduce((a,b)=>a+b,0).toLocaleString()}</td>`;
+      hHTML += `<th class="py-2 px-2 border border-slate-700 text-right">Total</th>`;
+      thead.innerHTML = hHTML;
+
+      tbody.innerHTML = '';
+      let totalMinggu = new Array(TOTAL_MINGGU).fill(0);
+
+      for (let s = 1; s <= TOTAL_SISWA; s++) {
+        let bal = totalMap[s] || 0;
+        let rHTML = `<td class="py-1.5 px-2 border border-slate-700 font-bold text-center">${s}</td><td class="py-1.5 px-2 border border-slate-700">${daftarSiswa[s].nama}</td>`;
+
+        for (let m = 0; m < TOTAL_MINGGU; m++) {
+          if (bal >= TARIF_MINGGU) {
+            rHTML += `<td class="py-1.5 px-1 border border-slate-700 text-center text-emerald-400 font-bold">✓</td>`;
+            bal -= TARIF_MINGGU;
+            totalMinggu[m] += TARIF_MINGGU;
+          } else if (bal > 0) {
+            rHTML += `<td class="py-1.5 px-1 border border-slate-700 text-center text-amber-400 text-[9px]">${bal/1000}k</td>`;
+            totalMinggu[m] += bal;
+            bal = 0;
+          } else {
+            rHTML += `<td class="py-1.5 px-1 border border-slate-700 text-center text-slate-600">-</td>`;
+          }
+        }
+        rHTML += `<td class="py-1.5 px-2 border border-slate-700 text-right font-bold text-indigo-400">Rp ${(totalMap[s]||0).toLocaleString('id-ID')}</td>`;
+
+        let tr = document.createElement('tr');
+        tr.innerHTML = rHTML;
+        tbody.appendChild(tr);
+      }
+
+      let fHTML = `<td colspan="2" class="py-2 px-2 border border-slate-700 text-right">TOTAL:</td>`;
+      totalMinggu.forEach(t => fHTML += `<td class="py-2 px-1 border border-slate-700 text-center text-[9px] text-indigo-300">Rp ${t/1000}k</td>`);
+      fHTML += `<td class="py-2 px-2 border border-slate-700 text-right text-emerald-400">Rp ${totalMinggu.reduce((a,b)=>a+b,0).toLocaleString('id-ID')}</td>`;
+      tfoot.innerHTML = fHTML;
     }
 
     function exportExcel() {
