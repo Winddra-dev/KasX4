@@ -226,7 +226,6 @@
 
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com"];
     let isAdmin = false; let localTx = []; let localDenda = []; let saldoFisik = 0;
-    let globalStudentMatrixCache = []; // Cache untuk AI Agent
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; const TOTAL_MINGGU = 16;
     const START_SEMESTER = new Date("2026-07-13"); const today = new Date().toISOString().split('T')[0];
@@ -402,38 +401,73 @@
     // ===============================================
     function runAIAgentAudit() {
       const now = new Date();
-      // Hitung minggu berjalan berdasarkan START_SEMESTER
       const diffTime = Math.abs(now - START_SEMESTER);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      const currentWeek = Math.max(1, Math.ceil(diffDays / 7));
+      const currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
 
-      let reportHTML = `<p class="text-xs text-slate-300"><b>AI Agent Status:</b> Berhasil memindai minggu ke-${currentWeek} hari ini (${now.toLocaleDateString('id-ID')}).</p>`;
-      let unpaidList = [];
+      let unpaidKas = [];
+      let unpaidDenda = [];
+      let reportHTML = `<p class="text-xs text-slate-300 mb-3"><b>AI Bot Scanner:</b> Memindai tunggakan minggu ke-${currentWeek}.</p>`;
 
       for(let s=1; s<=TOTAL_SISWA; s++) {
         let paidTotal = 0;
         localTx.filter(t => t.type === 'masuk' && t.absen === s).forEach(t => paidTotal += t.amount);
-        let expectedTotal = (currentWeek - 1) * TARIF_MINGGU; // Minggu berjalan belum wajib penuh, tapi minggu lalu wajib
         let weeksPaid = Math.floor(paidTotal / TARIF_MINGGU);
         let lagWeeks = (currentWeek - 1) - weeksPaid;
 
         if(lagWeeks > 0) {
-          let deficiency = lagWeeks * TARIF_MINGGU;
-          unpaidList.push({ absen: s, nama: daftarSiswa[s].nama, lag: lagWeeks, deficiency });
+          unpaidKas.push({ absen: s, nama: daftarSiswa[s].nama, lag: lagWeeks, deficiency: lagWeeks * TARIF_MINGGU });
         }
       }
 
-      if(unpaidList.length === 0) {
-        reportHTML += `<div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 font-bold">Luar biasa! Tidak ada siswa yang nunggak pembayaran minggu lalu.</div>`;
+      localDenda.forEach(d => {
+        if(d.status === 'Unpaid') {
+          unpaidDenda.push({ absen: d.absen, nama: d.nama, amount: d.amount, reason: d.reason });
+        }
+      });
+
+      if(unpaidKas.length === 0 && unpaidDenda.length === 0) {
+        reportHTML += `<div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 font-bold text-center">Aman! Semua warga kelas taat kas dan bersih dari denda. 🎉</div>`;
       } else {
-        reportHTML += `<p class="text-xs text-amber-400 font-bold mt-2">Ditemukan ${unpaidList.length} siswa nunggak. Klik tombol untuk kirim WA:</p>`;
-        unpaidList.forEach(u => {
-          let waText = encodeURIComponent(`Halo ${u.nama} (Absen ${u.absen}), AI Bot KasSmart X-4 menginfokan bahwa kamu memiliki tunggakan kas tertinggal ${u.lag} minggu (Total Rp ${u.deficiency.toLocaleString()}). Mohon segera dibayarkan ke Bendahara ya. Terima kasih! 🙏`);
+        let groupSummaryText = `📢 *PENGUMUMAN REKAP KAS & DENDA KELAS X-4* 📢%0A%0A*1. Daftar Tunggakan Kas:*%0A`;
+        unpaidKas.forEach(u => { groupSummaryText += `- Ab. ${u.absen} ${u.nama}: Nunggak ${u.lag} mgg (Rp ${u.deficiency.toLocaleString()})%0A`; });
+        
+        groupSummaryText += `%0A*2. Daftar Denda Belum Lunas:*%0A`;
+        if(unpaidDenda.length > 0) {
+          unpaidDenda.forEach(d => { groupSummaryText += `- Ab. ${d.absen} ${d.nama}: Rp ${d.amount.toLocaleString()} (${d.reason})%0A`; });
+        } else { groupSummaryText += `_Tidak ada denda aktif._%0A`; }
+        
+        groupSummaryText += `%0AMohon segera dilunasi ke Bendahara ya ges ya sebelum dispill wali kelas. Terima kasih! 🙏`;
+
+        reportHTML += `
+          <div class="mb-4 p-3 bg-slate-900 border border-indigo-500/30 rounded-xl flex justify-between items-center">
+            <div><b class="text-white text-xs">Sindiran Massal Grup Kelas</b><br><span class="text-[10px] text-slate-400">Kirim rekap tagihan gabungan ke WA Grup.</span></div>
+            <a href="https://wa.me/?text=${groupSummaryText}" target="_blank" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 shadow">
+              <i data-lucide="users" class="w-3.5 h-3.5"></i> Kirim ke Grup
+            </a>
+          </div>
+          <hr class="border-slate-700 my-3">
+          <p class="text-[11px] text-amber-400 font-bold mb-2">Atau Sindir Japri Satu-satu:</p>
+        `;
+
+        unpaidKas.forEach(u => {
+          let waText = encodeURIComponent(`Halo ${u.nama} (Absen ${u.absen}), AI Bot KasSmart X-4 menginfokan bahwa kas kamu nunggak ${u.lag} minggu (Rp ${u.deficiency.toLocaleString()}). Yuk, segera dibayar ke Bendahara sebelum jadi bahan ghibah kelas. 😭🙏`);
           reportHTML += `
-            <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700">
-              <div><b class="text-white">Ab. ${u.absen} - ${u.nama}</b><br><span class="text-[10px] text-rose-400">Nunggak ${u.lag} Mgg (Rp ${u.deficiency.toLocaleString()})</span></div>
-              <a href="https://wa.me/${daftarSiswa[u.absen].wa}?text=${waText}" target="_blank" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow">
-                <i data-lucide="send" class="w-3 h-3"></i> Kirim WA Bot
+            <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700 mb-2">
+              <div><b class="text-white text-xs">Ab. ${u.absen} - ${u.nama}</b><br><span class="text-[10px] text-rose-400">Kas: Nunggak ${u.lag} Mgg (Rp ${u.deficiency.toLocaleString()})</span></div>
+              <a href="https://wa.me/${daftarSiswa[u.absen].wa}?text=${waText}" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1">
+                <i data-lucide="send" class="w-3 h-3"></i> Japri WA
+              </a>
+            </div>
+          `;
+        });
+
+        unpaidDenda.forEach(d => {
+          let waText = encodeURIComponent(`Halo ${d.nama} (Absen ${d.absen}), catatan denda kamu sebesar Rp ${d.amount.toLocaleString()} (${d.reason}) tercatat belum lunas nih. Mohon segera diselesaikan ya bosku! ☕`);
+          reportHTML += `
+            <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700 mb-2">
+              <div><b class="text-white text-xs">Ab. ${d.absen} - ${d.nama}</b><br><span class="text-[10px] text-amber-400">Denda: Rp ${d.amount.toLocaleString()} (${d.reason})</span></div>
+              <a href="https://wa.me/${daftarSiswa[d.absen].wa}?text=${waText}" target="_blank" class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1">
+                <i data-lucide="send" class="w-3 h-3"></i> Tagih Denda
               </a>
             </div>
           `;
@@ -449,12 +483,11 @@
 
 
     // ===============================================
-    // MATRIX RENDER DENGAN SISTEM WARNA (Merah, Kuning, Hijau)
+    // MATRIX RENDER DENGAN SISTEM WARNA
     // ===============================================
     function renderRekapTable(tM) {
       const hd = document.getElementById('rekap-header'), bd = document.getElementById('rekap-body'), ft = document.getElementById('rekap-footer');
       
-      // Hitung minggu berjalan untuk logika warna
       const now = new Date();
       const diffTime = Math.abs(now - START_SEMESTER);
       const currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
@@ -474,26 +507,19 @@
         
         for (let m=1; m<=TOTAL_MINGGU; m++) {
           if (b >= TARIF_MINGGU) {
-            // 🟢 HIJAU: Sudah bayar lunas minggu ini
             rStr+=`<td class="p-1 border border-slate-700 text-center bg-emerald-500/20 text-emerald-400 font-bold">✓</td>`;
             b -= TARIF_MINGGU; tW[m-1] += TARIF_MINGGU;
           } else {
-            // Belum cukup bayar untuk minggu ke-m
             if (m < currentWeek) {
-              // Minggu sudah lewat tapi belum bayar -> Cek tingkat keterlambatan
               let lag = currentWeek - m;
               if (lag >= 2) {
-                // 🔴 MERAH: Nunggak >= 2 minggu
                 rStr+=`<td class="p-1 border border-slate-700 text-center bg-rose-500/20 text-rose-400 font-bold text-[9px]">✗ (${lag}m)</td>`;
               } else {
-                // 🟡 KUNING: Nunggak 1 minggu
                 rStr+=`<td class="p-1 border border-slate-700 text-center bg-amber-500/20 text-amber-400 font-bold text-[9px]">!</td>`;
               }
             } else if (m === currentWeek) {
-              // Minggu ini (sedang berjalan)
               rStr+=`<td class="p-1 border border-slate-700 text-center text-slate-400 text-[9px]">Proses</td>`;
             } else {
-              // ⚪ KOSONG: Belum waktunya (minggu depan)
               rStr+=`<td class="p-1 border border-slate-700 text-center text-slate-600">-</td>`;
             }
           }
