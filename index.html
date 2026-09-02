@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | Pro Edition</title>
+  <title>KasSmart X-4 | v5.0-Enterprise</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -19,11 +20,24 @@
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     .accordion-content { transition: max-height 0.3s ease-out, opacity 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
     .accordion-content.open { max-height: 2000px; opacity: 1; }
+    #toast-box { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateY(100px); opacity: 0; pointer-events: none; }
+    #toast-box.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-16 antialiased selection:bg-indigo-500/30">
 
-  <!-- Top App Bar -->
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-[999] bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
+    <div id="toast-icon" class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+      <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+    </div>
+    <div>
+      <h5 id="toast-title" class="text-xs font-black tracking-wide">Berhasil!</h5>
+      <p id="toast-msg" class="text-[11px] text-slate-300 mt-0.5">Pesan sistem.</p>
+    </div>
+  </div>
+
+  <!-- TOP APP BAR -->
   <header class="bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
       <div class="flex items-center gap-3">
@@ -31,8 +45,11 @@
           <i data-lucide="bot" class="w-5 h-5 text-white"></i>
         </div>
         <div>
-          <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-indigo-400">AI Agent</span></h1>
-          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Autonomous Financial Bot</p>
+          <div class="flex items-center gap-2">
+            <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-indigo-400">AI Agent</span></h1>
+            <span class="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black rounded">v5.0-Enterprise</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Autonomous Financial & Audit Bot</p>
         </div>
       </div>
 
@@ -45,19 +62,20 @@
         </button>
         <div id="user-profile" class="hidden items-center gap-2 bg-slate-800 border border-slate-700 p-1 pr-3 rounded-full cursor-pointer hover:bg-slate-700 transition-colors" onclick="logout()" title="Klik untuk Logout">
           <img id="user-avatar" src="" class="w-6 h-6 rounded-full border border-indigo-500">
-          <span class="text-[10px] font-bold text-emerald-400">Bendahara</span>
+          <span id="user-role-label" class="text-[10px] font-bold text-emerald-400">Bendahara</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
+  <!-- NAVIGATION TABS -->
   <div class="bg-slate-900 border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 py-2 flex gap-1 overflow-x-auto no-scrollbar">
       <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600/10 text-indigo-400 whitespace-nowrap transition-colors">Buku Harian</button>
+      <button onclick="switchTab('lookup')" id="tab-lookup" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Cek Kas Mandiri 🔍</button>
       <button onclick="switchTab('input')" id="tab-input" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Smart Input</button>
       <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Matriks & Denda</button>
-      <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Admin Tools</button>
+      <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Admin Tools & Audit</button>
     </div>
   </div>
 
@@ -66,7 +84,7 @@
     <!-- ================= TAB 1: BUKU HARIAN ================= -->
     <div id="content-dashboard" class="tab-content space-y-6">
       
-      <!-- PERSONAL NOTIFICATION BANNER WIRASENA -->
+      <!-- PERSONAL REMINDER WIRASENA -->
       <section id="wirasena-reminder-banner" class="hidden bg-gradient-to-r from-rose-950/80 via-slate-900 to-slate-900 border border-rose-500/40 p-4 rounded-2xl shadow-xl flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-rose-500/20 text-rose-400 rounded-xl border border-rose-500/30">
@@ -80,6 +98,21 @@
         <button onclick="document.getElementById('wirasena-reminder-banner').remove()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
       </section>
 
+      <!-- CASH LIMIT WARNING BANNER -->
+      <section id="cash-limit-banner" class="hidden bg-gradient-to-r from-amber-950/80 via-slate-900 to-slate-900 border border-amber-500/40 p-4 rounded-2xl shadow-xl flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-black text-amber-300">Peringatan Batas Maksimum Kas Fisik (>Rp 200.000) ⚠️</h4>
+            <p class="text-[11px] text-slate-300 mt-0.5">Uang tunai di laci kelas sudah cukup banyak. Harap segera amankan / disetor agar tidak berisiko!</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('cash-limit-banner').classList.add('hidden')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </section>
+
+      <!-- STAT CARDS -->
       <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Kas Sistem</p>
@@ -99,17 +132,78 @@
         </div>
       </section>
 
-      <section class="bg-slate-800/50 border border-slate-700/50 p-1 md:p-6 rounded-2xl">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2 px-4 md:px-0 pt-4 md:pt-0 mb-4">
-          <i data-lucide="book-open" class="w-4 h-4 text-indigo-400"></i> Buku Kas Harian
-        </h3>
+      <!-- FINANCIAL CHART STATS -->
+      <section class="bg-slate-800 border border-slate-700 p-4 md:p-6 rounded-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-400"></i> Statistik Arus Kas X-4</h3>
+          <span class="text-[10px] text-slate-400 font-medium">Real-time Visualizer</span>
+        </div>
+        <div class="h-48 w-full">
+          <canvas id="kasChart"></canvas>
+        </div>
+      </section>
+
+      <!-- LEDGER -->
+      <section class="bg-slate-800/50 border border-slate-700/50 p-4 md:p-6 rounded-2xl space-y-4">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="book-open" class="w-4 h-4 text-indigo-400"></i> Buku Kas Harian
+          </h3>
+          <button onclick="exportExcel()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel Harian
+          </button>
+        </div>
         <div id="ledger-container" class="space-y-3">
           <p class="text-center text-xs text-slate-500 py-8">Memuat ledger...</p>
         </div>
       </section>
     </div>
 
-    <!-- ================= TAB 2: SMART INPUT ================= -->
+    <!-- ================= TAB 2: CEK KAS MANDIRI (PUBLIC LOOKUP) ================= -->
+    <div id="content-lookup" class="tab-content hidden space-y-6">
+      <section class="bg-slate-800 border border-slate-700 p-5 md:p-8 rounded-2xl shadow-xl space-y-6">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <div class="inline-flex p-3 bg-indigo-500/20 text-indigo-400 rounded-2xl border border-indigo-500/30 mb-1">
+            <i data-lucide="search" class="w-6 h-6"></i>
+          </div>
+          <h2 class="text-lg font-black text-white">Cek Status Keuangan Mandiri</h2>
+          <p class="text-xs text-slate-400">Ketik nama atau nomor absenmu untuk melihat riwayat pembayaran kas & denda secara transparan tanpa perlu tanya bendahara.</p>
+        </div>
+
+        <div class="max-w-md mx-auto flex gap-2">
+          <input type="text" id="lookup-input" placeholder="Masukkan Nama atau No. Absen (Contoh: 28 / Wirasena)..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-indigo-500">
+          <button onclick="executeLookup()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30">Cek</button>
+        </div>
+
+        <div id="lookup-result-container" class="hidden max-w-xl mx-auto bg-slate-900 border border-slate-700 p-5 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div>
+              <h4 id="res-name" class="text-sm font-bold text-white">-</h4>
+              <p id="res-absen" class="text-[10px] text-indigo-400 font-semibold">-</p>
+            </div>
+            <div id="res-status-badge" class="px-2.5 py-1 rounded text-[10px] font-bold">Status</div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700/60">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Total Kas Dibayar</span>
+              <h5 id="res-total-kas" class="text-base font-black text-emerald-400 mt-1">Rp 0</h5>
+            </div>
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700/60">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Denda Aktif</span>
+              <h5 id="res-total-denda" class="text-base font-black text-amber-400 mt-1">Rp 0</h5>
+            </div>
+          </div>
+
+          <div>
+            <h5 class="text-xs font-bold text-slate-300 mb-2">Riwayat Transaksi Pribadi:</h5>
+            <div id="res-history-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= TAB 3: SMART INPUT ================= -->
     <div id="content-input" class="tab-content hidden space-y-6">
       <section class="bg-slate-800 border border-slate-700 p-4 md:p-6 rounded-2xl relative overflow-hidden shadow-2xl">
         <div id="lock-input" class="admin-overlay absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
@@ -117,15 +211,18 @@
           <h2 class="text-lg font-black text-white">AKSES DITOLAK</h2>
           <p class="text-xs text-slate-400 mt-1">Area khusus Bendahara Kelas.</p>
         </div>
-        <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-4">
-          <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input</h3>
-          <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah</button>
+        <div class="flex flex-wrap justify-between items-center border-b border-slate-700 pb-4 mb-4 gap-2">
+          <div>
+            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & QRIS Method</h3>
+            <p class="text-[11px] text-slate-400">Pilih metode pembayaran (Cash / QRIS Patungan Kelas tanpa syarat 17+).</p>
+          </div>
+          <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
         </div>
         <form id="form-multi" class="space-y-4">
           <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50">
-            <table class="w-full text-left text-xs min-w-[700px]">
+            <table class="w-full text-left text-xs min-w-[750px]">
               <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
-                <tr><th class="p-3 w-36">Tipe</th><th class="p-3 w-36">Tanggal</th><th class="p-3 w-24">Absen</th><th class="p-3 w-32">Nominal</th><th class="p-3">Catatan</th><th class="p-3 text-center w-12">Hapus</th></tr>
+                <tr><th class="p-3 w-36">Tipe</th><th class="p-3 w-32">Metode</th><th class="p-3 w-32">Tanggal</th><th class="p-3 w-20">Absen</th><th class="p-3 w-28">Nominal</th><th class="p-3">Catatan</th><th class="p-3 text-center w-12">Hapus</th></tr>
               </thead>
               <tbody id="multi-rows-container" class="divide-y divide-slate-800"></tbody>
             </table>
@@ -135,10 +232,9 @@
       </section>
     </div>
 
-    <!-- ================= TAB 3: MATRIKS & TABEL DENDA ================= -->
+    <!-- ================= TAB 4: MATRIKS & TABEL DENDA ================= -->
     <div id="content-rekap" class="tab-content hidden space-y-6">
       
-      <!-- AI AGENT CONTROL PANEL -->
       <section class="bg-gradient-to-r from-indigo-900/50 via-slate-800 to-slate-800 border border-indigo-500/30 p-5 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span class="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded border border-indigo-500/30">AI BOT ACTIVE</span>
@@ -150,12 +246,12 @@
         </button>
       </section>
 
-      <!-- TABEL MONITORING DENDA (Belum Bayar & Sudah Bayar) -->
+      <!-- TABEL MONITORING DENDA -->
       <section class="bg-slate-800 border border-slate-700 p-4 md:p-6 rounded-2xl space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring & Pelunasan Denda Kelas</h3>
-            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik tombol centang hijau untuk melunasi (otomatis masuk ke rekap kas).</p>
+            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik tombol centang hijau untuk melunasi.</p>
           </div>
           <div class="flex gap-2 text-xs font-bold">
             <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">Belum Lunas: <span id="count-unpaid">0</span></span>
@@ -202,31 +298,63 @@
       </section>
     </div>
 
-    <!-- ================= TAB 4: ADMIN TOOLS ================= -->
+    <!-- ================= TAB 5: ADMIN TOOLS & AUDIT TRAIL ================= -->
     <div id="content-tools" class="tab-content hidden space-y-6">
       <div id="lock-tools" class="admin-overlay fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
         <i data-lucide="shield-alert" class="w-10 h-10 text-slate-500 mb-3"></i>
-        <h2 class="text-lg font-black text-white">TOOLS ADMINISTRATOR</h2>
-        <p class="text-xs text-slate-400 mt-1">Area khusus modifikasi dan migrasi data.</p>
+        <h2 class="text-lg font-black text-white">TOOLS ADMINISTRATOR & AUDIT</h2>
+        <p class="text-xs text-slate-400 mt-1">Area khusus modifikasi, backup, dan jejak audit admin.</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-2"><i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i> Export & Template</h3>
-          <div class="flex gap-2 mt-4">
-            <button onclick="downloadTemplate()" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-bold text-white">Template Kosong</button>
-            <button onclick="exportExcel()" class="flex-1 py-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 rounded-lg text-[11px] font-bold">Export Excel</button>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i> Export & Backup</h3>
+          <p class="text-[11px] text-slate-400">Unduh data lengkap Excel atau Backup JSON.</p>
+          <div class="flex flex-col gap-2 pt-2">
+            <button onclick="downloadTemplate()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-bold text-white">Template Kosong</button>
+            <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 rounded-lg text-[11px] font-bold">Auto-Snapshot JSON</button>
           </div>
         </div>
-        <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-2"><i data-lucide="database" class="w-4 h-4 text-rose-400"></i> Import Data</h3>
-          <div class="flex gap-2 items-center mt-4">
+
+        <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-rose-400"></i> Import Data</h3>
+          <p class="text-[11px] text-slate-400">Unggah file Excel migrasi kas.</p>
+          <div class="flex gap-2 items-center pt-2">
             <input type="file" id="import-file" accept=".xlsx" class="flex-1 text-[10px] text-slate-400">
             <button onclick="importExcel()" class="py-2 px-4 bg-rose-600 text-white rounded-lg text-[11px] font-bold">Proses</button>
           </div>
         </div>
+
+        <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="calculator" class="w-4 h-4 text-amber-400"></i> Kalkulator Kembalian</h3>
+          <p class="text-[11px] text-slate-400">Hitung uang kembalian bayar kas.</p>
+          <div class="space-y-2 pt-1">
+            <input type="number" id="calc-total" placeholder="Total Tagihan (Rp)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white outline-none">
+            <input type="number" id="calc-paid" placeholder="Uang Diberikan (Rp)" oninput="calcChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white outline-none">
+            <p id="calc-result" class="text-xs font-bold text-emerald-400">Kembalian: Rp 0</p>
+          </div>
+        </div>
       </div>
-      <section class="bg-slate-800 border border-slate-700 p-5 rounded-2xl">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="table-2" class="w-4 h-4 text-indigo-400"></i> Database Manager</h3>
+
+      <!-- ADMIN AUDIT TRAIL -->
+      <section class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Jejak Audit Admin (Admin Activity Trail)</h3>
+        <p class="text-[11px] text-slate-400">Mencatat siapa admin yang melakukan input atau menghapus data transaksi untuk transparansi kelas.</p>
+        <div class="overflow-x-auto max-h-[300px] overflow-y-auto rounded-xl border border-slate-700 bg-slate-900/50">
+          <table class="w-full text-left text-[11px] min-w-[600px]">
+            <thead class="bg-slate-900 text-slate-400 sticky top-0">
+              <tr><th class="p-2.5">Waktu</th><th class="p-2.5">Admin</th><th class="p-2.5">Aksi / Aktivitas</th></tr>
+            </thead>
+            <tbody id="audit-trail-body" class="divide-y divide-slate-800 text-slate-300">
+              <tr><td colspan="3" class="text-center py-4 text-slate-500">Belum ada aktivitas audit.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- DATABASE MANAGER -->
+      <section class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-indigo-400"></i> Database Manager</h3>
         <div class="overflow-x-auto max-h-[400px] overflow-y-auto rounded-xl border border-slate-700 bg-slate-900/50">
           <table class="w-full text-left text-[10px] sm:text-xs min-w-[700px]">
             <thead class="bg-slate-900 text-slate-400 sticky top-0">
@@ -240,7 +368,7 @@
 
   </main>
 
-  <!-- MODAL AI AGENT WHATSAPP PREVIEW -->
+  <!-- MODAL AI WHATSAPP -->
   <div id="modal-ai" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-700 pb-3">
@@ -258,6 +386,28 @@
   </div>
 
   <script>
+    function showToast(title, msg, type = 'success') {
+      const box = document.getElementById('toast-box');
+      const titleEl = document.getElementById('toast-title');
+      const msgEl = document.getElementById('toast-msg');
+      const iconEl = document.getElementById('toast-icon');
+
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+
+      if(type === 'success') {
+        iconEl.className = "p-2 rounded-xl bg-emerald-500/20 text-emerald-400";
+        iconEl.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5"></i>`;
+      } else {
+        iconEl.className = "p-2 rounded-xl bg-amber-500/20 text-amber-400";
+        iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5"></i>`;
+      }
+
+      lucide.createIcons();
+      box.classList.add('show');
+      setTimeout(() => { box.classList.remove('show'); }, 3500);
+    }
+
     const firebaseConfig = {
       apiKey: "AIzaSyDCfPEYWlVflCjA3cWsHiX5BYwxcI-Th24",
       authDomain: "kas-x4-26-27.firebaseapp.com",
@@ -267,10 +417,14 @@
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); const auth = firebase.auth();
-    const kasRef = db.ref('transaksi_kas'); const dendaRef = db.ref('kas_denda'); const metaRef = db.ref('meta_data');
+    const kasRef = db.ref('transaksi_kas'); 
+    const dendaRef = db.ref('kas_denda'); 
+    const metaRef = db.ref('meta_data');
+    const auditRef = db.ref('audit_trail');
 
-    const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com"];
-    let isAdmin = false; let currentUserEmail = ""; let localTx = []; let localDenda = []; let saldoFisik = 0;
+    const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
+    let isAdmin = false; let currentUserEmail = ""; let currentUserName = ""; 
+    let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; const TOTAL_MINGGU = 16;
     const START_SEMESTER = new Date("2026-07-13"); const today = new Date().toISOString().split('T')[0];
@@ -283,21 +437,23 @@
       else { b.className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30"; t.innerText="CONNECTING"; }
     });
 
-    function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>alert(e.message)); }
-    function logout() { auth.signOut(); switchTab('dashboard'); }
+    function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
+    function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri.", 'success'); }
 
     auth.onAuthStateChanged(user => {
       const b=document.getElementById('btn-login'), p=document.getElementById('user-profile');
       if(user && ALLOWED_ADMINS.includes(user.email)) {
-        isAdmin = true; currentUserEmail = user.email;
+        isAdmin = true; currentUserEmail = user.email; currentUserName = user.displayName || user.email;
         b.classList.add('hidden'); p.classList.remove('hidden'); p.classList.add('flex');
-        document.getElementById('user-avatar').src = user.photoURL;
+        document.getElementById('user-avatar').src = user.photoURL || 'https://via.placeholder.com/150';
+        document.getElementById('user-role-label').innerText = user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara";
         document.querySelectorAll('.admin-overlay').forEach(el=>el.classList.add('hidden'));
         document.querySelectorAll('.admin-only').forEach(el=>{el.classList.remove('hidden');el.classList.add('inline-flex');});
         checkWirasenaReminder();
+        showToast("Admin Aktif", `Selamat datang, ${currentUserName}!`, 'success');
       } else {
-        if(user) { alert("Akses Ditolak. Email tidak terdaftar sebagai Admin."); auth.signOut(); }
-        isAdmin = false; currentUserEmail = "";
+        if(user) { showToast("Akses Ditolak", "Email tidak terdaftar sebagai Admin Utama.", 'error'); auth.signOut(); }
+        isAdmin = false; currentUserEmail = ""; currentUserName = "";
         b.classList.remove('hidden'); p.classList.add('hidden'); p.classList.remove('flex');
         document.querySelectorAll('.admin-overlay').forEach(el=>{el.classList.remove('hidden');el.classList.add('flex');});
         document.querySelectorAll('.admin-only').forEach(el=>{el.classList.add('hidden');el.classList.remove('inline-flex');});
@@ -305,6 +461,12 @@
       }
       processData();
     });
+
+    function logAudit(action) {
+      if(!currentUserEmail) return;
+      const timeStr = new Date().toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+      auditRef.push({ timestamp: Date.now(), timeStr: timeStr, admin: currentUserName, email: currentUserEmail, action: action });
+    }
 
     function checkWirasenaReminder() {
       const banner = document.getElementById('wirasena-reminder-banner');
@@ -339,6 +501,81 @@
       document.getElementById(`content-${t}`).classList.remove('hidden');
     }
 
+    // ===============================================
+    // PUBLIC LOOKUP (CEK KAS MANDIRI)
+    // ===============================================
+    function executeLookup() {
+      const q = document.getElementById('lookup-input').value.trim().toLowerCase();
+      const resContainer = document.getElementById('lookup-result-container');
+      if(!q) return showToast("Peringatan", "Masukkan nama atau nomor absen!", "error");
+
+      let foundAbsen = null;
+      if(!isNaN(q)) {
+        let num = parseInt(q);
+        if(num >= 1 && num <= TOTAL_SISWA) foundAbsen = num;
+      } else {
+        for(let i=1; i<=TOTAL_SISWA; i++) {
+          if(daftarSiswa[i].nama.toLowerCase().includes(q)) { foundAbsen = i; break; }
+        }
+      }
+
+      if(!foundAbsen) {
+        resContainer.classList.add('hidden');
+        return showToast("Tidak Ditemukan", "Siswa tidak ditemukan dalam daftar absen 1-28.", "error");
+      }
+
+      const name = daftarSiswa[foundAbsen].nama;
+      let totalKas = 0; let historyArr = [];
+
+      localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen).forEach(t => {
+        totalKas += t.amount;
+        historyArr.push({ date: t.dateStr, desc: t.description, amount: t.amount, type: 'masuk' });
+      });
+
+      let dendaList = localDenda.filter(d => d.absen === foundAbsen);
+      let totalActiveDenda = 0;
+      dendaList.forEach(d => {
+        if(d.status === 'Unpaid') totalActiveDenda += d.amount;
+        historyArr.push({ date: d.dateStr, desc: `Denda (${d.reason}) - ${d.status}`, amount: d.amount, type: 'denda' });
+      });
+
+      document.getElementById('res-name').innerText = name;
+      document.getElementById('res-absen').innerText = `Nomor Absen: ${foundAbsen}`;
+      document.getElementById('res-total-kas').innerText = `Rp ${totalKas.toLocaleString()}`;
+      document.getElementById('res-total-denda').innerText = `Rp ${totalActiveDenda.toLocaleString()}`;
+
+      const badge = document.getElementById('res-status-badge');
+      if(totalActiveDenda > 0) {
+        badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400";
+        badge.innerText = "Ada Denda Aktif";
+      } else {
+        badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400";
+        badge.innerText = "Aman / Lancar";
+      }
+
+      const hList = document.getElementById('res-history-list');
+      hList.innerHTML = '';
+      if(historyArr.length === 0) {
+        hList.innerHTML = `<p class="text-slate-500 text-center py-2">Belum ada riwayat transaksi.</p>`;
+      } else {
+        historyArr.forEach(h => {
+          let color = h.type === 'masuk' ? 'text-emerald-400' : 'text-amber-400';
+          hList.insertAdjacentHTML('beforeend', `
+            <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700/50">
+              <div><span class="text-white font-medium">${h.desc}</span><br><span class="text-[9px] text-slate-400">${h.date}</span></div>
+              <span class="font-bold ${color}">Rp ${h.amount.toLocaleString()}</span>
+            </div>
+          `);
+        });
+      }
+
+      resContainer.classList.remove('hidden');
+      showToast("Ditemukan", `Data keuangan ${name} berhasil dimuat.`, "success");
+    }
+
+    // ===============================================
+    // SMART MULTI INPUT WITH QRIS METHOD
+    // ===============================================
     function addMultiRow() {
       const tb = document.getElementById('multi-rows-container');
       const tr = document.createElement('tr'); tr.className = "multi-row group";
@@ -347,6 +584,7 @@
 
       tr.innerHTML = `
         <td class="p-1.5"><select onchange="handleTypeChange(this)" class="m-type w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 outline-none"><option value="masuk">Kas Masuk</option><option value="keluar">Pengeluaran</option><option value="denda">Catat Denda</option></select></td>
+        <td class="p-1.5"><select class="m-method w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 outline-none"><option value="Cash">Cash Tunai</option><option value="QRIS Kelas">QRIS Patungan Kelas</option></select></td>
         <td class="p-1.5"><input type="date" value="${defaultDate}" onchange="handleDateChange(this)" class="m-date w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 outline-none"></td>
         <td class="p-1.5"><input type="number" min="1" max="28" placeholder="No" class="m-absen w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs outline-none"></td>
         <td class="p-1.5"><input type="number" placeholder="Rp" required value="5000" class="m-amount w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-emerald-400 font-bold outline-none"></td>
@@ -375,26 +613,49 @@
       e.preventDefault(); if(!isAdmin) return;
       const promises = [];
       document.querySelectorAll('.multi-row').forEach(r => {
-        const t = r.querySelector('.m-type').value, dV = r.querySelector('.m-date').value;
+        const t = r.querySelector('.m-type').value, method = r.querySelector('.m-method').value, dV = r.querySelector('.m-date').value;
         const ab = parseInt(r.querySelector('.m-absen').value), am = parseInt(r.querySelector('.m-amount').value), no = r.querySelector('.m-note').value;
         if(am) {
           const nm = daftarSiswa[ab]?daftarSiswa[ab].nama:`Absen ${ab}`;
           const dObj = new Date(dV); const dStr = dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
           if(t === 'denda') { 
-            if(!ab) return alert("Absen wajib diisi!");
+            if(!ab) return showToast("Peringatan", "Absen wajib diisi untuk denda!", "error");
             promises.push(dendaRef.push({ timestamp: dObj.getTime(), dateStr: dStr, absen: ab, nama: nm, amount: am, reason: (no||'Pelanggaran'), status: 'Unpaid' }));
+            logAudit(`Mencatat denda Rp ${am.toLocaleString()} untuk ${nm} (${no||'Pelanggaran'})`);
           } else { 
-            let desc = t==='masuk'&&ab ? `[Ab. ${ab} - ${nm}] ${no||'Kas'}` : (no||'Pengeluaran Kas');
+            let desc = t==='masuk'&&ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran Kas'}`;
             promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc }));
+            logAudit(`Mencatat ${t} sebesar Rp ${am.toLocaleString()} via ${method}`);
           }
         }
       });
-      Promise.all(promises).then(() => { document.getElementById('multi-rows-container').innerHTML=''; addMultiRow(); switchTab('dashboard'); });
+      Promise.all(promises).then(() => { 
+        document.getElementById('multi-rows-container').innerHTML=''; 
+        addMultiRow(); 
+        switchTab('dashboard'); 
+        showToast("Sukses", "Data transaksi berhasil dieksekusi!", "success"); 
+      });
     });
 
     kasRef.on('value', s => { const d=s.val(); localTx=[]; if(d) Object.keys(d).forEach(k=>localTx.push({id:k,...d[k]})); processData(); });
     dendaRef.on('value', s => { const d=s.val(); localDenda=[]; if(d) Object.keys(d).forEach(k=>localDenda.push({id:k,...d[k]})); processData(); });
     metaRef.child('saldo_fisik').on('value', snap => { saldoFisik = snap.val() || 0; processData(); });
+    auditRef.on('value', s => { const d=s.val(); localAudit=[]; if(d) Object.keys(d).forEach(k=>localAudit.push({id:k,...d[k]})); renderAuditTrail(); });
+
+    function renderAuditTrail() {
+      const tb = document.getElementById('audit-trail-body'); tb.innerHTML = '';
+      let sorted = [...localAudit].sort((a,b)=>b.timestamp - a.timestamp);
+      if(sorted.length === 0) { tb.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-slate-500">Belum ada aktivitas audit.</td></tr>`; return; }
+      sorted.forEach(a => {
+        tb.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td class="p-2.5 text-slate-400">${a.timeStr}</td>
+            <td class="p-2.5 font-bold text-indigo-400">${a.admin}</td>
+            <td class="p-2.5 text-slate-200">${a.action}</td>
+          </tr>
+        `);
+      });
+    }
 
     function processData() {
       let tM=0, tK=0, tD=0, tBayar={}; for(let i=1;i<=TOTAL_SISWA;i++) tBayar[i]=0;
@@ -417,6 +678,11 @@
       document.getElementById('stat-fisik').innerText = `Rp ${saldoFisik.toLocaleString()}`;
       document.getElementById('stat-denda').innerText = `Rp ${tD.toLocaleString()}`;
       
+      // Cash limit warning check (>200.000)
+      const cashBanner = document.getElementById('cash-limit-banner');
+      if(saldoFisik > 200000) { cashBanner.classList.remove('hidden'); cashBanner.classList.add('flex'); }
+      else { cashBanner.classList.add('hidden'); }
+
       const sb = document.getElementById('box-selisih'), st = document.getElementById('stat-selisih');
       if(selisih===0){ sb.className="bg-emerald-900/20 p-4 rounded-2xl border border-emerald-500/30 col-span-2 md:col-span-1"; st.innerText="Sinkron"; st.className="text-xl font-black text-emerald-400 mt-1"; }
       else if(selisih>0){ sb.className="bg-amber-900/20 p-4 rounded-2xl border border-amber-500/30 col-span-2 md:col-span-1"; st.innerText=`+ Rp${selisih.toLocaleString()}`; st.className="text-xl font-black text-amber-400 mt-1"; }
@@ -428,12 +694,12 @@
       if(sortedDates.length === 0) lg.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada aktivitas.</p>';
 
       sortedDates.forEach((dateStr, index) => {
-        const day = dailyGroup[dateStr]; let dayKasIn = 0, dayKasOut = 0, dayDendaCount = 0; let detailHTML = '';
+        const day = dailyGroup[dateStr]; let dayKasIn = 0, dayKasOut = 0; let detailHTML = '';
         day.items.forEach(item => {
           let badge = '', textColor = 'text-slate-300';
           if(item.type === 'masuk') { dayKasIn+=item.amount; badge = `<span class="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold">IN</span>`; textColor = 'text-emerald-300'; }
           else if(item.type === 'keluar') { dayKasOut+=item.amount; badge = `<span class="bg-rose-500/20 text-rose-400 text-[9px] px-1.5 py-0.5 rounded font-bold">OUT</span>`; textColor = 'text-rose-300'; }
-          else { dayDendaCount++; badge = `<span class="bg-amber-500/20 text-amber-400 text-[9px] px-1.5 py-0.5 rounded font-bold">DENDA</span>`; textColor = 'text-amber-300'; }
+          else { badge = `<span class="bg-amber-500/20 text-amber-400 text-[9px] px-1.5 py-0.5 rounded font-bold">DENDA</span>`; textColor = 'text-amber-300'; }
           detailHTML += `<div class="flex justify-between items-center py-2 border-b border-slate-700/50 px-2"><div class="flex flex-col"><div class="flex items-center gap-2">${badge}</div><span class="text-[11px] text-slate-400 mt-0.5">${item.desc}</span></div><span class="text-xs font-bold ${textColor}">${item.type==='keluar'?'-':'+'}Rp${item.amount.toLocaleString()}</span></div>`;
         });
 
@@ -460,6 +726,7 @@
       renderDendaTable();
       renderRekapTable(tBayar); 
       renderAdminTable(); 
+      updateChart(tM, tK);
       lucide.createIcons();
     }
 
@@ -473,7 +740,32 @@
     function editSaldoFisik() {
       if(!isAdmin) return;
       const input = prompt("Masukkan jumlah uang asli di tangan saat ini:", saldoFisik);
-      if(input !== null && !isNaN(input)) metaRef.child('saldo_fisik').set(parseInt(input));
+      if(input !== null && !isNaN(input)) {
+        metaRef.child('saldo_fisik').set(parseInt(input));
+        showToast("Saldo Diperbarui", "Uang fisik berhasil disesuaikan.", "success");
+        logAudit(`Mengubah saldo fisik laci kas menjadi Rp ${parseInt(input).toLocaleString()}`);
+      }
+    }
+
+    function updateChart(totalIn, totalOut) {
+      const ctx = document.getElementById('kasChart').getContext('2d');
+      if(kasChartInstance) kasChartInstance.destroy();
+      kasChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Total Pemasukan Kas', 'Total Pengeluaran'],
+          datasets: [{
+            data: [totalIn, totalOut],
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } } }
+        }
+      });
     }
 
     // ===============================================
@@ -521,24 +813,21 @@
     }
 
     function payDenda(id, ab, nm, am, rz) {
-      if(!isAdmin) return alert("Hanya Bendahara yang dapat melunasi denda.");
-      if(confirm(`Konfirmasi Pelunasan:\nApakah ${nm} (Absen ${ab}) sudah membayar denda Rp ${am.toLocaleString()}?`)) {
-        const todayStr = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
-        
-        // 1. Update status denda jadi Paid
-        dendaRef.child(id).update({ status: 'Paid', paidAt: todayStr }).then(() => {
-          // 2. Otomatis masukin ke kas utama supaya saldo fisik & rekap nambah
-          kasRef.push({
-            timestamp: Date.now(),
-            dateStr: todayStr,
-            type: 'masuk',
-            absen: ab,
-            amount: am,
-            description: `[Denda Lunas - Ab. ${ab} ${nm}] ${rz}`
-          });
-          alert("Denda berhasil dilunasi dan otomatis masuk ke Rekap Kas Utama! 🎉");
+      if(!isAdmin) return showToast("Akses Ditolak", "Hanya Admin yang dapat melunasi denda.", "error");
+      const todayStr = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+      
+      dendaRef.child(id).update({ status: 'Paid', paidAt: todayStr }).then(() => {
+        kasRef.push({
+          timestamp: Date.now(),
+          dateStr: todayStr,
+          type: 'masuk',
+          absen: ab,
+          amount: am,
+          description: `[Denda Lunas - Ab. ${ab} ${nm}] ${rz}`
         });
-      }
+        showToast("Denda Lunas!", `${nm} (Ab. ${ab}) melunasi denda Rp ${am.toLocaleString()} & masuk kas.`, "success");
+        logAudit(`Melunasi denda siswa ${nm} (Ab. ${ab}) sebesar Rp ${am.toLocaleString()}`);
+      });
     }
 
     // ===============================================
@@ -586,7 +875,7 @@
         `;
 
         unpaidKas.forEach(u => {
-          let waText = encodeURIComponent(`Halo ${u.nama} (Absen ${u.absen}), AI Bot KasSmart X-4 menginfokan kas kamu nunggak ${u.lag} minggu (Rp ${u.deficiency.toLocaleString()}). Yuk segera dibayar ke Bendahara! 😭🙏`);
+          let waText = encodeURIComponent(`Halo ${u.nama} (Absen ${u.absen}), AI Bot KasSmart X-4 menginfokan kas kamu nunggak ${u.lag} minggu (Rp ${u.deficiency.toLocaleString()}). Yuk segera dibayar! 😭🙏`);
           reportHTML += `<div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700 mb-2"><div><b class="text-white text-xs">Ab. ${u.absen} - ${u.nama}</b><br><span class="text-[10px] text-rose-400">Kas: Nunggak ${u.lag} Mgg</span></div><a href="https://wa.me/${daftarSiswa[u.absen].wa}?text=${waText}" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-bold"><i data-lucide="send" class="w-3 h-3 inline"></i> Japri WA</a></div>`;
         });
 
@@ -663,7 +952,11 @@
 
     function deleteData(dbType, id) {
       if(!isAdmin) return;
-      if(confirm("Yakin hapus data ini?")) { if(dbType === 'kas') kasRef.child(id).remove(); else dendaRef.child(id).remove(); }
+      if(confirm("Yakin hapus data ini?")) { 
+        if(dbType === 'kas') kasRef.child(id).remove(); else dendaRef.child(id).remove();
+        showToast("Hapus Data", "Data berhasil dihapus dari database.", "success");
+        logAudit(`Menghapus data ID: ${id}`);
+      }
     }
 
     function downloadTemplate() {
@@ -673,24 +966,53 @@
     }
 
     function exportExcel() {
-      if (localTx.length === 0) return alert("Kosong.");
+      if (localTx.length === 0) return showToast("Kosong", "Belum ada data untuk di-export.", "error");
       const data = localTx.map(t => ({ Tanggal: t.dateStr, Tipe: t.type.toUpperCase(), Deskripsi: t.description, Nominal: t.amount }));
       const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Backup"); XLSX.writeFile(wb, `Backup_KasSmart.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, "Buku_Harian_Kas"); XLSX.writeFile(wb, `Laporan_KasSmart_Harian.xlsx`);
+      showToast("Export Berhasil", "File Excel Buku Harian berhasil diunduh.", "success");
+      logAudit("Mengekspor laporan kas harian ke Excel");
+    }
+
+    function exportJSONBackup() {
+      const backupObj = { transaksi: localTx, denda: localDenda, audit: localAudit, saldoFisik: saldoFisik, timestamp: Date.now() };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", `KasSmart_Backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
+      showToast("Snapshot Berhasil", "File backup JSON berhasil diunduh.", "success");
+      logAudit("Membuat auto-snapshot backup JSON");
     }
 
     function importExcel() {
       if(!isAdmin) return;
       const f = document.getElementById('import-file').files[0];
-      if(!f) return alert("Pilih file!");
+      if(!f) return showToast("Error", "Pilih file Excel terlebih dahulu!", "error");
       const r = new FileReader();
       r.onload = (e) => {
         const d = new Uint8Array(e.target.result); const wb = XLSX.read(d, {type: 'array'});
         const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         let p = [];
-        rows.rows?.forEach?.(row => {}); // Safe check
-        alert("Fitur import siap.");
+        rows.forEach(row => {
+          let t = (row.Tipe||'').toLowerCase();
+          if(t==='masuk'||t==='keluar') {
+            let dO = new Date(row.Tanggal||today);
+            p.push(kasRef.push({ timestamp: dO.getTime(), dateStr: dO.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}), type: t, absen: row.Absen||null, amount: row.Nominal||0, description: row.Catatan||'Import' }));
+          }
+        });
+        Promise.all(p).then(() => { 
+          showToast("Import Sukses", "Semua data dari excel berhasil dimasukkan!", "success"); 
+          logAudit("Melakukan import data dari file Excel");
+        });
       }; r.readAsArrayBuffer(f);
+    }
+
+    function calcChange() {
+      const tot = parseFloat(document.getElementById('calc-total').value) || 0;
+      const paid = parseFloat(document.getElementById('calc-paid').value) || 0;
+      const change = paid - tot;
+      document.getElementById('calc-result').innerText = change >= 0 ? `Kembalian: Rp ${change.toLocaleString()}` : `Kurang: Rp ${Math.abs(change).toLocaleString()}`;
     }
   </script>
 </body>
