@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | AI Agent Edition</title>
+  <title>KasSmart X-4 | Pro Edition</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -45,7 +45,7 @@
         </button>
         <div id="user-profile" class="hidden items-center gap-2 bg-slate-800 border border-slate-700 p-1 pr-3 rounded-full cursor-pointer hover:bg-slate-700 transition-colors" onclick="logout()" title="Klik untuk Logout">
           <img id="user-avatar" src="" class="w-6 h-6 rounded-full border border-indigo-500">
-          <span class="text-[10px] font-bold text-emerald-400">Bendahara</span>
+          <span id="user-name-label" class="text-[10px] font-bold text-emerald-400">Bendahara</span>
         </div>
       </div>
     </div>
@@ -65,6 +65,21 @@
 
     <!-- ================= TAB 1: BUKU HARIAN ================= -->
     <div id="content-dashboard" class="tab-content space-y-6">
+      
+      <!-- PERSONAL NOTIFICATION BANNER UNTUK WIRASENA (ABSEN 28) -->
+      <section id="wirasena-reminder-banner" class="hidden bg-gradient-to-r from-rose-950/80 via-slate-900 to-slate-900 border border-rose-500/40 p-4 rounded-2xl shadow-xl flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-rose-500/20 text-rose-400 rounded-xl border border-rose-500/30">
+            <i data-lucide="bell-ring" class="w-5 h-5 animate-bounce"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-black text-white">Peringatan AI Khusus Wirasena (Absen 28) 🚨</h4>
+            <p id="wirasena-reminder-text" class="text-[11px] text-slate-300 mt-0.5">Memeriksa status keuangan pribadimu...</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('wirasena-reminder-banner').remove()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </section>
+
       <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Kas Sistem</p>
@@ -123,7 +138,6 @@
     <!-- ================= TAB 3: MATRIKS & AI AGENT ================= -->
     <div id="content-rekap" class="tab-content hidden space-y-6">
       
-      <!-- AI AGENT CONTROL PANEL -->
       <section class="bg-gradient-to-r from-indigo-900/50 via-slate-800 to-slate-800 border border-indigo-500/30 p-5 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span class="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded border border-indigo-500/30">AI BOT ACTIVE</span>
@@ -135,7 +149,6 @@
         </button>
       </section>
 
-      <!-- Matrix Table -->
       <section class="bg-slate-800 border border-slate-700 p-4 md:p-6 rounded-2xl">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="grid" class="w-5 h-5 text-indigo-400"></i> Matriks Warna Pembayaran Siswa</h3>
@@ -203,9 +216,7 @@
         </div>
         <button onclick="closeAIModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-      <div id="ai-modal-content" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 text-xs">
-        <!-- AI Generated List -->
-      </div>
+      <div id="ai-modal-content" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 text-xs"></div>
       <div class="pt-2 border-t border-slate-700 flex justify-end">
         <button onclick="closeAIModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">Tutup Laporan</button>
       </div>
@@ -224,8 +235,9 @@
     const db = firebase.database(); const auth = firebase.auth();
     const kasRef = db.ref('transaksi_kas'); const dendaRef = db.ref('kas_denda'); const metaRef = db.ref('meta_data');
 
+    // Email Admin Diperbarui (awiendra55 & wpnarend11)
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com"];
-    let isAdmin = false; let localTx = []; let localDenda = []; let saldoFisik = 0;
+    let isAdmin = false; let currentUserEmail = ""; let localTx = []; let localDenda = []; let saldoFisik = 0;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; const TOTAL_MINGGU = 16;
     const START_SEMESTER = new Date("2026-07-13"); const today = new Date().toISOString().split('T')[0];
@@ -244,18 +256,57 @@
     auth.onAuthStateChanged(user => {
       const b=document.getElementById('btn-login'), p=document.getElementById('user-profile');
       if(user && ALLOWED_ADMINS.includes(user.email)) {
-        isAdmin = true; b.classList.add('hidden'); p.classList.remove('hidden'); p.classList.add('flex');
+        isAdmin = true; currentUserEmail = user.email;
+        b.classList.add('hidden'); p.classList.remove('hidden'); p.classList.add('flex');
         document.getElementById('user-avatar').src = user.photoURL;
         document.querySelectorAll('.admin-overlay').forEach(el=>el.classList.add('hidden'));
         document.querySelectorAll('.admin-only').forEach(el=>{el.classList.remove('hidden');el.classList.add('inline-flex');});
+        
+        // Cek Peringatan Khusus Wirasena (Absen 28)
+        checkWirasenaReminder();
       } else {
-        if(user) { alert("Akses Ditolak."); auth.signOut(); }
-        isAdmin = false; b.classList.remove('hidden'); p.classList.add('hidden'); p.classList.remove('flex');
+        if(user) { alert("Akses Ditolak. Email tidak terdaftar sebagai Admin."); auth.signOut(); }
+        isAdmin = false; currentUserEmail = "";
+        b.classList.remove('hidden'); p.classList.add('hidden'); p.classList.remove('flex');
         document.querySelectorAll('.admin-overlay').forEach(el=>{el.classList.remove('hidden');el.classList.add('flex');});
         document.querySelectorAll('.admin-only').forEach(el=>{el.classList.add('hidden');el.classList.remove('inline-flex');});
+        document.getElementById('wirasena-reminder-banner').classList.add('hidden');
       }
       processData();
     });
+
+    // FITUR KHUSUS PENGINGAT WIRASENA (ABSEN 28)
+    function checkWirasenaReminder() {
+      const banner = document.getElementById('wirasena-reminder-banner');
+      const textElem = document.getElementById('wirasena-reminder-text');
+      
+      const now = new Date();
+      const diffTime = Math.abs(now - START_SEMESTER);
+      const currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
+      
+      // Hitung bayaran Absen 28 (Wirasena)
+      let paidTotal = 0;
+      localTx.filter(t => t.type === 'masuk' && t.absen === 28).forEach(t => paidTotal += t.amount);
+      let weeksPaid = Math.floor(paidTotal / TARIF_MINGGU);
+      let lagWeeks = (currentWeek - 1) - weeksPaid;
+
+      // Cek denda aktif untuk absen 28
+      let myDenda = localDenda.filter(d => d.absen === 28 && d.status === 'Unpaid');
+
+      if(lagWeeks > 0 || myDenda.length > 0) {
+        let msg = `Waduh Wir, kas kamu tercatat nunggak ${lagWeeks} minggu`;
+        if(myDenda.length > 0) msg += ` plus ada ${myDenda.length} denda belum lunas!`;
+        msg += ` Yuk segera selesaikan sebelum anak-anak protes. 😉`;
+        textElem.innerText = msg;
+        banner.classList.remove('hidden');
+        banner.classList.add('flex');
+      } else {
+        textElem.innerText = `Mantap Wir! Status kas Absen 28 bersih tanpa tunggakan. Teladan yang baik! 🔥`;
+        banner.classList.remove('hidden');
+        banner.classList.add('flex');
+      }
+      lucide.createIcons();
+    }
 
     function switchTab(t) {
       document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors');
@@ -379,6 +430,10 @@
         `;
         lg.appendChild(card);
       });
+
+      if(isAdmin && currentUserEmail === "wpnarend11@gmail.com") {
+        checkWirasenaReminder();
+      }
 
       renderRekapTable(tBayar); renderAdminTable(); lucide.createIcons();
     }
