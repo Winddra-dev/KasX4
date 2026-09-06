@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v5.3-Microsoft Enterprise</title>
+  <title>KasSmart X-4 | v5.4-Microsoft Enterprise</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -47,7 +47,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">Microsoft Edition</span></h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v5.3-Pro</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v5.4-Pro</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Enterprise Financial & Matrix System</p>
         </div>
@@ -150,8 +150,8 @@
           <h3 class="text-sm font-bold text-white flex items-center gap-2">
             <i data-lucide="book-open" class="w-4 h-4 text-blue-400"></i> Buku Kas Harian
           </h3>
-          <button onclick="exportExcelCorporate()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
-            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel Korporat (.xlsx)
+          <button onclick="exportExcelMultiSheet()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel Multi-Sheet Korporat (.xlsx)
           </button>
         </div>
         <div id="ledger-container" class="space-y-3">
@@ -269,7 +269,7 @@
       </section>
     </div>
 
-    <!-- ================= TAB: MATRIKS & TABEL DENDA (MICROSOFT EXCEL STYLE) ================= -->
+    <!-- ================= TAB: MATRIKS & TABEL DENDA ================= -->
     <div id="content-rekap" class="tab-content hidden space-y-6">
       
       <section class="bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 p-5 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -283,7 +283,7 @@
             <i data-lucide="share-2" class="w-4 h-4"></i> Salin Matriks ke WA Kelas
           </button>
           <button onclick="runAIAgentAudit()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2">
-            <i data-lucide="bot" class="w-4 h-4"></i> Tagih Siswa
+            <i data-lucide="bot" class="w-4 h-4"></i> Tagih Siswa (Format Korporat)
           </button>
         </div>
       </section>
@@ -325,7 +325,7 @@
         <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-blue-400"></i> Matriks Keuangan Korporat (Microsoft Excel Style)</h3>
-            <p class="text-[11px] text-slate-400">Mendukung cicilan parsial (ikon ⏳ atau nominal parsial otomatis tercatat).</p>
+            <p class="text-[11px] text-slate-400">Mendukung cicilan parsial (< Rp 5.000) otomatis tercatat tanpa menunggu genap.</p>
           </div>
           <div class="flex gap-3 text-[10px] font-bold">
             <span class="flex items-center gap-1 text-emerald-400"><span class="w-2.5 h-2.5 bg-emerald-500/30 border border-emerald-500 rounded"></span> Lunas (5k)</span>
@@ -484,7 +484,7 @@
 
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
     let isAdmin = false; let currentUserEmail = ""; let currentUserName = ""; 
-    let localTx = []; localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
+    let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; const TOTAL_MINGGU = 16;
     const START_SEMESTER = new Date("2026-07-20");
@@ -704,7 +704,6 @@
     metaRef.child('saldo_fisik').on('value', snap => { saldoFisik = snap.val() || 0; processData(); });
     auditRef.on('value', s => { const d=s.val(); localAudit=[]; if(d) Object.keys(d).forEach(k=>localAudit.push({id:k,...d[k]})); renderAuditFeed(); });
 
-    // RENDER LIVE CS-STYLE AUDIT FEED
     function renderAuditFeed() {
       const c = document.getElementById('audit-feed-container'); c.innerHTML = '';
       let sorted = [...localAudit].sort((a,b)=>b.timestamp - a.timestamp);
@@ -959,6 +958,7 @@
       });
     }
 
+    // AI AGENT AUDIT & KORPORAT JAPRI FORMAT (HRD STYLE)
     function runAIAgentAudit() {
       const now = new Date();
       const diffTime = Math.abs(now - START_SEMESTER);
@@ -980,33 +980,33 @@
       if(unpaidKas.length === 0 && unpaidDenda.length === 0) {
         reportHTML += `<div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 font-bold text-center">Aman! Semua warga kelas taat kas & bersih dari denda. 🎉</div>`;
       } else {
-        let groupSummaryText = `📢 *PENGUMUMAN REKAP KAS & DENDA KELAS X-4* 📢%0A%0A*1. Daftar Tunggakan Kas:*%0A`;
-        unpaidKas.forEach(u => { groupSummaryText += `- Ab. ${u.absen} ${u.nama}: Nunggak ${u.lag} mgg (Rp ${u.deficiency.toLocaleString()})%0A`; });
+        let groupSummaryText = `*[PENGUMUMAN RESMI KEUANGAN KELAS X-4]*%0A%0AKepada seluruh warga kelas X-4, berikut disampaikan laporan peninjauan finansial dan administratif per pekan berjalan:%0A%0A1. Daftar Tunggakan Kas:%0A`;
+        unpaidKas.forEach(u => { groupSummaryText += `• Absen ${u.absen} - ${u.nama}: Terlambat ${u.lag} minggu (Nominal: Rp ${u.deficiency.toLocaleString()})%0A`; });
         
-        groupSummaryText += `%0A*2. Daftar Denda Belum Lunas:*%0A`;
+        groupSummaryText += `%0A2. Daftar Tagihan Denda Aktif:%0A`;
         if(unpaidDenda.length > 0) {
-          unpaidDenda.forEach(d => { groupSummaryText += `- Ab. ${d.absen} ${d.nama}: Rp ${d.amount.toLocaleString()} (${d.reason})%0A`; });
-        } else { groupSummaryText += `_Tidak ada denda aktif._%0A`; }
-        groupSummaryText += `%0AMohon segera dilunasi ya ges ya. Terima kasih! 🙏`;
+          unpaidDenda.forEach(d => { groupSummaryText += `• Absen ${d.absen} - ${d.nama}: Rp ${d.amount.toLocaleString()} (Keterangan: ${d.reason})%0A`; });
+        } else { groupSummaryText += `_Nihil._%0A`; }
+        groupSummaryText += `%0AMohon agar kewajiban administratif ini segera diselesaikan demi kelancaran operasional kelas. Terima kasih atas perhatian dan kerjasamanya.%0A%0A*Hormat Kami,*%0ABendahara & Manajemen Kelas X-4`;
 
         reportHTML += `
           <div class="mb-4 p-3 bg-slate-950 border border-blue-500/30 rounded-xl flex justify-between items-center">
-            <div><b class="text-white text-xs">Sindiran Massal Grup Kelas</b><br><span class="text-[10px] text-slate-400">Kirim rekap tagihan gabungan ke WA Grup.</span></div>
+            <div><b class="text-white text-xs">Pengumuman Grup Korporat</b><br><span class="text-[10px] text-slate-400">Kirim rekap formal ke WhatsApp Grup.</span></div>
             <a href="https://wa.me/?text=${groupSummaryText}" target="_blank" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 shadow">
               <i data-lucide="users" class="w-3.5 h-3.5"></i> Kirim ke Grup
             </a>
           </div>
           <hr class="border-slate-800 my-3">
-          <p class="text-[11px] text-amber-400 font-bold mb-2">Atau Sindir Japri Satu-satu:</p>
+          <p class="text-[11px] text-blue-400 font-bold mb-2">Notifikasi Japri Formal (Manajer ke Bawahan / HRD Style):</p>
         `;
 
         unpaidKas.forEach(u => {
-          let waText = encodeURIComponent(`Halo ${u.nama} (Absen ${u.absen}), AI Bot KasSmart X-4 menginfokan kas kamu nunggak ${u.lag} minggu (Rp ${u.deficiency.toLocaleString()}). Yuk segera dibayar! 😭🙏`);
-          reportHTML += `<div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-800 mb-2"><div><b class="text-white text-xs">Ab. ${u.absen} - ${u.nama}</b><br><span class="text-[10px] text-rose-400">Kas: Nunggak ${u.lag} Mgg</span></div><a href="https://wa.me/${daftarSiswa[u.absen].wa}?text=${waText}" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-bold"><i data-lucide="send" class="w-3 h-3 inline"></i> Japri WA</a></div>`;
+          let waText = encodeURIComponent(`Yth. Saudara/i ${u.nama} (Absen ${u.absen}),%0A%0ABerdasarkan audit keuangan kelas X-4, tercatat penunggakan administrasi kas sebesar ${u.lag} minggu (Total: Rp ${u.deficiency.toLocaleString()}).%0A%0AMohon agar kewajiban ini dapat diselesaikan dalam waktu dekat. Atas kedisiplinan dan kerjasamanya, kami ucapkan terima kasih.%0A%0A*Regards,*%0AManajemen Keuangan X-4`);
+          reportHTML += `<div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-800 mb-2"><div><b class="text-white text-xs">Ab. ${u.absen} - ${u.nama}</b><br><span class="text-[10px] text-rose-400">Kas: Nunggak ${u.lag} Mgg</span></div><a href="https://wa.me/${daftarSiswa[u.absen].wa}?text=${waText}" target="_blank" class="px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold"><i data-lucide="send" class="w-3 h-3 inline"></i> Japri Korporat</a></div>`;
         });
 
         unpaidDenda.forEach(d => {
-          let waText = encodeURIComponent(`Halo ${d.nama} (Absen ${d.absen}), denda kamu sebesar Rp ${d.amount.toLocaleString()} (${d.reason}) belum lunas nih. Mohon segera diselesaikan ya bosku! ☕`);
+          let waText = encodeURIComponent(`Yth. Saudara/i ${d.nama} (Absen ${d.absen}),%0A%0AMelalui pesan ini, kami menginformasikan tagihan administratif terkait denda pelanggaran sebesar Rp ${d.amount.toLocaleString()} (${d.reason}) yang belum terselesaikan.%0A%0ADiharapkan konfirmasi dan penyelesaiannya segera. Terima kasih.%0A%0A*Regards,*%0AManajemen Keuangan X-4`);
           reportHTML += `<div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-800 mb-2"><div><b class="text-white text-xs">Ab. ${d.absen} - ${d.nama}</b><br><span class="text-[10px] text-amber-400">Denda: Rp ${d.amount.toLocaleString()} (${d.reason})</span></div><a href="https://wa.me/${daftarSiswa[d.absen].wa}?text=${waText}" target="_blank" class="px-2.5 py-1.5 bg-amber-600 text-white rounded-lg text-[10px] font-bold"><i data-lucide="send" class="w-3 h-3 inline"></i> Tagih Denda</a></div>`;
         });
       }
@@ -1045,7 +1045,6 @@
             rStr+=`<td class="p-1 border border-slate-800 text-center bg-emerald-500/15 text-emerald-400 font-bold">✓</td>`;
             b -= TARIF_MINGGU; tW[m-1] += TARIF_MINGGU;
           } else if (b > 0 && b < TARIF_MINGGU) {
-            // Cicilan parsial < 5k
             let partialVal = b;
             rStr+=`<td class="p-1 border border-slate-800 text-center bg-blue-500/15 text-blue-300 font-bold text-[8px]" title="Cicil: Rp ${partialVal.toLocaleString()}">⏳${partialVal/1000}k</td>`;
             tW[m-1] += partialVal;
@@ -1070,18 +1069,16 @@
       ft.innerHTML = fStr + `<td class="p-2 border border-slate-800 text-right text-emerald-400 font-black text-xs bg-slate-900">Rp ${tW.reduce((a,b)=>a+b,0).toLocaleString()}</td></tr>`;
     }
 
-    // COPY MATRIKS TO WHATSAPP CLASS GROUP
     function copyMatriksWhatsApp() {
       let nowStr = new Date().toLocaleDateString('id-ID', {dateStyle:'full'});
-      let text = `📊 *REKAP MATRIKS KAS KELAS X-4* 📊%0A📅 Tanggal: ${nowStr}%0A%0A`;
-      text += `Berikut adalah ringkasan progres pembayaran kas seluruh warga kelas:%0A%0A`;
+      let text = `*[LAPORAN MATRIKS KEUANGAN KELAS X-4]*%0A📅 Tanggal: ${nowStr}%0A%0AKepada seluruh warga kelas, berikut adalah rekapitulasi progres pembayaran kas berjalan:%0A%0A`;
       
       for(let s=1; s<=TOTAL_SISWA; s++) {
         let totalPaid = 0;
         localTx.filter(t => t.type === 'masuk' && t.absen === s).forEach(t => totalPaid += t.amount);
-        text += `• *Ab. ${s}* (${daftarSiswa[s].nama}): *Rp ${totalPaid.toLocaleString()}*%0A`;
+        text += `• Absen ${s} (${daftarSiswa[s].nama}): *Rp ${totalPaid.toLocaleString()}*%0A`;
       }
-      text += `%0ATerima kasih kepada yang sudah taat kas. Yuk yang belum segera dilunasi! 🙏✨`;
+      text += `%0ATerima kasih atas kedisiplinan dan kontribusinya. Salam hormat,%0A*Bendahara X-4*`;
 
       const dummy = document.createElement('textarea');
       document.body.appendChild(dummy);
@@ -1090,8 +1087,8 @@
       document.execCommand('copy');
       document.body.removeChild(dummy);
 
-      showToast("Berhasil Disalin", "Format matriks ringkas berhasil disalin ke clipboard untuk dikirim ke WA Kelas!", "success");
-      logAudit("Menyalin laporan matriks korporat untuk grup WhatsApp kelas");
+      showToast("Berhasil Disalin", "Format matriks formal berhasil disalin ke clipboard untuk grup kelas!", "success");
+      logAudit("Menyalin laporan matriks korporat formal untuk grup WhatsApp kelas");
     }
 
     function renderAdminTable() {
@@ -1121,37 +1118,92 @@
       XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, `Template_KasSmart.xlsx`);
     }
 
-    function exportExcelCorporate() {
-      if (localTx.length === 0) return showToast("Kosong", "Belum ada data untuk di-export.", "error");
-
-      let corporateRows = [
-        ["LAPORAN KEUANGAN KAS KELAS X-4 (MICROSOFT ENTERPRISE EDITION)"],
-        ["PERIODE SEMESTER GANJIL 2026/2027 (Mulai 20 Juli 2026)"],
-        ["Dicetak oleh KasSmart AI Agent pada: " + new Date().toLocaleString('id-ID')],
-        []
-      ];
-
-      corporateRows.push(["No", "Tanggal Transaksi", "Kategori", "Keterangan / Detail", "Nominal (IDR)"]);
-
-      localTx.forEach((t, idx) => {
-        corporateRows.push([
-          idx + 1,
-          t.dateStr,
-          t.type.toUpperCase(),
-          t.description,
-          t.amount
-        ]);
-      });
-
-      const ws = XLSX.utils.aoa_to_sheet(corporateRows);
-      ws['!cols'] = [{wch: 5}, {wch: 22}, {wch: 15}, {wch: 45}, {wch: 18}];
+    // ===============================================
+    // EXPORT EXCEL MULTI-SHEET KORPORAT LENGKAP
+    // ===============================================
+    function exportExcelMultiSheet() {
+      if (localTx.length === 0 && localDenda.length === 0) return showToast("Kosong", "Belum ada data untuk di-export.", "error");
 
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Laporan_Korporat");
-      XLSX.writeFile(wb, `Laporan_Keuangan_Kas_X4_MicrosoftStyle.xlsx`);
 
-      showToast("Export Korporat", "Laporan keuangan format Microsoft Excel berhasil diunduh.", "success");
-      logAudit("Mengekspor laporan keuangan format korporat (.xlsx)");
+      // 1. SHEET 1: MATRIKS KAS KELAS (Lengkap ala web)
+      let matrixRows = [
+        ["MATRIKS KEUANGAN KELAS X-4 (LENGKAP 16 MINGGU)"],
+        ["Dicetak pada: " + new Date().toLocaleString('id-ID')],
+        []
+      ];
+      let headerCols = ["Ab", "Nama Siswa"];
+      for(let m=1; m<=TOTAL_MINGGU; m++) headerCols.push(`Minggu ${m}`);
+      headerCols.push("Total Dibayar");
+      matrixRows.push(headerCols);
+
+      for(let s=1; s<=TOTAL_SISWA; s++) {
+        let rowData = [s, daftarSiswa[s].nama];
+        let paidTotal = 0;
+        localTx.filter(t => t.type === 'masuk' && t.absen === s).forEach(t => paidTotal += t.amount);
+        
+        let b = paidTotal;
+        for(let m=1; m<=TOTAL_MINGGU; m++) {
+          if(b >= TARIF_MINGGU) {
+            rowData.push("Lunas (5k)");
+            b -= TARIF_MINGGU;
+          } else if(b > 0 && b < TARIF_MINGGU) {
+            rowData.push(`Cicil (${b})`);
+            b = 0;
+          } else {
+            rowData.push("Belum");
+          }
+        }
+        rowData.push(paidTotal);
+        matrixRows.push(rowData);
+      }
+      const wsMatrix = XLSX.utils.aoa_to_sheet(matrixRows);
+      XLSX.utils.book_append_sheet(wb, wsMatrix, "Matriks Kas");
+
+      // 2. SHEET 2: VERSI DENDA
+      let dendaRows = [
+        ["REKAPITULASI DENDA & PELANGGARAN KELAS X-4"],
+        ["Dicetak pada: " + new Date().toLocaleString('id-ID')],
+        [],
+        ["No", "Tanggal", "Absen", "Nama Siswa", "Keterangan / Alasan", "Nominal (IDR)", "Status"]
+      ];
+      localDenda.forEach((d, idx) => {
+        dendaRows.push([idx+1, d.dateStr, d.absen, d.nama, d.reason, d.amount, d.status]);
+      });
+      const wsDenda = XLSX.utils.aoa_to_sheet(dendaRows);
+      XLSX.utils.book_append_sheet(wb, wsDenda, "Denda & Pelanggaran");
+
+      // 3. SHEET 3: VERSI PENGELUARAN
+      let keluarRows = [
+        ["LAPORAN ARUS PENGELUARAN KAS KELAS X-4"],
+        ["Dicetak pada: " + new Date().toLocaleString('id-ID')],
+        [],
+        ["No", "Tanggal", "Keterangan Pengeluaran", "Nominal (IDR)"]
+      ];
+      let kIdx = 1;
+      localTx.filter(t => t.type === 'keluar').forEach(t => {
+        keluarRows.push([kIdx++, t.dateStr, t.description, t.amount]);
+      });
+      const wsKeluar = XLSX.utils.aoa_to_sheet(keluarRows);
+      XLSX.utils.book_append_sheet(wb, wsKeluar, "Pengeluaran Kas");
+
+      // 4. SHEET 4: VERSI HARIAN (Lengkap semua transaksi masuk/keluar)
+      let harianRows = [
+        ["BUKU KAS HARIAN LENGKAP X-4"],
+        ["Dicetak pada: " + new Date().toLocaleString('id-ID')],
+        [],
+        ["No", "Tanggal", "Kategori", "Detail Transaksi", "Nominal (IDR)"]
+      ];
+      localTx.forEach((t, idx) => {
+        harianRows.push([idx+1, t.dateStr, t.type.toUpperCase(), t.description, t.amount]);
+      });
+      const wsHarian = XLSX.utils.aoa_to_sheet(harianRows);
+      XLSX.utils.book_append_sheet(wb, wsHarian, "Kas Harian");
+
+      // Simpan file
+      XLSX.writeFile(wb, `Laporan_Lengkap_Korporat_KasX4.xlsx`);
+      showToast("Export Multi-Sheet", "Laporan korporat detail (Matriks, Denda, Pengeluaran, Harian) berhasil diunduh.", "success");
+      logAudit("Mengekspor laporan multi-sheet detail korporat (.xlsx)");
     }
 
     function exportJSONBackup() {
