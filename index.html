@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v5.0-Enterprise</title>
+  <title>KasSmart X-4 | v5.2-Enterprise Pro</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -47,9 +47,9 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-indigo-400">AI Agent</span></h1>
-            <span class="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black rounded">v5.0-Enterprise</span>
+            <span class="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black rounded">v5.2-Pro</span>
           </div>
-          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Autonomous Financial & Audit Bot</p>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Corporate Financial & Audit System</p>
         </div>
       </div>
 
@@ -72,6 +72,7 @@
   <div class="bg-slate-900 border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 py-2 flex gap-1 overflow-x-auto no-scrollbar">
       <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600/10 text-indigo-400 whitespace-nowrap transition-colors">Buku Harian</button>
+      <button onclick="switchTab('history')" id="tab-history" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Riwayat E-Statement 📜</button>
       <button onclick="switchTab('lookup')" id="tab-lookup" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Cek Kas Mandiri 🔍</button>
       <button onclick="switchTab('input')" id="tab-input" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Smart Input</button>
       <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Matriks & Denda</button>
@@ -98,7 +99,7 @@
         <button onclick="document.getElementById('wirasena-reminder-banner').remove()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
       </section>
 
-      <!-- CASH LIMIT WARNING BANNER -->
+      <!-- CASH LIMIT WARNING -->
       <section id="cash-limit-banner" class="hidden bg-gradient-to-r from-amber-950/80 via-slate-900 to-slate-900 border border-amber-500/40 p-4 rounded-2xl shadow-xl flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30">
@@ -106,7 +107,7 @@
           </div>
           <div>
             <h4 class="text-xs font-black text-amber-300">Peringatan Batas Maksimum Kas Fisik (>Rp 200.000) ⚠️</h4>
-            <p class="text-[11px] text-slate-300 mt-0.5">Uang tunai di laci kelas sudah cukup banyak. Harap segera amankan / disetor agar tidak berisiko!</p>
+            <p class="text-[11px] text-slate-300 mt-0.5">Uang tunai di laci kelas sudah cukup banyak. Harap segera amankan atau disetor.</p>
           </div>
         </div>
         <button onclick="document.getElementById('cash-limit-banner').classList.add('hidden')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -132,11 +133,11 @@
         </div>
       </section>
 
-      <!-- FINANCIAL CHART STATS -->
+      <!-- CHART -->
       <section class="bg-slate-800 border border-slate-700 p-4 md:p-6 rounded-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-400"></i> Statistik Arus Kas X-4</h3>
-          <span class="text-[10px] text-slate-400 font-medium">Real-time Visualizer</span>
+          <span class="text-[10px] text-slate-400 font-medium">Mulai 20 Juli 2026</span>
         </div>
         <div class="h-48 w-full">
           <canvas id="kasChart"></canvas>
@@ -149,8 +150,8 @@
           <h3 class="text-sm font-bold text-white flex items-center gap-2">
             <i data-lucide="book-open" class="w-4 h-4 text-indigo-400"></i> Buku Kas Harian
           </h3>
-          <button onclick="exportExcel()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
-            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel Harian
+          <button onclick="exportExcelCorporate()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel Korporat (.xlsx)
           </button>
         </div>
         <div id="ledger-container" class="space-y-3">
@@ -159,7 +160,44 @@
       </section>
     </div>
 
-    <!-- ================= TAB 2: CEK KAS MANDIRI (PUBLIC LOOKUP) ================= -->
+    <!-- ================= TAB: RIWAYAT E-STATEMENT GOPAY-STYLE ================= -->
+    <div id="content-history" class="tab-content hidden space-y-6">
+      <section class="bg-slate-800 border border-slate-700 p-5 md:p-8 rounded-2xl shadow-xl space-y-6">
+        <div class="flex flex-wrap justify-between items-center border-b border-slate-700 pb-4 gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 text-[10px] font-bold rounded border border-cyan-500/30">E-STATEMENT RESMI</span>
+              <h2 class="text-lg font-black text-white">Riwayat Transaksi Kelas X-4</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Periode Transaksi: Semester Ganjil (Mulai 20 Juli 2026)</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-slate-400 font-bold uppercase">Administrator Aktif</p>
+            <p id="estatement-admin-name" class="text-xs font-black text-indigo-400">Wirasena Pradnya Narendra</p>
+          </div>
+        </div>
+
+        <!-- TABEL E-STATEMENT ALA GOPAY -->
+        <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/60">
+          <table class="w-full text-left text-xs min-w-[750px]">
+            <thead class="bg-slate-900 text-slate-400 border-b border-slate-700 uppercase tracking-wider text-[10px]">
+              <tr>
+                <th class="p-3 w-36">Tanggal / Waktu</th>
+                <th class="p-3">Transaksi / Keterangan</th>
+                <th class="p-3 w-36">ID Transaksi</th>
+                <th class="p-3 w-32">Metode</th>
+                <th class="p-3 w-32 text-right">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody id="estatement-table-body" class="divide-y divide-slate-800 text-slate-300">
+              <tr><td colspan="5" class="text-center py-6 text-slate-500">Memuat e-statement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= TAB 2: CEK KAS MANDIRI ================= -->
     <div id="content-lookup" class="tab-content hidden space-y-6">
       <section class="bg-slate-800 border border-slate-700 p-5 md:p-8 rounded-2xl shadow-xl space-y-6">
         <div class="text-center max-w-xl mx-auto space-y-2">
@@ -167,7 +205,7 @@
             <i data-lucide="search" class="w-6 h-6"></i>
           </div>
           <h2 class="text-lg font-black text-white">Cek Status Keuangan Mandiri</h2>
-          <p class="text-xs text-slate-400">Ketik nama atau nomor absenmu untuk melihat riwayat pembayaran kas & denda secara transparan tanpa perlu tanya bendahara.</p>
+          <p class="text-xs text-slate-400">Ketik nama atau nomor absenmu untuk melihat riwayat pembayaran kas & denda secara transparan.</p>
         </div>
 
         <div class="max-w-md mx-auto flex gap-2">
@@ -214,7 +252,7 @@
         <div class="flex flex-wrap justify-between items-center border-b border-slate-700 pb-4 mb-4 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & QRIS Method</h3>
-            <p class="text-[11px] text-slate-400">Pilih metode pembayaran (Cash / QRIS Patungan Kelas tanpa syarat 17+).</p>
+            <p class="text-[11px] text-slate-400">Pilih metode pembayaran (Cash / QRIS Patungan Kelas).</p>
           </div>
           <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
         </div>
@@ -251,7 +289,7 @@
         <div class="flex flex-wrap justify-between items-center gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring & Pelunasan Denda Kelas</h3>
-            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik tombol centang hijau untuk melunasi.</p>
+            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik tombol edit untuk ubah alasan atau centang hijau untuk lunas.</p>
           </div>
           <div class="flex gap-2 text-xs font-bold">
             <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">Belum Lunas: <span id="count-unpaid">0</span></span>
@@ -260,15 +298,15 @@
         </div>
 
         <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50">
-          <table class="w-full text-left text-xs min-w-[650px]">
+          <table class="w-full text-left text-xs min-w-[700px]">
             <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
               <tr>
-                <th class="p-3 w-20 text-center">Absen</th>
-                <th class="p-3 w-40">Nama Siswa</th>
+                <th class="p-3 w-16 text-center">Absen</th>
+                <th class="p-3 w-36">Nama Siswa</th>
                 <th class="p-3">Alasan / Pelanggaran</th>
                 <th class="p-3 w-28">Nominal</th>
                 <th class="p-3 w-28 text-center">Status</th>
-                <th class="p-3 w-24 text-center">Aksi / Centang</th>
+                <th class="p-3 w-32 text-center">Aksi / Edit</th>
               </tr>
             </thead>
             <tbody id="denda-table-body" class="divide-y divide-slate-800 text-slate-300">
@@ -309,7 +347,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-3">
           <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i> Export & Backup</h3>
-          <p class="text-[11px] text-slate-400">Unduh data lengkap Excel atau Backup JSON.</p>
+          <p class="text-[11px] text-slate-400">Unduh data korporat atau Backup JSON.</p>
           <div class="flex flex-col gap-2 pt-2">
             <button onclick="downloadTemplate()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-bold text-white">Template Kosong</button>
             <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 rounded-lg text-[11px] font-bold">Auto-Snapshot JSON</button>
@@ -339,7 +377,7 @@
       <!-- ADMIN AUDIT TRAIL -->
       <section class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-4">
         <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Jejak Audit Admin (Admin Activity Trail)</h3>
-        <p class="text-[11px] text-slate-400">Mencatat siapa admin yang melakukan input atau menghapus data transaksi untuk transparansi kelas.</p>
+        <p class="text-[11px] text-slate-400">Mencatat siapa admin yang melakukan input atau menghapus data transaksi.</p>
         <div class="overflow-x-auto max-h-[300px] overflow-y-auto rounded-xl border border-slate-700 bg-slate-900/50">
           <table class="w-full text-left text-[11px] min-w-[600px]">
             <thead class="bg-slate-900 text-slate-400 sticky top-0">
@@ -367,6 +405,22 @@
     </div>
 
   </main>
+
+  <!-- MODAL EDIT ALASAN DENDA -->
+  <div id="modal-edit-denda" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[110] flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+      <h3 class="text-sm font-black text-white">Edit Alasan Denda</h3>
+      <input type="hidden" id="edit-denda-id">
+      <div class="space-y-1">
+        <label class="text-[10px] text-slate-400 uppercase font-bold">Alasan / Pelanggaran Baru:</label>
+        <input type="text" id="edit-denda-reason-input" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-indigo-500">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="document.getElementById('modal-edit-denda').classList.add('hidden')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold text-white">Batal</button>
+        <button onclick="saveEditDenda()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-bold text-white shadow">Simpan</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL AI WHATSAPP -->
   <div id="modal-ai" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
@@ -427,7 +481,8 @@
     let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; const TOTAL_MINGGU = 16;
-    const START_SEMESTER = new Date("2026-07-13"); const today = new Date().toISOString().split('T')[0];
+    const START_SEMESTER = new Date("2026-07-20");
+    const today = new Date().toISOString().split('T')[0];
     const daftarSiswa = {}; for(let i=1;i<=TOTAL_SISWA;i++) daftarSiswa[i] = {nama:`Siswa Absen ${i}`, wa:"6281234567890"};
 
     lucide.createIcons();
@@ -447,6 +502,7 @@
         b.classList.add('hidden'); p.classList.remove('hidden'); p.classList.add('flex');
         document.getElementById('user-avatar').src = user.photoURL || 'https://via.placeholder.com/150';
         document.getElementById('user-role-label').innerText = user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara";
+        document.getElementById('estatement-admin-name').innerText = currentUserName;
         document.querySelectorAll('.admin-overlay').forEach(el=>el.classList.add('hidden'));
         document.querySelectorAll('.admin-only').forEach(el=>{el.classList.remove('hidden');el.classList.add('inline-flex');});
         checkWirasenaReminder();
@@ -502,7 +558,7 @@
     }
 
     // ===============================================
-    // PUBLIC LOOKUP (CEK KAS MANDIRI)
+    // PUBLIC LOOKUP
     // ===============================================
     function executeLookup() {
       const q = document.getElementById('lookup-input').value.trim().toLowerCase();
@@ -574,7 +630,7 @@
     }
 
     // ===============================================
-    // SMART MULTI INPUT WITH QRIS METHOD
+    // SMART MULTI INPUT
     // ===============================================
     function addMultiRow() {
       const tb = document.getElementById('multi-rows-container');
@@ -678,7 +734,6 @@
       document.getElementById('stat-fisik').innerText = `Rp ${saldoFisik.toLocaleString()}`;
       document.getElementById('stat-denda').innerText = `Rp ${tD.toLocaleString()}`;
       
-      // Cash limit warning check (>200.000)
       const cashBanner = document.getElementById('cash-limit-banner');
       if(saldoFisik > 200000) { cashBanner.classList.remove('hidden'); cashBanner.classList.add('flex'); }
       else { cashBanner.classList.add('hidden'); }
@@ -688,7 +743,6 @@
       else if(selisih>0){ sb.className="bg-amber-900/20 p-4 rounded-2xl border border-amber-500/30 col-span-2 md:col-span-1"; st.innerText=`+ Rp${selisih.toLocaleString()}`; st.className="text-xl font-black text-amber-400 mt-1"; }
       else { sb.className="bg-rose-900/20 p-4 rounded-2xl border border-rose-500/30 col-span-2 md:col-span-1"; st.innerText=`- Rp${Math.abs(selisih).toLocaleString()}`; st.className="text-xl font-black text-rose-400 mt-1"; }
 
-      // Render Ledger
       const lg = document.getElementById('ledger-container'); lg.innerHTML = '';
       const sortedDates = Object.keys(dailyGroup).sort((a,b) => dailyGroup[b].timestamp - dailyGroup[a].timestamp);
       if(sortedDates.length === 0) lg.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada aktivitas.</p>';
@@ -721,13 +775,51 @@
         lg.appendChild(card);
       });
 
-      if(isAdmin && currentUserEmail === "wpnarend11@gmail.com") checkWirasenaReminder();
-
+      renderEStatementTable();
       renderDendaTable();
       renderRekapTable(tBayar); 
       renderAdminTable(); 
       updateChart(tM, tK);
       lucide.createIcons();
+    }
+
+    // RENDER E-STATEMENT GOPAY-STYLE
+    function renderEStatementTable() {
+      const tb = document.getElementById('estatement-table-body');
+      tb.innerHTML = '';
+      
+      let combined = [...localTx.map(t => ({...t, isDenda: false})), ...localDenda.map(d => ({
+        timestamp: d.timestamp,
+        dateStr: d.dateStr,
+        description: `Denda (${d.reason}) - Status: ${d.status}`,
+        id: d.id,
+        amount: d.amount,
+        type: 'denda',
+        isDenda: true
+      }))].sort((a,b) => b.timestamp - a.timestamp);
+
+      if(combined.length === 0) {
+        tb.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">Belum ada transaksi terekam.</td></tr>`;
+        return;
+      }
+
+      combined.forEach(item => {
+        let isOut = item.type === 'keluar';
+        let amtColor = isOut ? 'text-rose-400' : (item.isDenda ? 'text-amber-400' : 'text-emerald-400');
+        let amtPrefix = isOut ? '-' : '+';
+        let methodBadge = item.isDenda ? 'Kas Denda' : (item.description.includes('QRIS') ? 'QRIS Kelas' : 'Cash Tunai');
+        let shortId = item.id ? item.id.substring(0, 12).toUpperCase() : 'KAS-X4-ID';
+
+        tb.insertAdjacentHTML('beforeend', `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="p-3 text-slate-400 font-medium">${item.dateStr}</td>
+            <td class="p-3 text-white font-semibold">${item.description}</td>
+            <td class="p-3 text-slate-500 font-mono text-[10px]">${shortId}</td>
+            <td class="p-3 text-slate-300"><span class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px]">${methodBadge}</span></td>
+            <td class="p-3 text-right font-black ${amtColor}">${amtPrefix}Rp ${item.amount.toLocaleString()}</td>
+          </tr>
+        `);
+      });
     }
 
     window.toggleAccordion = function(headerElem) {
@@ -769,7 +861,7 @@
     }
 
     // ===============================================
-    // TABEL DENDA & PELUNASAN INTERAKTIF
+    // TABEL DENDA & EDIT ALASAN DENDA
     // ===============================================
     function renderDendaTable() {
       const tb = document.getElementById('denda-table-body');
@@ -792,9 +884,17 @@
           ? `<span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[10px] font-bold">LUNAS</span>` 
           : `<span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded text-[10px] font-bold animate-pulse">BELUM BAYAR</span>`;
         
-        let actionBtn = d.status === 'Unpaid' 
-          ? `<button onclick="payDenda('${d.id}', ${d.absen}, '${d.nama}', ${d.amount}, '${d.reason}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 mx-auto shadow"><i data-lucide="check" class="w-3 h-3"></i> Lunas</button>`
-          : `<span class="text-[10px] text-slate-500 font-medium">Selesai</span>`;
+        let actionHTML = '';
+        if(d.status === 'Unpaid') {
+          actionHTML = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openEditDendaModal('${d.id}', '${d.reason}')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-[10px] font-bold flex items-center gap-1 shadow" title="Edit Alasan"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+              <button onclick="payDenda('${d.id}', ${d.absen}, '${d.nama}', ${d.amount}, '${d.reason}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow" title="Lunasi"><i data-lucide="check" class="w-3 h-3"></i> Lunas</button>
+            </div>
+          `;
+        } else {
+          actionHTML = `<span class="text-[10px] text-slate-500 font-medium">Selesai</span>`;
+        }
 
         tb.insertAdjacentHTML('beforeend', `
           <tr class="hover:bg-slate-800/40 transition-colors">
@@ -803,13 +903,33 @@
             <td class="p-3 text-slate-300">${d.reason} <span class="block text-[9px] text-slate-500">${d.dateStr}</span></td>
             <td class="p-3 font-bold text-amber-400">Rp ${d.amount.toLocaleString()}</td>
             <td class="p-3 text-center">${statusBadge}</td>
-            <td class="p-3 text-center">${actionBtn}</td>
+            <td class="p-3 text-center">${actionHTML}</td>
           </tr>
         `);
       });
 
       document.getElementById('count-unpaid').innerText = cUnpaid;
       document.getElementById('count-paid').innerText = cPaid;
+      lucide.createIcons();
+    }
+
+    function openEditDendaModal(id, currentReason) {
+      if(!isAdmin) return showToast("Akses Ditolak", "Hanya Admin yang dapat mengedit denda.", "error");
+      document.getElementById('edit-denda-id').value = id;
+      document.getElementById('edit-denda-reason-input').value = currentReason;
+      document.getElementById('modal-edit-denda').classList.remove('hidden');
+    }
+
+    function saveEditDenda() {
+      const id = document.getElementById('edit-denda-id').value;
+      const newReason = document.getElementById('edit-denda-reason-input').value.trim();
+      if(!newReason) return showToast("Peringatan", "Alasan denda tidak boleh kosong!", "error");
+
+      dendaRef.child(id).update({ reason: newReason }).then(() => {
+        document.getElementById('modal-edit-denda').classList.add('hidden');
+        showToast("Berhasil", "Alasan denda berhasil diperbarui!", "success");
+        logAudit(`Mengubah alasan denda ID ${id} menjadi: "${newReason}"`);
+      });
     }
 
     function payDenda(id, ab, nm, am, rz) {
@@ -960,18 +1080,45 @@
     }
 
     function downloadTemplate() {
-      const data = [{ Tanggal: "2026-09-02", Tipe: "masuk", Absen: 1, Nominal: 5000, Catatan: "Kas" }];
+      const data = [{ Tanggal: "2026-07-20", Tipe: "masuk", Absen: 1, Nominal: 5000, Catatan: "Kas" }];
       const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, `Template_KasSmart.xlsx`);
     }
 
-    function exportExcel() {
+    // ===============================================
+    // KORPORAT EXPORT EXCEL FORMAT
+    // ===============================================
+    function exportExcelCorporate() {
       if (localTx.length === 0) return showToast("Kosong", "Belum ada data untuk di-export.", "error");
-      const data = localTx.map(t => ({ Tanggal: t.dateStr, Tipe: t.type.toUpperCase(), Deskripsi: t.description, Nominal: t.amount }));
-      const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Buku_Harian_Kas"); XLSX.writeFile(wb, `Laporan_KasSmart_Harian.xlsx`);
-      showToast("Export Berhasil", "File Excel Buku Harian berhasil diunduh.", "success");
-      logAudit("Mengekspor laporan kas harian ke Excel");
+
+      let corporateRows = [
+        ["LAPORAN KEUANGAN KAS KELAS X-4"],
+        ["PERIODE SEMESTER GANJIL 2026/2027 (Mulai 20 Juli 2026)"],
+        ["Dicetak oleh Sistem KasSmart AI Agent v5.2-Pro pada: " + new Date().toLocaleString('id-ID')],
+        []
+      ];
+
+      corporateRows.push(["No", "Tanggal Transaksi", "Kategori", "Keterangan / Detail", "Nominal (IDR)"]);
+
+      localTx.forEach((t, idx) => {
+        corporateRows.push([
+          idx + 1,
+          t.dateStr,
+          t.type.toUpperCase(),
+          t.description,
+          t.amount
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(corporateRows);
+      ws['!cols'] = [{wch: 5}, {wch: 22}, {wch: 15}, {wch: 45}, {wch: 18}];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan_Kas_Korporat");
+      XLSX.writeFile(wb, `Laporan_Keuangan_Kas_X4_Corporate.xlsx`);
+
+      showToast("Export Korporat", "Laporan keuangan rapi ala perusahaan berhasil diunduh.", "success");
+      logAudit("Mengekspor laporan keuangan format korporat (.xlsx)");
     }
 
     function exportJSONBackup() {
