@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v6.3-Enterprise Final</title>
+  <title>KasSmart X-4 | v6.4 Enterprise Final</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -19,8 +20,6 @@
     ::-webkit-scrollbar { height: 6px; width: 6px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    .accordion-content { transition: max-height 0.3s ease-out, opacity 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
-    .accordion-content.open { max-height: 2000px; opacity: 1; }
     #toast-box { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateY(100px); opacity: 0; pointer-events: none; }
     #toast-box.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
   </style>
@@ -48,7 +47,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">X-4 Enterprise</span></h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.3 PRO</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.4</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
@@ -94,17 +93,6 @@
           </div>
         </div>
         <button onclick="document.getElementById('wirasena-reminder-banner').remove()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
-      </section>
-
-      <section id="cash-limit-banner" class="hidden bg-gradient-to-r from-amber-950/80 via-slate-900 to-slate-900 border border-amber-500/40 p-4 rounded-xl shadow-xl flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="p-2.5 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/30"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
-          <div>
-            <h4 class="text-xs font-black text-amber-300">Peringatan Batas Maksimum Kas Fisik (>Rp 200.000) ⚠️</h4>
-            <p class="text-[11px] text-slate-300 mt-0.5">Uang tunai di laci kelas cukup banyak. Harap segera amankan atau disetor.</p>
-          </div>
-        </div>
-        <button onclick="document.getElementById('cash-limit-banner').classList.add('hidden')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
       </section>
 
       <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -241,7 +229,7 @@
         <div class="flex flex-wrap justify-between items-center gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring & Pelunasan Denda Kelas</h3>
-            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik edit untuk ubah alasan atau lunas.</p>
+            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik lunas untuk menyelesaikan denda.</p>
           </div>
           <div class="flex gap-2 text-xs font-bold">
             <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">Belum: <span id="count-unpaid">0</span></span>
@@ -318,28 +306,16 @@
 
   </main>
 
-  <!-- MODAL EDIT DENDA -->
-  <div id="modal-edit-denda" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[110] flex items-center justify-center p-4">
+  <!-- MODAL EDIT SALDO FISIK -->
+  <div id="modal-edit-fisik" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[110] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-sm shadow-2xl space-y-4">
-      <h3 class="text-sm font-black text-white">Edit Alasan Denda</h3>
-      <input type="hidden" id="edit-denda-id">
-      <input type="text" id="edit-denda-reason-input" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none">
+      <h3 class="text-sm font-black text-white">Setor / Ubah Uang Fisik</h3>
+      <p class="text-[11px] text-slate-400">Masukkan total uang fisik yang dipegang admin/di laci saat ini:</p>
+      <input type="number" id="input-saldo-fisik" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-emerald-400 font-bold outline-none" placeholder="Nominal (Rp)">
       <div class="flex justify-end gap-2 pt-2">
-        <button onclick="document.getElementById('modal-edit-denda').classList.add('hidden')" class="px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-bold text-white">Batal</button>
-        <button onclick="saveEditDenda()" class="px-4 py-1.5 bg-blue-600 rounded-lg text-xs font-bold text-white">Simpan</button>
+        <button onclick="document.getElementById('modal-edit-fisik').classList.add('hidden')" class="px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-bold text-white">Batal</button>
+        <button onclick="saveSaldoFisik()" class="px-4 py-1.5 bg-blue-600 rounded-lg text-xs font-bold text-white">Simpan</button>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL AI -->
-  <div id="modal-ai" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-lg shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">AI Agent Reminder</h3>
-        <button onclick="closeAIModal()" class="text-slate-400"><i data-lucide="x" class="w-4 h-4"></i></button>
-      </div>
-      <div id="ai-modal-content" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 text-xs"></div>
-      <div class="pt-2 border-t border-slate-800 flex justify-end"><button onclick="closeAIModal()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">Tutup</button></div>
     </div>
   </div>
 
@@ -424,12 +400,18 @@
       } catch(e) {}
     });
 
-    function logAudit(action) {
-      if(!currentUserEmail) return;
-      try {
-        const timeStr = new Date().toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
-        auditRef.push({ timestamp: Date.now(), timeStr: timeStr, admin: currentUserName, email: currentUserEmail, action: action });
-      } catch(e) {}
+    function editSaldoFisik() {
+      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
+      document.getElementById('input-saldo-fisik').value = saldoFisik;
+      document.getElementById('modal-edit-fisik').classList.remove('hidden');
+    }
+
+    function saveSaldoFisik() {
+      const val = parseInt(document.getElementById('input-saldo-fisik').value) || 0;
+      metaRef.child('saldo_fisik').set(val).then(() => {
+        document.getElementById('modal-edit-fisik').classList.add('hidden');
+        showToast("Sukses", "Uang fisik berhasil diperbarui!", "success");
+      });
     }
 
     function checkWirasenaReminder() {
@@ -494,15 +476,10 @@
         }
 
         const name = daftarSiswa[foundAbsen].nama;
-        let totalKas = 0; let historyArr = [];
+        let totalKas = 0;
 
         localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen).forEach(t => {
           totalKas += t.amount;
-          historyArr.push({ date: t.dateStr, desc: t.description, amount: t.amount, type: 'masuk' });
-        });
-
-        localDenda.filter(d => d.absen === foundAbsen).forEach(d => {
-          historyArr.push({ date: d.dateStr, desc: `Denda (${d.reason}) - ${d.status}`, amount: d.amount, type: 'denda' });
         });
 
         document.getElementById('res-name').innerText = name;
@@ -614,9 +591,6 @@
         const elSys = document.getElementById('stat-sistem'); if(elSys) elSys.innerText = `Rp ${totSistem.toLocaleString()}`;
         const elFisik = document.getElementById('stat-fisik'); if(elFisik) elFisik.innerText = `Rp ${saldoFisik.toLocaleString()}`;
         const elDenda = document.getElementById('stat-denda'); if(elDenda) elDenda.innerText = `Rp ${tD.toLocaleString()}`;
-        
-        const cashBanner = document.getElementById('cash-limit-banner');
-        if(cashBanner) { if(saldoFisik > 200000) cashBanner.classList.remove('hidden'); else cashBanner.classList.add('hidden'); }
 
         const sb = document.getElementById('box-selisih'), st = document.getElementById('stat-selisih');
         if(sb && st) {
@@ -638,7 +612,7 @@
       const sortedDates = Object.keys(dailyGroup).sort((a,b) => dailyGroup[b].timestamp - dailyGroup[a].timestamp);
       if(sortedDates.length === 0) { lg.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada aktivitas.</p>'; return; }
 
-      sortedDates.forEach((dateStr, index) => {
+      sortedDates.forEach((dateStr) => {
         const day = dailyGroup[dateStr]; let dayIn = 0; let detailHTML = '';
         day.items.forEach(item => {
           if(item.type === 'masuk') dayIn+=item.amount;
@@ -747,7 +721,28 @@
       XLSX.writeFile(wb, "Laporan.xlsx");
     }
 
-    async function exportWordReport() { showToast("Word", "Fitur Word siap di-download.", "success"); }
+    async function exportWordReport() {
+      try {
+        const { Document, Packer, Paragraph, TextRun, HeadingLevel } = window.docx;
+        const doc = new Document({
+          sections: [{
+            properties: {},
+            children: [
+              new Paragraph({ text: "LAPORAN KEUANGAN KELAS X-4", heading: HeadingLevel.HEADING_1 }),
+              new Paragraph({ text: `Dicetak otomatis oleh sistem pada ${new Date().toLocaleDateString('id-ID')}` }),
+              new Paragraph({ text: "" }),
+              new Paragraph({ text: "Ringkasan Transaksi Terakhir:", heading: HeadingLevel.HEADING_2 }),
+              ...localTx.slice(0, 15).map(t => new Paragraph({ children: [new TextRun(`- ${t.dateStr}: ${t.description} (Rp ${t.amount.toLocaleString()})`)] }))
+            ]
+          }]
+        });
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, "Laporan-Kas-X4.docx");
+        showToast("Sukses", "File Word berhasil di-download!", "success");
+      } catch(e) {
+        showToast("Gagal", "Gagal export Word: " + e.message, "error");
+      }
+    }
 
     function exportJSONBackup() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({localTx, localDenda}));
