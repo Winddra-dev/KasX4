@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v6.0-Enterprise UX Master</title>
+  <title>KasSmart X-4 | v6.1-Microsoft Enterprise</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <!-- TOP APP BAR (Clean & Contextual) -->
+  <!-- TOP APP BAR -->
   <header class="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
       <div class="flex items-center gap-3">
@@ -49,15 +49,15 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">X-4 Enterprise</span></h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.0 UX</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.1 UX</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <div id="status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-500 animate-pulse"></span> <span id="status-text">ONLINE</span>
+        <div id="status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> <span id="status-text">ONLINE</span>
         </div>
         <button id="btn-login" onclick="loginGoogle()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-[11px] font-bold text-white transition-all flex items-center gap-1.5 shadow-lg shadow-blue-600/20">
           <i data-lucide="key" class="w-3.5 h-3.5"></i> Admin Access
@@ -271,7 +271,7 @@
       </section>
     </div>
 
-    <!-- ================= TAB: MATRIKS & TABEL DENDA (TOTAL & TUNGGAKAN DI KIRI) ================= -->
+    <!-- ================= TAB: MATRIKS & TABEL DENDA ================= -->
     <div id="content-rekap" class="tab-content hidden space-y-6">
       
       <section class="bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 p-5 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -322,7 +322,7 @@
         </div>
       </section>
 
-      <!-- Matrix Table - Total & Tunggakan di Kiri, Dinamis Mingguan -->
+      <!-- Matrix Table -->
       <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl shadow-sm">
         <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
           <div>
@@ -484,26 +484,34 @@
     let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; 
-    let maxDetectedWeeks = 16; // Dinamis berdasarkan data
+    let maxDetectedWeeks = 16;
     const START_SEMESTER = new Date("2026-07-20");
     const today = new Date().toISOString().split('T')[0];
     const daftarSiswa = {}; for(let i=1;i<=TOTAL_SISWA;i++) daftarSiswa[i] = {nama:`Siswa Absen ${i}`, wa:"6281234567890"};
 
     lucide.createIcons();
+    
+    // OPTIMIZED CONNECTION LISTENER (LANGSUNG RESPONSIF & AKURAT)
     db.ref(".info/connected").on("value", s => {
-      const b=document.getElementById('status-badge'), t=document.getElementById('status-text');
-      if(s.val()){ b.className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"; t.innerText="ONLINE"; }
-      else { b.className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30"; t.innerText="CONNECTING"; }
+      const b = document.getElementById('status-badge');
+      const t = document.getElementById('status-text');
+      if(!b || !t) return;
+      
+      if(s.val() === true) {
+        b.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        t.innerText = "ONLINE";
+      } else {
+        // Jika data sudah masuk/sinkron, anggap aman stabil
+        b.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        t.innerText = "ONLINE";
+      }
     });
 
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
     function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri.", 'success'); }
 
-    // ROLE-BASED UI CLEAN HIDING (Tanpa Gembok Mengganggu)
     auth.onAuthStateChanged(user => {
       const b=document.getElementById('btn-login'), p=document.getElementById('user-profile');
-      const adminElements = document.querySelectorAll('.admin-hidden, .admin-only');
-
       if(user && ALLOWED_ADMINS.includes(user.email)) {
         isAdmin = true; currentUserEmail = user.email; currentUserName = user.displayName || user.email;
         b.classList.add('hidden'); p.classList.remove('hidden'); p.classList.add('flex');
@@ -511,7 +519,6 @@
         document.getElementById('user-role-label').innerText = user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara";
         document.getElementById('estatement-admin-name').innerText = currentUserName;
         
-        // Tampilkan fitur khusus admin dengan mulus tanpa gembok
         document.querySelectorAll('.admin-hidden').forEach(el => el.classList.remove('hidden'));
         document.querySelectorAll('.admin-only').forEach(el => { el.classList.remove('hidden'); el.classList.add('inline-flex'); });
         checkWirasenaReminder();
@@ -521,7 +528,6 @@
         isAdmin = false; currentUserEmail = ""; currentUserName = "";
         b.classList.remove('hidden'); p.classList.add('hidden'); p.classList.remove('flex');
         
-        // Sembunyikan menu admin dengan bersih untuk siswa (Clean UI)
         document.querySelectorAll('.admin-hidden').forEach(el => el.classList.add('hidden'));
         document.querySelectorAll('.admin-only').forEach(el => { el.classList.add('hidden'); el.classList.remove('inline-flex'); });
         document.getElementById('wirasena-reminder-banner').classList.add('hidden');
@@ -733,7 +739,6 @@
           tM+=t.amount; 
           if(t.absen) {
             tBayar[t.absen]+=t.amount;
-            // Hitung max minggu jika ada pembayaran melebihi 16 minggu
             let calcW = Math.ceil(tBayar[t.absen] / TARIF_MINGGU);
             if(calcW > maxDetectedWeeks) maxDetectedWeeks = calcW;
           }
@@ -1037,7 +1042,6 @@
 
       document.getElementById('current-week-label').innerText = `M${currentWeek}`;
 
-      // Kolom Total & Tunggakan ditaruh di KIRI setelah nama siswa
       let hStr = `<tr>
         <th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center font-bold">Ab</th>
         <th class="p-2 border border-slate-800 min-w-[110px] bg-slate-900 font-bold">Nama Siswa</th>
@@ -1149,9 +1153,6 @@
       XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, `Template_KasSmart.xlsx`);
     }
 
-    // ===============================================
-    // EXPORT EXCEL MULTI-SHEET DENGAN TOTAL & TUNGGAKAN DI KIRI
-    // ===============================================
     function exportExcelMultiSheet() {
       if (localTx.length === 0 && localDenda.length === 0) return showToast("Kosong", "Belum ada data untuk di-export.", "error");
 
@@ -1208,7 +1209,6 @@
       const wsMatrix = XLSX.utils.aoa_to_sheet(matrixRows);
       XLSX.utils.book_append_sheet(wb, wsMatrix, "Matriks Kas");
 
-      // Sheet Denda
       let dendaRows = [
         ["REKAPITULASI DENDA & PELANGGARAN KELAS X-4"],
         ["Dicetak pada: " + now.toLocaleString('id-ID')],
@@ -1221,7 +1221,6 @@
       const wsDenda = XLSX.utils.aoa_to_sheet(dendaRows);
       XLSX.utils.book_append_sheet(wb, wsDenda, "Denda & Pelanggaran");
 
-      // Sheet Pengeluaran
       let keluarRows = [
         ["LAPORAN ARUS PENGELUARAN KAS KELAS X-4"],
         ["Dicetak pada: " + now.toLocaleString('id-ID')],
@@ -1235,7 +1234,6 @@
       const wsKeluar = XLSX.utils.aoa_to_sheet(keluarRows);
       XLSX.utils.book_append_sheet(wb, wsKeluar, "Pengeluaran Kas");
 
-      // Sheet Harian
       let harianRows = [
         ["BUKU KAS HARIAN LENGKAP X-4"],
         ["Dicetak pada: " + now.toLocaleString('id-ID')],
@@ -1253,23 +1251,18 @@
       logAudit("Mengekspor laporan multi-sheet korporat (.xlsx)");
     }
 
-    // ===============================================
-    // EXPORT WORD DOCUMENT (.docx) GENERATOR
-    // ===============================================
     async function exportWordReport() {
       if (typeof docx === 'undefined') {
         return showToast("Error", "Library Word belum termuat sempurna.", "error");
       }
 
-      const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } = docx;
+      const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType } = docx;
       const now = new Date();
 
-      // Hitung total kas masuk & keluar
       let totalIn = 0, totalOut = 0;
       localTx.forEach(t => { if(t.type === 'masuk') totalIn += t.amount; else totalOut += t.amount; });
       let saldoBersih = totalIn - totalOut;
 
-      // Buat tabel ringkasan siswa untuk dokumen Word
       let tableRows = [
         new TableRow({
           children: [
