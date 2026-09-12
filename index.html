@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v6.5 Elite Final</title>
+  <title>KasSmart X-4 | v6.6 Final Polish</title>
   
+  <!-- FAVICON DARI LOGO NAVBAR -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -47,7 +50,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">X-4 Enterprise</span></h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.5 ELITE</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.6</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
@@ -427,10 +430,9 @@
         localTx.filter(t => t.type === 'masuk' && t.absen === 28).forEach(t => paidTotal += t.amount);
         let weeksPaid = Math.floor(paidTotal / TARIF_MINGGU);
         let lagWeeks = (currentWeek - 1) - weeksPaid;
-        let myDenda = localDenda.filter(d => d.absen === 28 && d.status === 'Unpaid');
 
-        if(lagWeeks > 0 || myDenda.length > 0) {
-          textElem.innerText = `Waduh Wir, kas kamu nunggak ${lagWeeks} minggu per hari ini plus ada denda belum lunas!`;
+        if(lagWeeks > 0) {
+          textElem.innerText = `Waduh Wir, kas kamu nunggak ${lagWeeks} minggu per hari ini. Segera bereskan ya!`;
         } else {
           textElem.innerText = `Mantap Wir! Status kas Absen 28 bersih tanpa tunggakan. 🔥`;
         }
@@ -678,8 +680,8 @@
         const weekLabel = document.getElementById('current-week-label');
         if(weekLabel) weekLabel.innerText = `M${currentWeek}`;
 
-        let hStr = `<tr><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center">Ab</th><th class="p-2 border border-slate-800 bg-slate-900">Nama</th><th class="p-2 border border-slate-800 text-right bg-slate-900">Total & Apresiasi</th><th class="p-2 border border-slate-800 text-center bg-slate-900">Tunggakan</th>`;
-        for(let m=1; m<=totalWeeks; m++) { hStr += `<th class="p-1 border border-slate-800 text-center text-[9px] w-10">M${m}</th>`; }
+        let hStr = `<tr><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center text-slate-300 font-bold">Ab</th><th class="p-2 border border-slate-800 bg-slate-900 text-slate-300 font-bold">Nama</th><th class="p-2 border border-slate-800 text-right bg-slate-900 text-slate-300 font-bold">Total & Keterangan</th><th class="p-2 border border-slate-800 text-center bg-slate-900 text-slate-300 font-bold">Tunggakan</th>`;
+        for(let m=1; m<=totalWeeks; m++) { hStr += `<th class="p-1 border border-slate-800 text-center text-[9px] w-10 text-slate-400 font-bold">M${m}</th>`; }
         hd.innerHTML = hStr + `</tr>`;
 
         let bStr = '';
@@ -689,14 +691,15 @@
           let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
           let surplusWeeks = weeksPaid - (currentWeek - 1);
 
-          let apresiasiText = surplusWeeks > 0 ? `<br><span class="text-[9px] text-emerald-400 font-bold">🔥 Yey lebih ${surplusWeeks} minggu! Makaseh ${daftarSiswa[s].nama.split(' ')[0]}</span>` : '';
+          let ketText = surplusWeeks > 0 ? `<br><span class="text-[9px] text-emerald-400 font-bold">✨ Kelebihan ${surplusWeeks} minggu</span>` : (lag > 0 ? `<br><span class="text-[9px] text-rose-400 font-bold">⚠️ Nunggak ${lag} minggu</span>` : `<br><span class="text-[9px] text-slate-400 font-bold">✓ Pas / Aman</span>`);
+          let tunggakanBadge = lag > 0 ? `<span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded text-[10px] font-extrabold">${lag} Mgg</span>` : `<span class="text-emerald-400 font-bold text-[10px]">Aman</span>`;
 
-          let rStr = `<td class="p-1.5 border border-slate-800 text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border border-slate-800 text-[10px] truncate max-w-[100px]">${daftarSiswa[s].nama}</td><td class="p-1.5 border border-slate-800 text-right font-bold text-blue-400 text-[10px]">Rp ${paid.toLocaleString()}${apresiasiText}</td><td class="p-1.5 border border-slate-800 text-center text-[10px]">${lag>0?lag+' Mgg':'Aman'}</td>`;
+          let rStr = `<td class="p-1.5 border border-slate-800 text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border border-slate-800 text-[10px] truncate max-w-[100px] text-slate-200 font-medium">${daftarSiswa[s].nama}</td><td class="p-1.5 border border-slate-800 text-right font-bold text-blue-400 text-[10px]">Rp ${paid.toLocaleString()}${ketText}</td><td class="p-1.5 border border-slate-800 text-center text-[10px]">${tunggakanBadge}</td>`;
           let b = paid;
           for(let m=1; m<=totalWeeks; m++) {
-            if(b >= TARIF_MINGGU) { rStr += `<td class="p-1 border border-slate-800 text-center text-emerald-400 font-bold">✓</td>`; b -= TARIF_MINGGU; }
-            else if(b > 0) { rStr += `<td class="p-1 border border-slate-800 text-center text-blue-300">⏳</td>`; b = 0; }
-            else { rStr += `<td class="p-1 border border-slate-800 text-center text-slate-700">-</td>`; }
+            if(b >= TARIF_MINGGU) { rStr += `<td class="p-1 border border-slate-800 text-center text-emerald-400 font-black bg-emerald-950/20">✓</td>`; b -= TARIF_MINGGU; }
+            else if(b > 0) { rStr += `<td class="p-1 border border-slate-800 text-center text-blue-300 font-bold bg-blue-950/20">⏳</td>`; b = 0; }
+            else { rStr += `<td class="p-1 border border-slate-800 text-center text-slate-600">-</td>`; }
           }
           bStr += `<tr>${rStr}</tr>`;
         }
@@ -719,20 +722,22 @@
           let weeksPaid = Math.floor(paid / TARIF_MINGGU);
           let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
           let surplusWeeks = weeksPaid - (currentWeek - 1);
-          let apresiasi = surplusWeeks > 0 ? `Yey lebih ${surplusWeeks} minggu! Makaseh ${daftarSiswa[s].nama}` : 'Aman';
+          let statusNote = surplusWeeks > 0 ? `Kelebihan ${surplusWeeks} mgg` : (lag > 0 ? `Nunggak ${lag} mgg` : 'Lunas');
+
+          let formatVal = paid >= 1000 ? Math.round(paid/1000) + 'k' : paid;
 
           dataExport.push({
             "No Absen": s,
             "Nama Siswa": daftarSiswa[s].nama,
-            "Total Pembayaran": paid,
-            "Tunggakan (Minggu)": lag > 0 ? `${lag} Minggu` : 'Lunas / Aman',
-            "Apresiasi Status": apresiasi
+            "Total Pembayaran": `Rp ${formatVal}`,
+            "Tunggakan": lag > 0 ? `${lag} Mgg` : 'Aman',
+            "Keterangan": statusNote
           });
         }
 
         const ws = XLSX.utils.json_to_sheet(dataExport);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Matriks & Apresiasi");
+        XLSX.utils.book_append_sheet(wb, ws, "Matriks Keuangan");
         XLSX.writeFile(wb, "Matriks-Keuangan-X4.xlsx");
         showToast("Sukses", "Matriks berhasil diexport ke Excel!", "success");
       } catch(e) {
@@ -754,9 +759,9 @@
         let weeksPaid = Math.floor(paid / TARIF_MINGGU);
         let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
         let surplusWeeks = weeksPaid - (currentWeek - 1);
-        let apres = surplusWeeks > 0 ? ` (Yey lebih ${surplusWeeks} minggu! Makaseh ${daftarSiswa[s].nama})` : '';
+        let note = surplusWeeks > 0 ? ` (Kelebihan ${surplusWeeks} mgg)` : '';
 
-        text += `${s}. *${daftarSiswa[s].nama}* - Rp ${paid.toLocaleString()} | Tunggakan: ${lag > 0 ? lag + ' Mgg' : 'Aman'}${apres}\n`;
+        text += `${s}. *${daftarSiswa[s].nama}* - Rp ${paid.toLocaleString()} | Tunggakan: ${lag > 0 ? lag + ' Mgg' : 'Aman'}${note}\n`;
       }
 
       navigator.clipboard.writeText(text);
