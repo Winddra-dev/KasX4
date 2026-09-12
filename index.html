@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v6.6 Final Polish</title>
+  <title>KasX-4 | v6.7 Ultimate Edition</title>
   
   <!-- FAVICON DARI LOGO NAVBAR -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
@@ -49,8 +49,9 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">X-4 Enterprise</span></h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.6</span>
+            <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">Kas X-4</h1>
+            <!-- KLIK VERSI UNTUK PATCH NOTES (KHUSUS ADMIN) -->
+            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk melihat Patch Notes">v6.7 ULTIMATE</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
@@ -117,12 +118,22 @@
         </div>
       </section>
 
-      <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
-        <div class="flex justify-between items-center">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Statistik Arus Kas X-4</h3>
-          <span class="text-[10px] text-slate-400 font-medium">Mulai 20 Juli 2026</span>
+      <!-- STATISTIK GRAFIK DUAL (DOUGHNUT & BAR CHART) -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Komposisi Arus Kas</h3>
+            <span class="text-[10px] text-slate-400 font-medium">Donut Ratio</span>
+          </div>
+          <div class="h-48 w-full"><canvas id="kasChart"></canvas></div>
         </div>
-        <div class="h-48 w-full"><canvas id="kasChart"></canvas></div>
+        <div class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Perbandingan Keuangan</h3>
+            <span class="text-[10px] text-slate-400 font-medium">Bar Breakdown</span>
+          </div>
+          <div class="h-48 w-full"><canvas id="kasBarChart"></canvas></div>
+        </div>
       </section>
 
       <section class="bg-slate-900/60 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
@@ -322,6 +333,33 @@
     </div>
   </div>
 
+  <!-- MODAL PATCH NOTES -->
+  <div id="modal-patch-notes" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Patch Notes & Update History</h3>
+        <button onclick="document.getElementById('modal-patch-notes').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300 max-h-64 overflow-y-auto pr-2">
+        <div>
+          <b class="text-blue-400">v6.7 Ultimate Edition (Current)</b>
+          <p class="text-slate-400 text-[11px] mt-0.5">• Penambahan Bar Chart komparatif di dashboard.<br>• Auto-Fit Column width pada ekspor Excel.<br>• Desain Header Navbar ringkas & Patch Notes interaktif.</p>
+        </div>
+        <div>
+          <b class="text-slate-300">v6.6 Clean & Polish</b>
+          <p class="text-slate-400 text-[11px] mt-0.5">• Pembersihan teks AI reminder.<br>• Integrasi logo navbar ke favicon web.<br>• Pembaruan warna kontras matriks web.</p>
+        </div>
+        <div>
+          <b class="text-slate-300">v6.5 Elite Final</b>
+          <p class="text-slate-400 text-[11px] mt-0.5">• Penambahan fitur import Excel langsung ke Firebase.<br>• Ekspor laporan komplit berbasis Word (.docx).</p>
+        </div>
+      </div>
+      <div class="flex justify-end pt-2">
+        <button onclick="document.getElementById('modal-patch-notes').classList.add('hidden')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold text-white">Tutup</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function showToast(title, msg, type = 'success') {
       try {
@@ -350,7 +388,8 @@
 
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
     let isAdmin = false; let currentUserEmail = ""; let currentUserName = ""; 
-    let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
+    let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; 
+    let kasChartInstance = null; let kasBarChartInstance = null;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; 
     let maxDetectedWeeks = 16;
@@ -371,6 +410,11 @@
 
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
     function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri.", 'success'); }
+
+    function openPatchNotes() {
+      if(!isAdmin) return showToast("Akses Terbatas", "Fitur Patch Notes khusus Admin!", "error");
+      document.getElementById('modal-patch-notes').classList.remove('hidden');
+    }
 
     auth.onAuthStateChanged(user => {
       try {
@@ -605,7 +649,7 @@
         renderDendaTable();
         renderRekapTable(tBayar); 
         renderAdminTable(); 
-        updateChart(tM, tK);
+        updateCharts(tM, tK);
       } catch(e) {}
     }
 
@@ -636,16 +680,29 @@
       });
     }
 
-    function updateChart(inVal, outVal) {
+    function updateCharts(inVal, outVal) {
       try {
-        const ctx = document.getElementById('kasChart');
-        if(!ctx) return;
-        if(kasChartInstance) kasChartInstance.destroy();
-        kasChartInstance = new Chart(ctx.getContext('2d'), {
-          type: 'doughnut',
-          data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ data: [inVal, outVal], backgroundColor: ['#3b82f6', '#f43f5e'], borderWidth: 0 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } } } }
-        });
+        // Doughnut Chart
+        const ctxDoughnut = document.getElementById('kasChart');
+        if(ctxDoughnut) {
+          if(kasChartInstance) kasChartInstance.destroy();
+          kasChartInstance = new Chart(ctxDoughnut.getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ data: [inVal, outVal], backgroundColor: ['#3b82f6', '#f43f5e'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } } } }
+          });
+        }
+
+        // Bar Chart
+        const ctxBar = document.getElementById('kasBarChart');
+        if(ctxBar) {
+          if(kasBarChartInstance) kasBarChartInstance.destroy();
+          kasBarChartInstance = new Chart(ctxBar.getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ label: 'Rupiah (Rp)', data: [inVal, outVal], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } }, x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } } } }
+          });
+        }
       } catch(e) {}
     }
 
@@ -681,7 +738,11 @@
         if(weekLabel) weekLabel.innerText = `M${currentWeek}`;
 
         let hStr = `<tr><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center text-slate-300 font-bold">Ab</th><th class="p-2 border border-slate-800 bg-slate-900 text-slate-300 font-bold">Nama</th><th class="p-2 border border-slate-800 text-right bg-slate-900 text-slate-300 font-bold">Total & Keterangan</th><th class="p-2 border border-slate-800 text-center bg-slate-900 text-slate-300 font-bold">Tunggakan</th>`;
-        for(let m=1; m<=totalWeeks; m++) { hStr += `<th class="p-1 border border-slate-800 text-center text-[9px] w-10 text-slate-400 font-bold">M${m}</th>`; }
+        for(let m=1; m<=totalWeeks; m++) {
+          let isCurrent = (m === currentWeek);
+          let thClass = isCurrent ? "p-1 border border-indigo-500/60 text-center text-[9px] w-10 text-indigo-300 font-black bg-indigo-950/40" : "p-1 border border-slate-800 text-center text-[9px] w-10 text-slate-400 font-bold";
+          hStr += `<th class="${thClass}">M${m}</th>`;
+        }
         hd.innerHTML = hStr + `</tr>`;
 
         let bStr = '';
@@ -697,9 +758,11 @@
           let rStr = `<td class="p-1.5 border border-slate-800 text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border border-slate-800 text-[10px] truncate max-w-[100px] text-slate-200 font-medium">${daftarSiswa[s].nama}</td><td class="p-1.5 border border-slate-800 text-right font-bold text-blue-400 text-[10px]">Rp ${paid.toLocaleString()}${ketText}</td><td class="p-1.5 border border-slate-800 text-center text-[10px]">${tunggakanBadge}</td>`;
           let b = paid;
           for(let m=1; m<=totalWeeks; m++) {
-            if(b >= TARIF_MINGGU) { rStr += `<td class="p-1 border border-slate-800 text-center text-emerald-400 font-black bg-emerald-950/20">✓</td>`; b -= TARIF_MINGGU; }
-            else if(b > 0) { rStr += `<td class="p-1 border border-slate-800 text-center text-blue-300 font-bold bg-blue-950/20">⏳</td>`; b = 0; }
-            else { rStr += `<td class="p-1 border border-slate-800 text-center text-slate-600">-</td>`; }
+            let isCurrent = (m === currentWeek);
+            let tdBase = isCurrent ? "p-1 border border-indigo-500/40 text-center bg-indigo-950/20 " : "p-1 border border-slate-800 text-center ";
+            if(b >= TARIF_MINGGU) { rStr += `<td class="${tdBase} text-emerald-400 font-black">✓</td>`; b -= TARIF_MINGGU; }
+            else if(b > 0) { rStr += `<td class="${tdBase} text-blue-300 font-bold">⏳</td>`; b = 0; }
+            else { rStr += `<td class="${tdBase} text-slate-600">-</td>`; }
           }
           bStr += `<tr>${rStr}</tr>`;
         }
@@ -736,10 +799,21 @@
         }
 
         const ws = XLSX.utils.json_to_sheet(dataExport);
+        
+        // AUTO-FIT COLUMN WIDTHS (Agar pas diliat mata tanpa drag manual)
+        const colWidths = [
+          {wch: 10}, // No Absen
+          {wch: 22}, // Nama Siswa
+          {wch: 18}, // Total Pembayaran
+          {wch: 12}, // Tunggakan
+          {wch: 22}  // Keterangan
+        ];
+        ws['!cols'] = colWidths;
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Matriks Keuangan");
         XLSX.writeFile(wb, "Matriks-Keuangan-X4.xlsx");
-        showToast("Sukses", "Matriks berhasil diexport ke Excel!", "success");
+        showToast("Sukses", "Matriks Excel otomatis rapi berhasil di-export!", "success");
       } catch(e) {
         showToast("Gagal", "Gagal export matriks: " + e.message, "error");
       }
@@ -777,12 +851,15 @@
 
     function downloadTemplate() {
       const ws = XLSX.utils.json_to_sheet([{ Tanggal: today, Tipe: "masuk", Absen: 1, Nominal: 5000, Catatan: "Kas" }]);
+      ws['!cols'] = [{wch: 14}, {wch: 10}, {wch: 10}, {wch: 12}, {wch: 20}];
       const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, "Template.xlsx");
     }
 
     function exportExcelMultiSheet() {
+      const ws = XLSX.utils.json_to_sheet(localTx);
+      ws['!cols'] = [{wch: 14}, {wch: 14}, {wch: 12}, {wch: 28}, {wch: 12}, {wch: 14}];
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(localTx), "Kas");
+      XLSX.utils.book_append_sheet(wb, ws, "Kas");
       XLSX.writeFile(wb, "Laporan.xlsx");
     }
 
@@ -851,7 +928,7 @@
             promises.push(kasRef.push({ timestamp: Date.now(), dateStr: dStr, type: tipe, absen: absen, amount: nominal, description: desc }));
           });
 
-          Promise.all(promises).then(() => {
+          Promise.all(onsPromiseAll => {
             showToast("Sukses", "Data Excel berhasil di-import ke Firebase!", "success");
             fileInput.value = "";
           });
