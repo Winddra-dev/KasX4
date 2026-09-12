@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasSmart X-4 | v5.5-Microsoft Enterprise</title>
+  <title>KasSmart X-4 | v6.0-Enterprise UX Master</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Library untuk Export ke Word (.docx) -->
+  <script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.js"></script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -37,25 +39,25 @@
     </div>
   </div>
 
-  <!-- TOP APP BAR -->
+  <!-- TOP APP BAR (Clean & Contextual) -->
   <header class="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
       <div class="flex items-center gap-3">
         <div class="p-2 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg shadow-lg shadow-blue-500/20">
-          <i data-lucide="layout-grid" class="w-5 h-5 text-white"></i>
+          <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">Microsoft Edition</span></h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v5.5-Pro</span>
+            <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">KasSmart <span class="text-blue-400">X-4 Enterprise</span></h1>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded">v6.0 UX</span>
           </div>
-          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Enterprise Financial & Matrix System</p>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
         <div id="status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-500 animate-pulse"></span> <span id="status-text">INIT</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-500 animate-pulse"></span> <span id="status-text">ONLINE</span>
         </div>
         <button id="btn-login" onclick="loginGoogle()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-[11px] font-bold text-white transition-all flex items-center gap-1.5 shadow-lg shadow-blue-600/20">
           <i data-lucide="key" class="w-3.5 h-3.5"></i> Admin Access
@@ -74,9 +76,9 @@
       <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-bold rounded-lg bg-blue-600/10 text-blue-400 whitespace-nowrap transition-colors">Buku Harian</button>
       <button onclick="switchTab('history')" id="tab-history" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">E-Statement 📜</button>
       <button onclick="switchTab('lookup')" id="tab-lookup" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Cek Mandiri 🔍</button>
-      <button onclick="switchTab('input')" id="tab-input" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Smart Input</button>
+      <button onclick="switchTab('input')" id="tab-input" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-hidden">Smart Input</button>
       <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Matriks & Denda 📊</button>
-      <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Live Audit & Tools 🛡️</button>
+      <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-hidden">Live Audit & Tools 🛡️</button>
     </div>
   </div>
 
@@ -150,9 +152,14 @@
           <h3 class="text-sm font-bold text-white flex items-center gap-2">
             <i data-lucide="book-open" class="w-4 h-4 text-blue-400"></i> Buku Kas Harian
           </h3>
-          <button onclick="exportExcelMultiSheet()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
-            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel Multi-Sheet Korporat (.xlsx)
-          </button>
+          <div class="flex gap-2">
+            <button onclick="exportExcelMultiSheet()" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel (.xlsx)
+            </button>
+            <button onclick="exportWordReport()" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Download Laporan Word (.docx)
+            </button>
+          </div>
         </div>
         <div id="ledger-container" class="space-y-3">
           <p class="text-center text-xs text-slate-500 py-8">Memuat ledger...</p>
@@ -243,11 +250,6 @@
     <!-- ================= TAB: SMART INPUT ================= -->
     <div id="content-input" class="tab-content hidden space-y-6">
       <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl relative overflow-hidden shadow-2xl">
-        <div id="lock-input" class="admin-overlay absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
-          <i data-lucide="shield-alert" class="w-10 h-10 text-slate-500 mb-3"></i>
-          <h2 class="text-lg font-black text-white">AKSES DITOLAK</h2>
-          <p class="text-xs text-slate-400 mt-1">Area khusus Bendahara Kelas.</p>
-        </div>
         <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & QRIS Method</h3>
@@ -269,7 +271,7 @@
       </section>
     </div>
 
-    <!-- ================= TAB: MATRIKS & TABEL DENDA ================= -->
+    <!-- ================= TAB: MATRIKS & TABEL DENDA (TOTAL & TUNGGAKAN DI KIRI) ================= -->
     <div id="content-rekap" class="tab-content hidden space-y-6">
       
       <section class="bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 p-5 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -320,11 +322,11 @@
         </div>
       </section>
 
-      <!-- Matrix Table - Microsoft Excel Style with On-Progress Indicator -->
+      <!-- Matrix Table - Total & Tunggakan di Kiri, Dinamis Mingguan -->
       <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl shadow-sm">
         <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
           <div>
-            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-blue-400"></i> Matriks Keuangan Korporat (Microsoft Excel Style)</h3>
+            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-blue-400"></i> Matriks Keuangan Korporat (Total & Tunggakan di Kiri)</h3>
             <p class="text-[11px] text-slate-400">Minggu <span id="current-week-label" class="text-indigo-400 font-bold"></span> saat ini berstatus <span class="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30 font-bold">ON PROGRESS ⚡</span></p>
           </div>
           <div class="flex gap-3 text-[10px] font-bold flex-wrap">
@@ -347,12 +349,6 @@
 
     <!-- ================= TAB: LIVE AUDIT & TOOLS ================= -->
     <div id="content-tools" class="tab-content hidden space-y-6">
-      <div id="lock-tools" class="admin-overlay fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
-        <i data-lucide="shield-alert" class="w-10 h-10 text-slate-500 mb-3"></i>
-        <h2 class="text-lg font-black text-white">TOOLS ADMINISTRATOR & LIVE AUDIT</h2>
-        <p class="text-xs text-slate-400 mt-1">Area khusus modifikasi, backup, dan sistem audit korporat.</p>
-      </div>
-
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3 shadow-sm">
           <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i> Export & Backup</h3>
@@ -487,7 +483,8 @@
     let isAdmin = false; let currentUserEmail = ""; let currentUserName = ""; 
     let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; let kasChartInstance = null;
 
-    const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; const TOTAL_MINGGU = 16;
+    const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; 
+    let maxDetectedWeeks = 16; // Dinamis berdasarkan data
     const START_SEMESTER = new Date("2026-07-20");
     const today = new Date().toISOString().split('T')[0];
     const daftarSiswa = {}; for(let i=1;i<=TOTAL_SISWA;i++) daftarSiswa[i] = {nama:`Siswa Absen ${i}`, wa:"6281234567890"};
@@ -502,24 +499,31 @@
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
     function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri.", 'success'); }
 
+    // ROLE-BASED UI CLEAN HIDING (Tanpa Gembok Mengganggu)
     auth.onAuthStateChanged(user => {
       const b=document.getElementById('btn-login'), p=document.getElementById('user-profile');
+      const adminElements = document.querySelectorAll('.admin-hidden, .admin-only');
+
       if(user && ALLOWED_ADMINS.includes(user.email)) {
         isAdmin = true; currentUserEmail = user.email; currentUserName = user.displayName || user.email;
         b.classList.add('hidden'); p.classList.remove('hidden'); p.classList.add('flex');
         document.getElementById('user-avatar').src = user.photoURL || 'https://via.placeholder.com/150';
         document.getElementById('user-role-label').innerText = user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara";
         document.getElementById('estatement-admin-name').innerText = currentUserName;
-        document.querySelectorAll('.admin-overlay').forEach(el=>el.classList.add('hidden'));
-        document.querySelectorAll('.admin-only').forEach(el=>{el.classList.remove('hidden');el.classList.add('inline-flex');});
+        
+        // Tampilkan fitur khusus admin dengan mulus tanpa gembok
+        document.querySelectorAll('.admin-hidden').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.admin-only').forEach(el => { el.classList.remove('hidden'); el.classList.add('inline-flex'); });
         checkWirasenaReminder();
         showToast("Admin Aktif", `Selamat datang, ${currentUserName}!`, 'success');
       } else {
         if(user) { showToast("Akses Ditolak", "Email tidak terdaftar sebagai Admin Utama.", 'error'); auth.signOut(); }
         isAdmin = false; currentUserEmail = ""; currentUserName = "";
         b.classList.remove('hidden'); p.classList.add('hidden'); p.classList.remove('flex');
-        document.querySelectorAll('.admin-overlay').forEach(el=>{el.classList.remove('hidden');el.classList.add('flex');});
-        document.querySelectorAll('.admin-only').forEach(el=>{el.classList.add('hidden');el.classList.remove('inline-flex');});
+        
+        // Sembunyikan menu admin dengan bersih untuk siswa (Clean UI)
+        document.querySelectorAll('.admin-hidden').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.admin-only').forEach(el => { el.classList.add('hidden'); el.classList.remove('inline-flex'); });
         document.getElementById('wirasena-reminder-banner').classList.add('hidden');
       }
       processData();
@@ -564,9 +568,6 @@
       document.getElementById(`content-${t}`).classList.remove('hidden');
     }
 
-    // ===============================================
-    // PUBLIC LOOKUP
-    // ===============================================
     function executeLookup() {
       const q = document.getElementById('lookup-input').value.trim().toLowerCase();
       const resContainer = document.getElementById('lookup-result-container');
@@ -636,9 +637,6 @@
       showToast("Ditemukan", `Data keuangan ${name} berhasil dimuat.`, "success");
     }
 
-    // ===============================================
-    // SMART MULTI INPUT
-    // ===============================================
     function addMultiRow() {
       const tb = document.getElementById('multi-rows-container');
       const tr = document.createElement('tr'); tr.className = "multi-row group";
@@ -706,7 +704,7 @@
     auditRef.on('value', s => { const d=s.val(); localAudit=[]; if(d) Object.keys(d).forEach(k=>localAudit.push({id:k,...d[k]})); renderAuditFeed(); });
 
     function renderAuditFeed() {
-      const c = document.getElementById('audit-feed-container'); c.innerHTML = '';
+      const c = document.getElementById('audit-feed-container'); if(!c) return; c.innerHTML = '';
       let sorted = [...localAudit].sort((a,b)=>b.timestamp - a.timestamp);
       if(sorted.length === 0) { c.innerHTML = `<p class="text-center py-6 text-slate-500 text-xs">Belum ada aktivitas audit sistem.</p>`; return; }
       sorted.forEach(a => {
@@ -731,7 +729,16 @@
       let dailyGroup = {};
 
       localTx.forEach(t => {
-        if(t.type === 'masuk') { tM+=t.amount; if(t.absen) tBayar[t.absen]+=t.amount; } else tK+=t.amount;
+        if(t.type === 'masuk') { 
+          tM+=t.amount; 
+          if(t.absen) {
+            tBayar[t.absen]+=t.amount;
+            // Hitung max minggu jika ada pembayaran melebihi 16 minggu
+            let calcW = Math.ceil(tBayar[t.absen] / TARIF_MINGGU);
+            if(calcW > maxDetectedWeeks) maxDetectedWeeks = calcW;
+          }
+        } else tK+=t.amount;
+
         if(!dailyGroup[t.dateStr]) dailyGroup[t.dateStr] = { timestamp: t.timestamp, items: [] };
         dailyGroup[t.dateStr].items.push({ type: t.type, amount: t.amount, desc: t.description, id: t.id, db: 'kas' });
       });
@@ -1019,32 +1026,51 @@
     function closeAIModal() { document.getElementById('modal-ai').classList.add('hidden'); }
 
     // ===============================================
-    // MATRIX RENDER - ON-PROGRESS COLOR & DYNAMIC WEEKS
+    // MATRIX RENDER - TOTAL & TUNGGAKAN DI KIRI
     // ===============================================
     function renderRekapTable(tM) {
       const hd = document.getElementById('rekap-header'), bd = document.getElementById('rekap-body'), ft = document.getElementById('rekap-footer');
       const now = new Date();
       const diffTime = Math.abs(now - START_SEMESTER);
       const currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
+      const totalWeeksToRender = Math.max(TOTAL_MINGGU, maxDetectedWeeks);
 
       document.getElementById('current-week-label').innerText = `M${currentWeek}`;
 
-      let hStr = `<tr><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center font-bold">Ab</th><th class="p-2 border border-slate-800 min-w-[110px] bg-slate-900 font-bold">Nama Siswa</th>`;
-      for (let m=1; m<=TOTAL_MINGGU; m++) { 
+      // Kolom Total & Tunggakan ditaruh di KIRI setelah nama siswa
+      let hStr = `<tr>
+        <th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center font-bold">Ab</th>
+        <th class="p-2 border border-slate-800 min-w-[110px] bg-slate-900 font-bold">Nama Siswa</th>
+        <th class="p-2 border border-slate-800 text-right w-20 bg-slate-900 font-bold">Total</th>
+        <th class="p-2 border border-slate-800 text-center w-24 bg-slate-900 font-bold">Tunggakan</th>`;
+
+      for (let m=1; m<=totalWeeksToRender; m++) { 
         let d=new Date(START_SEMESTER); d.setDate(d.getDate()+(m-1)*7); 
         let isProg = (m === currentWeek);
         let headerBg = isProg ? 'bg-indigo-950/80 text-indigo-300 border-indigo-500/40' : 'bg-slate-900 text-slate-300';
         hStr+=`<th class="p-1 border border-slate-800 text-center text-[9px] w-12 ${headerBg}">M${m}${isProg?'⚡':''}<br><span class="text-[7px] text-slate-400 font-normal">${d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit'})}</span></th>`; 
       }
-      hd.innerHTML = hStr + `<th class="p-2 border border-slate-800 text-right w-20 bg-slate-900 font-bold">Total</th></tr>`;
+      hd.innerHTML = hStr + `</tr>`;
       
-      bd.innerHTML = ''; let tW = new Array(TOTAL_MINGGU).fill(0);
+      bd.innerHTML = ''; let tW = new Array(totalWeeksToRender).fill(0);
       
       for (let s=1; s<=TOTAL_SISWA; s++) {
-        let b = tM[s] || 0;
-        let rStr = `<td class="p-1.5 border border-slate-800 font-bold text-center bg-slate-950/40 text-blue-400">${s}</td><td class="p-1.5 border border-slate-800 text-[10px] truncate max-w-[120px] font-medium" title="${daftarSiswa[s].nama}">${daftarSiswa[s].nama}</td>`;
+        let totalPaid = tM[s] || 0;
+        let weeksPaid = Math.floor(totalPaid / TARIF_MINGGU);
+        let lagWeeks = Math.max(0, (currentWeek - 1) - weeksPaid);
+
+        let statusTunggakanHTML = lagWeeks > 0 
+          ? `<span class="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 rounded text-[9px] font-bold">${lagWeeks} Mgg</span>`
+          : `<span class="text-emerald-400 text-[9px]">Aman</span>`;
+
+        let rStr = `
+          <td class="p-1.5 border border-slate-800 font-bold text-center bg-slate-950/40 text-blue-400">${s}</td>
+          <td class="p-1.5 border border-slate-800 text-[10px] truncate max-w-[120px] font-medium" title="${daftarSiswa[s].nama}">${daftarSiswa[s].nama}</td>
+          <td class="p-1.5 border border-slate-800 text-right font-bold text-blue-400 text-[10px] bg-slate-950/40">Rp ${totalPaid.toLocaleString()}</td>
+          <td class="p-1.5 border border-slate-800 text-center bg-slate-950/40">${statusTunggakanHTML}</td>`;
         
-        for (let m=1; m<=TOTAL_MINGGU; m++) {
+        let b = totalPaid;
+        for (let m=1; m<=totalWeeksToRender; m++) {
           let isProg = (m === currentWeek);
           if (b >= TARIF_MINGGU) {
             rStr+=`<td class="p-1 border border-slate-800 text-center bg-emerald-500/15 text-emerald-400 font-bold">✓</td>`;
@@ -1066,12 +1092,12 @@
             }
           }
         }
-        bd.insertAdjacentHTML('beforeend', `<tr>${rStr}<td class="p-1.5 border border-slate-800 text-right font-bold text-blue-400 text-[10px] bg-slate-950/40">Rp ${(tM[s]||0).toLocaleString()}</td></tr>`);
+        bd.insertAdjacentHTML('beforeend', `<tr>${rStr}</tr>`);
       }
 
-      let fStr = `<tr><td colspan="2" class="p-2 border border-slate-800 text-right font-bold text-[10px] bg-slate-900">TOTAL MINGGUAN:</td>`;
+      let fStr = `<tr><td colspan="4" class="p-2 border border-slate-800 text-right font-bold text-[10px] bg-slate-900">TOTAL MINGGUAN:</td>`;
       tW.forEach(t => fStr+=`<td class="p-1 border border-slate-800 text-center text-[8px] text-blue-300 font-bold bg-slate-900">${t>0?(t/1000)+'k':'-'}</td>`);
-      ft.innerHTML = fStr + `<td class="p-2 border border-slate-800 text-right text-emerald-400 font-black text-xs bg-slate-900">Rp ${tW.reduce((a,b)=>a+b,0).toLocaleString()}</td></tr>`;
+      ft.innerHTML = fStr + `</tr>`;
     }
 
     function copyMatriksWhatsApp() {
@@ -1097,7 +1123,7 @@
     }
 
     function renderAdminTable() {
-      const tb = document.getElementById('manager-table-body'); tb.innerHTML = '';
+      const tb = document.getElementById('manager-table-body'); if(!tb) return; tb.innerHTML = '';
       let combined = [...localTx.map(t=>({...t, db:'kas'})), ...localDenda.map(d=>({...d, db:'denda'}))].sort((a,b)=>b.timestamp-a.timestamp);
       if(combined.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="text-center py-4">Kosong.</td></tr>`; return; }
       combined.forEach(i => {
@@ -1124,7 +1150,7 @@
     }
 
     // ===============================================
-    // EXPORT EXCEL MULTI-SHEET IDENTIK DENGAN WEB MATRIX
+    // EXPORT EXCEL MULTI-SHEET DENGAN TOTAL & TUNGGAKAN DI KIRI
     // ===============================================
     function exportExcelMultiSheet() {
       if (localTx.length === 0 && localDenda.length === 0) return showToast("Kosong", "Belum ada data untuk di-export.", "error");
@@ -1133,53 +1159,56 @@
       const now = new Date();
       const diffTime = Math.abs(now - START_SEMESTER);
       const currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
+      const totalWeeksToRender = Math.max(TOTAL_MINGGU, maxDetectedWeeks);
 
-      // 1. SHEET 1: MATRIKS KAS PERSIS SEPERTI DI WEB
       let matrixRows = [
-        ["MATRIKS KEUANGAN KELAS X-4 (PERSIS WEB GRID)"],
+        ["MATRIKS KEUANGAN KELAS X-4 (TOTAL & TUNGGAKAN DI KIRI)"],
         [`Periode Semester Ganjil 2026/2027 | Posisi Minggu Berjalan: M${currentWeek} | Dicetak: ` + now.toLocaleString('id-ID')],
         []
       ];
 
-      let headerCols = ["Ab", "Nama Siswa"];
-      for(let m=1; m<=TOTAL_MINGGU; m++) {
+      let headerCols = ["Ab", "Nama Siswa", "Total (IDR)", "Tunggakan (Minggu)"];
+      for(let m=1; m<=totalWeeksToRender; m++) {
         let d = new Date(START_SEMESTER); d.setDate(d.getDate()+(m-1)*7);
         headerCols.push(`M${m} (${d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit'})})`);
       }
-      headerCols.push("Total Dibayar");
       matrixRows.push(headerCols);
 
       for(let s=1; s<=TOTAL_SISWA; s++) {
-        let rowData = [s, daftarSiswa[s].nama];
         let paidTotal = 0;
         localTx.filter(t => t.type === 'masuk' && t.absen === s).forEach(t => paidTotal += t.amount);
         
+        let weeksPaid = Math.floor(paidTotal / TARIF_MINGGU);
+        let lagWeeks = Math.max(0, (currentWeek - 1) - weeksPaid);
+        let statusTunggakan = lagWeeks > 0 ? `${lagWeeks} Minggu` : "Aman";
+
+        let rowData = [s, daftarSiswa[s].nama, paidTotal, statusTunggakan];
+        
         let b = paidTotal;
-        for(let m=1; m<=TOTAL_MINGGU; m++) {
+        for(let m=1; m<=totalWeeksToRender; m++) {
           if(b >= TARIF_MINGGU) {
             rowData.push("Lunas (✓)");
             b -= TARIF_MINGGU;
           } else if(b > 0 && b < TARIF_MINGGU) {
-            rowData.push(`Cicil (Rp ${b})`);
+            rowData.push(`Cicil (${b})`);
             b = 0;
           } else {
             if(m < currentWeek) {
               let lag = currentWeek - m;
-              rowData.push(lag >= 2 ? `Nunggak ${lag}m (✗)` : "Nunggak (!)");
+              rowData.push(lag >= 2 ? `Nunggak ${lag}m` : "Nunggak (!)");
             } else if(m === currentWeek) {
-              rowData.push("On Progress (⚡)");
+              rowData.push("On Progress");
             } else {
               rowData.push("-");
             }
           }
         }
-        rowData.push(paidTotal);
         matrixRows.push(rowData);
       }
       const wsMatrix = XLSX.utils.aoa_to_sheet(matrixRows);
       XLSX.utils.book_append_sheet(wb, wsMatrix, "Matriks Kas");
 
-      // 2. SHEET 2: VERSI DENDA
+      // Sheet Denda
       let dendaRows = [
         ["REKAPITULASI DENDA & PELANGGARAN KELAS X-4"],
         ["Dicetak pada: " + now.toLocaleString('id-ID')],
@@ -1192,7 +1221,7 @@
       const wsDenda = XLSX.utils.aoa_to_sheet(dendaRows);
       XLSX.utils.book_append_sheet(wb, wsDenda, "Denda & Pelanggaran");
 
-      // 3. SHEET 3: VERSI PENGELUARAN
+      // Sheet Pengeluaran
       let keluarRows = [
         ["LAPORAN ARUS PENGELUARAN KAS KELAS X-4"],
         ["Dicetak pada: " + now.toLocaleString('id-ID')],
@@ -1206,7 +1235,7 @@
       const wsKeluar = XLSX.utils.aoa_to_sheet(keluarRows);
       XLSX.utils.book_append_sheet(wb, wsKeluar, "Pengeluaran Kas");
 
-      // 4. SHEET 4: VERSI HARIAN
+      // Sheet Harian
       let harianRows = [
         ["BUKU KAS HARIAN LENGKAP X-4"],
         ["Dicetak pada: " + now.toLocaleString('id-ID')],
@@ -1219,9 +1248,103 @@
       const wsHarian = XLSX.utils.aoa_to_sheet(harianRows);
       XLSX.utils.book_append_sheet(wb, wsHarian, "Kas Harian");
 
-      XLSX.writeFile(wb, `Laporan_Korporat_PersisWeb_KasX4.xlsx`);
-      showToast("Export Multi-Sheet", "Laporan matriks identik web dan sheet pendukung berhasil diunduh.", "success");
-      logAudit("Mengekspor laporan multi-sheet persis format web (.xlsx)");
+      XLSX.writeFile(wb, `Laporan_Korporat_KasX4_v6.xlsx`);
+      showToast("Export Multi-Sheet", "Laporan file Excel korporat berhasil diunduh.", "success");
+      logAudit("Mengekspor laporan multi-sheet korporat (.xlsx)");
+    }
+
+    // ===============================================
+    // EXPORT WORD DOCUMENT (.docx) GENERATOR
+    // ===============================================
+    async function exportWordReport() {
+      if (typeof docx === 'undefined') {
+        return showToast("Error", "Library Word belum termuat sempurna.", "error");
+      }
+
+      const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } = docx;
+      const now = new Date();
+
+      // Hitung total kas masuk & keluar
+      let totalIn = 0, totalOut = 0;
+      localTx.forEach(t => { if(t.type === 'masuk') totalIn += t.amount; else totalOut += t.amount; });
+      let saldoBersih = totalIn - totalOut;
+
+      // Buat tabel ringkasan siswa untuk dokumen Word
+      let tableRows = [
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Absen", bold: true, color: "FFFFFF" })] })], shading: { fill: "1E293B" } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Nama Siswa", bold: true, color: "FFFFFF" })] })], shading: { fill: "1E293B" } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Total Kas (Rp)", bold: true, color: "FFFFFF" })] })], shading: { fill: "1E293B" } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Status", bold: true, color: "FFFFFF" })] })], shading: { fill: "1E293B" } })
+          ]
+        })
+      ];
+
+      for(let s=1; s<=TOTAL_SISWA; s++) {
+        let paid = 0;
+        localTx.filter(t => t.type === 'masuk' && t.absen === s).forEach(t => paid += t.amount);
+        let weeksPaid = Math.floor(paid / TARIF_MINGGU);
+        let diffTime = Math.abs(now - START_SEMESTER);
+        let curWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
+        let lag = Math.max(0, (curWeek - 1) - weeksPaid);
+        let statusText = lag > 0 ? `Nunggak ${lag} Mgg` : "Lancar / Aman";
+
+        tableRows.push(
+          new TableRow({
+            children: [
+              new TableCell({ children: [new Paragraph(s.toString())] }),
+              new TableCell({ children: [new Paragraph(daftarSiswa[s].nama)] }),
+              new TableCell({ children: [new Paragraph(`Rp ${paid.toLocaleString()}`)] }),
+              new TableCell({ children: [new Paragraph(statusText)] })
+            ]
+          })
+        );
+      }
+
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: "LAPORAN RESMI KEUANGAN KELAS X-4", bold: true, size: 28, color: "1E293B" })],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 100 }
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Periode Semester Ganjil 2026/2027 | Tanggal Cetak: ${now.toLocaleDateString('id-ID')}`, size: 16, color: "64748B" })],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 300 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Total Pemasukan Kas: Rp ${totalIn.toLocaleString()}\n`, bold: true }),
+                new TextRun({ text: `Total Pengeluaran: Rp ${totalOut.toLocaleString()}\n`, bold: true }),
+                new TextRun({ text: `Saldo Bersih Kas: Rp ${saldoBersih.toLocaleString()}\n`, bold: true, color: "2563EB" })
+              ],
+              spacing: { after: 300 }
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "Daftar Rekapitulasi Pembayaran Siswa:", bold: true, size: 20 })],
+              spacing: { after: 150 }
+            }),
+            new Table({
+              rows: tableRows,
+              width: { size: 100, type: WidthType.PERCENTAGE }
+            })
+          ]
+        })
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Laporan_Keuangan_Kas_X4_${now.toISOString().split('T')[0]}.docx`;
+      link.click();
+      link.remove();
+
+      showToast("Berhasil", "Laporan Dokumen Word (.docx) berhasil diunduh.", "success");
+      logAudit("Mengekspor Laporan Resmi Format Word (.docx)");
     }
 
     function exportJSONBackup() {
@@ -1262,7 +1385,8 @@
       const tot = parseFloat(document.getElementById('calc-total').value) || 0;
       const paid = parseFloat(document.getElementById('calc-paid').value) || 0;
       const change = paid - tot;
-      document.getElementById('calc-result').innerText = change >= 0 ? `Kembalian: Rp ${change.toLocaleString()}` : `Kurang: Rp ${Math.abs(change).toLocaleString()}`;
+      const resEl = document.getElementById('calc-result');
+      if(resEl) resEl.innerText = change >= 0 ? `Kembalian: Rp ${change.toLocaleString()}` : `Kurang: Rp ${Math.abs(change).toLocaleString()}`;
     }
   </script>
 </body>
