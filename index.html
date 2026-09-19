@@ -3,380 +3,797 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v7.6 Analytics & Audit</title>
+  <title>Kas Kelas X-4 - v7.6 Master Edition</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS (Excel Studio) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  
-  <style>
-    ::-webkit-scrollbar { height: 6px; width: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen pb-16 antialiased">
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
 
-  <!-- HEADER -->
-  <header class="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
+  <!-- HEADER & NAVBAR -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <h1 class="text-md font-extrabold text-white">Kas X-4</h1>
-        <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] rounded">v7.6</span>
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid me-2 fa-wallet text-indigo-400 text-2xl"></i>
+        <div>
+          <h1 class="font-bold text-lg leading-tight">Kas Kelas X-4</h1>
+          <p class="text-xs text-slate-400">SMA Mater Dei &bull; v7.6 Master Edition</p>
+        </div>
       </div>
       
-      <div class="flex items-center gap-3">
-        <!-- Indikator Koneksi Firebase -->
-        <span id="conn-status" class="flex items-center gap-1 text-[10px] text-rose-400 font-bold bg-rose-500/10 px-2 py-1 rounded">
-          <div class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>Offline
-        </span>
-        
-        <button id="btn-login" onclick="loginGoogle()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-[11px] font-bold text-white transition">Admin Access</button>
-        <button id="btn-logout" onclick="logoutGoogle()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-bold text-white hidden transition">Logout</button>
+      <div class="flex items-center space-x-4">
+        <!-- Indikator Koneksi Realtime -->
+        <div id="connectionStatus" class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+          <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+          <span id="statusText" class="text-slate-300 font-medium">Connecting...</span>
+        </div>
+
+        <!-- Tombol Auth Admin -->
+        <div id="authContainer">
+          <button id="btnLogin" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5">
+            <i class="fa-brands fa-google"></i>
+            <span>Login Admin</span>
+          </button>
+          <div id="userInfo" class="hidden flex items-center space-x-2">
+            <span id="userEmail" class="text-xs text-indigo-300 font-mono"></span>
+            <button id="btnLogout" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs px-2.5 py-1 rounded transition">Logout</button>
+          </div>
+        </div>
+
+        <button onclick="toggleModal('modalPatch')" class="text-slate-400 hover:text-white transition text-sm">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
       </div>
     </div>
   </header>
-  
-  <!-- NAVIGASI -->
-  <div class="bg-slate-900 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 py-2 flex gap-1 overflow-x-auto no-scrollbar">
-      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-bold rounded-lg bg-blue-600/10 text-blue-400 transition">Dashboard</button>
-      <button onclick="switchTab('audit')" id="tab-audit" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 admin-hidden hidden transition">Audit & Ekspor</button>
+
+  <!-- TAB NAVIGATION -->
+  <nav class="bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 flex space-x-6">
+      <button onclick="switchTab('dasbor')" id="tab-dasbor" class="py-3 px-1 border-b-2 border-indigo-600 font-semibold text-sm text-indigo-600 flex items-center space-x-2">
+        <i class="fa-solid fa-chart-pie"></i><span>Dasbor & Matriks</span>
+      </button>
+      <button onclick="switchTab('rekonsiliasi')" id="tab-rekonsiliasi" class="py-3 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-2">
+        <i class="fa-solid fa-scale-balanced"></i><span>Rekonsiliasi Fisik</span>
+      </button>
+      <button onclick="switchTab('lookup')" id="tab-lookup" class="py-3 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-2">
+        <i class="fa-solid fa-magnifying-glass"></i><span>Cek Mandiri</span>
+      </button>
+      <button onclick="switchTab('audit')" id="tab-audit" class="py-3 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-2">
+        <i class="fa-solid fa-clock-rotate-left"></i><span>Live Audit Log</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+
+    <!-- VIEW 1: DASBOR & MATRIKS -->
+    <section id="view-dasbor" class="space-y-6">
+      <!-- Analitik Keuangan -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+          <div>
+            <p class="text-xs text-slate-500 font-semibold uppercase">Total Kas Sistem</p>
+            <p id="statTotalSystem" class="text-2xl font-bold text-indigo-600 mt-1">Rp 0</p>
+          </div>
+          <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-server text-xl"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+          <div>
+            <p class="text-xs text-slate-500 font-semibold uppercase">Total Uang Fisik</p>
+            <p id="statTotalPhysical" class="text-2xl font-bold text-emerald-600 mt-1">Rp 0</p>
+          </div>
+          <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-money-bill-wave text-xl"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+          <div>
+            <p class="text-xs text-slate-500 font-semibold uppercase">Total Tunggakan</p>
+            <p id="statTotalTunggakan" class="text-2xl font-bold text-rose-600 mt-1">Rp 0</p>
+          </div>
+          <div class="p-3 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+          <div>
+            <p class="text-xs text-slate-500 font-semibold uppercase">Dana Eksternal</p>
+            <p id="statExternal" class="text-2xl font-bold text-amber-600 mt-1">Rp 0</p>
+          </div>
+          <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-vault text-xl"></i></div>
+        </div>
+      </div>
+
+      <!-- Action & Matriks Kas -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
+          <h2 class="font-bold text-slate-700 flex items-center gap-2">
+            <i class="fa-solid fa-table-cells"></i> Matriks Pembayaran Kas Siswa
+          </h2>
+          <div class="flex items-center space-x-2">
+            <button id="btnExportKas" onclick="exportKasMain()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1">
+              <i class="fa-solid fa-file-excel"></i><span>Ekspor Kas (.xlsx)</span>
+            </button>
+            <button id="btnTambahSiswa" onclick="toggleModal('modalSiswa')" class="admin-only hidden bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1">
+              <i class="fa-solid fa-user-plus"></i><span>Tambah Siswa</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead class="bg-slate-100 text-slate-600 uppercase text-[11px] font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4 sticky left-0 bg-slate-100 z-10 border-r border-slate-200">Nama Siswa</th>
+                <th class="py-3 px-2 text-center">M1</th>
+                <th class="py-3 px-2 text-center">M2</th>
+                <th class="py-3 px-2 text-center">M3</th>
+                <th class="py-3 px-2 text-center">M4</th>
+                <th class="py-3 px-4 text-right">Total Lunas</th>
+                <th class="py-3 px-4 text-right">Tunggakan</th>
+                <th class="py-3 px-4 text-center admin-only hidden">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="siswaTableBody" class="divide-y divide-slate-200 text-xs">
+              <!-- Render via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: REKONSILIASI FISIK -->
+    <section id="view-rekonsiliasi" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-2xl mx-auto space-y-6">
+        <div class="border-b border-slate-200 pb-4">
+          <h2 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+            <i class="fa-solid fa-scale-balanced text-indigo-600"></i> Kalibrasi Uang Fisik vs Digital
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">Lakukan penghitungan ulang fisik secara berkala untuk mendeteksi selisih overage/shortage.</p>
+        </div>
+
+        <div id="overdueAlert" class="hidden p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs flex items-center space-x-2">
+          <i class="fa-solid fa-triangle-exclamation text-base"></i>
+          <span>Peringatan: Kalibrasi uang fisik belum dilakukan dalam 7 hari terakhir!</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-xs text-slate-500">Saldo Digital Sistem</span>
+            <p id="reconSystemVal" class="text-lg font-bold text-slate-800">Rp 0</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-xs text-slate-500">Terakhir Dikalibrasi</span>
+            <p id="reconLastDate" class="text-xs font-semibold text-slate-700 mt-1.5">-</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 admin-only hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Uang Tunai Fisik Saat Ini (Rp)</label>
+            <input type="number" id="inputPhysicalCash" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Masukkan total uang tunai riil">
+          </div>
+          <button onclick="submitReconciliation()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 rounded-lg transition">
+            Simpan Kalibrasi Fisik
+          </button>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200">
+          <h3 class="font-bold text-xs text-slate-700 mb-3">Manajemen Dana Eksternal / Kas Lebih</h3>
+          <div class="space-y-3 admin-only hidden">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="inputExtAmount" class="text-xs border border-slate-300 rounded-lg px-3 py-2" placeholder="Nominal (Rp)">
+              <input type="text" id="inputExtDesc" class="text-xs border border-slate-300 rounded-lg px-3 py-2" placeholder="Keterangan (mis: Sisa Acara)">
+            </div>
+            <button onclick="submitExternalFund()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs py-2 rounded-lg transition">
+              Tambah Dana Eksternal
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: CEK MANDIRI (PUBLIC LOOKUP) -->
+    <section id="view-lookup" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-xl mx-auto space-y-4">
+        <h2 class="font-bold text-slate-800 text-center text-lg">Pencarian Status Kas Mandiri</h2>
+        <div class="relative">
+          <input type="text" id="inputLookupName" onkeyup="searchLookup()" class="w-full text-sm border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ketik nama siswa...">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+        </div>
+        
+        <div id="lookupResult" class="hidden space-y-3 pt-2">
+          <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100 flex justify-between items-center">
+            <div>
+              <h3 id="lookupNama" class="font-bold text-indigo-900 text-base"></h3>
+              <p class="text-xs text-indigo-600">Siswa Kelas X-4</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] uppercase text-indigo-400 font-bold block">Status Tunggakan</span>
+              <span id="lookupTunggakan" class="text-lg font-bold"></span>
+            </div>
+          </div>
+          <div id="lookupDetailWeeks" class="grid grid-cols-4 gap-2 text-center text-xs">
+            <!-- Render Status Minggu -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: LIVE AUDIT LOG -->
+    <section id="view-audit" class="hidden space-y-4">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+          <h2 class="font-bold text-slate-700 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left"></i> Immutable Audit Trail
+          </h2>
+          <button id="btnExportAudit" onclick="exportAuditLog()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1">
+            <i class="fa-solid fa-file-excel"></i><span>Ekspor Log (.xlsx)</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px] font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Waktu</th>
+                <th class="py-3 px-4">Admin</th>
+                <th class="py-3 px-4">Aksi</th>
+                <th class="py-3 px-4">Detail Perubahan</th>
+                <th class="py-3 px-4">Alasan</th>
+                <th class="py-3 px-4 text-center admin-only hidden">Mekanisme</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody" class="divide-y divide-slate-200">
+              <!-- Render via JS -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="p-3 border-t border-slate-200 bg-slate-50 flex justify-center">
+          <button id="btnLoadMoreAudit" onclick="loadAuditLogs(true)" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center space-x-1">
+            <span>Muat Lebih Banyak Log</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL REVISI MINGGU (ADMIN) -->
+  <div id="modalRevisi" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <h3 class="font-bold text-slate-800 text-base border-b pb-2">Revisi Status Pembayaran</h3>
+      <input type="hidden" id="revSiswaId">
+      <input type="hidden" id="revWeekKey">
+      
+      <div>
+        <p class="text-xs text-slate-500">Siswa: <span id="revNamaSiswa" class="font-bold text-slate-700"></span></p>
+        <p class="text-xs text-slate-500">Minggu: <span id="revTargetWeek" class="font-bold text-slate-700"></span></p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Status Pembayaran</label>
+        <select id="revStatusSelect" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+          <option value="LUNAS">LUNAS (Rp 10.000)</option>
+          <option value="BELUM">BELUM BAYAR (Rp 0)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Alasan Perubahan <span class="text-rose-500">*Wajib</span></label>
+        <textarea id="revReasonInput" class="w-full text-xs border border-slate-300 rounded-lg p-2 h-20 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Jelaskan alasan logis perubahan data ini..."></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="toggleModal('modalRevisi')" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg">Batal</button>
+        <button onclick="submitRevision()" class="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg">Simpan Revisi</button>
+      </div>
     </div>
   </div>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-    
-    <!-- TAB DASHBOARD -->
-    <div id="content-dashboard" class="tab-content">
-      
-      <!-- WIDGET ANALITIK -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-          <div class="flex justify-between items-start">
-            <p class="text-xs text-slate-400 font-bold mb-1">Total Sistem (Siswa + Eksternal)</p>
-          </div>
-          <h3 id="stat-total-sistem" class="text-2xl font-black text-blue-400">Rp 0</h3>
-          <p id="stat-detail-sistem" class="text-[11px] mt-1 text-slate-500">Siswa: Rp 0 | Eksternal: Rp 0</p>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg relative group">
-          <div class="flex justify-between items-start">
-            <p class="text-xs text-slate-400 font-bold mb-1">Uang Fisik (Real)</p>
-            <span id="badge-reconcile" class="px-2 py-0.5 text-[10px] rounded-full bg-red-500/20 text-red-400 font-bold cursor-pointer admin-hidden hidden transition hover:bg-red-500/30" onclick="openReconcileModal()">Cek Fisik!</span>
-          </div>
-          <h3 id="stat-total-fisik" class="text-2xl font-black text-emerald-400">Rp 0</h3>
-          <p id="stat-selisih" class="text-[11px] mt-1 text-slate-500">Selisih: Rp 0</p>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-          <p class="text-xs text-slate-400 font-bold mb-1">Total Tunggakan</p>
-          <h3 id="stat-tunggakan" class="text-2xl font-black text-rose-400">Rp 0</h3>
-        </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col justify-center gap-2 shadow-lg">
-           <button onclick="tambahDanaEksternal()" class="w-full py-1.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-500 text-xs font-bold rounded flex items-center justify-center gap-2 admin-hidden hidden transition">
-            <i data-lucide="plus-circle" class="w-3 h-3"></i> Set Dana Eksternal
-          </button>
-          <button onclick="handleExportKas()" id="btn-export-kas" class="w-full py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-xs font-bold rounded flex items-center justify-center gap-2 transition">
-            <i data-lucide="download" class="w-3 h-3"></i> Laporan Kas (Excel)
-          </button>
-        </div>
+  <!-- MODAL TAMBAH SISWA -->
+  <div id="modalSiswa" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4">
+      <h3 class="font-bold text-slate-800 text-base border-b pb-2">Tambah Siswa Baru</h3>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap Siswa</label>
+        <input type="text" id="inputNamaSiswa" class="w-full text-xs border border-slate-300 rounded-lg p-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ketik nama siswa">
       </div>
-      
-      <!-- TABEL MATRIKS -->
-      <h2 class="text-xl font-bold mb-4 text-white">Matriks Kas Siswa</h2>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto shadow-lg">
-        <table class="w-full text-left text-xs whitespace-nowrap">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th class="p-3">Nama</th>
-              <th class="p-3">Total Bayar</th>
-              <th class="p-3">Tunggakan</th>
-              <th class="p-3 text-center admin-hidden hidden">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="siswaTableBody" class="divide-y divide-slate-800 text-slate-300">
-            <tr><td colspan="4" class="p-4 text-center text-slate-500">Memuat data kas dari Firebase...</td></tr>
-          </tbody>
-        </table>
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="toggleModal('modalSiswa')" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg">Batal</button>
+        <button onclick="submitTambahSiswa()" class="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg">Simpan</button>
       </div>
     </div>
+  </div>
 
-    <!-- TAB AUDIT -->
-    <div id="content-audit" class="tab-content hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-white">Live System Audit Log</h3>
-        <button onclick="handleExportAudit()" id="btn-export-audit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded flex items-center gap-2 transition">
-          <i data-lucide="file-text" class="w-4 h-4"></i> Ekspor Audit
-        </button>
+  <!-- MODAL PATCH NOTES -->
+  <div id="modalPatch" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-slate-800 text-base">Patch Notes - v7.6 Master</h3>
+        <button onclick="toggleModal('modalPatch')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl overflow-x-auto shadow-lg">
-        <table class="w-full text-left text-xs whitespace-nowrap">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr><th class="p-2">Waktu</th><th class="p-2">Admin</th><th class="p-2">Alasan</th></tr>
-          </thead>
-          <tbody id="auditTableBody" class="divide-y divide-slate-800 text-slate-300">
-             <tr><td colspan="3" class="p-4 text-center text-slate-500">Memuat log sistem...</td></tr>
-          </tbody>
-        </table>
+      <div class="text-xs text-slate-600 space-y-2 max-h-60 overflow-y-auto pr-1">
+        <p class="font-bold text-indigo-600">Rilis Terbaru v7.6 (Master Edition):</p>
+        <ul class="list-disc pl-4 space-y-1">
+          <li>Penguatan Firebase Realtime Database Security Rules.</li>
+          <li>Integrasi audit log immutable dengan lazy loading cursor pagination.</li>
+          <li>Fitur rollback (Undo) perubahan terintegrasi.</li>
+          <li>Pemisahan ketat Laporan Kas Utama dan Audit Log pada ekspor Excel Studio.</li>
+        </ul>
       </div>
     </div>
-  </main>
+  </div>
 
-  <script>
-    // 1. INISIALISASI FIREBASE
+  <!-- FIREBASE APPLICATION LOGIC (MODULE) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set, push, update, get, query, orderByChild, limitToLast, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // 1. CONFIG & INIT
     const firebaseConfig = {
       apiKey: "AIzaSyDCfPEYWlVflCjA3cWsHiX5BYwxcI-Th24",
       authDomain: "kas-x4-26-27.firebaseapp.com",
       databaseURL: "https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "kas-x4-26-27"
     };
-    
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    
-    const auth = firebase.auth();
-    const db = firebase.database();
-    
-    const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
-    const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 
-    // 2. DETEKSI KONEKSI FIREBASE (REALTIME STATUS)
-    const connStatus = document.getElementById('conn-status');
-    db.ref('.info/connected').on('value', function(snap) {
+    const ALLOWED_ADMINS = [
+      "awiendra55@gmail.com",
+      "wpnarend11@gmail.com",
+      "chelsyangelina5796@gmail.com"
+    ];
+
+    const IURAN_PER_WEEK = 10000;
+    const TOTAL_WEEKS = 4;
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+    let isAdmin = false;
+    let localSiswaData = {};
+    let localMetaData = {};
+    let lastAuditKey = null;
+
+    // 2. REALTIME CONNECTION MONITOR
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
       if (snap.val() === true) {
-        connStatus.innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></div>Online';
-        connStatus.className = 'flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded transition-all';
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+        statusText.textContent = "Online";
       } else {
-        connStatus.innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>Offline';
-        connStatus.className = 'flex items-center gap-1 text-[10px] text-rose-400 font-bold bg-rose-500/10 px-2 py-1 rounded transition-all';
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse";
+        statusText.textContent = "Offline";
       }
     });
 
-    // 3. AUTHENTICATION & UI TAB
-    function loginGoogle() { 
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(err => {
-        alert("Gagal Login: " + err.message);
-        console.error(err);
-      }); 
-    }
-    
-    function logoutGoogle() { 
-      auth.signOut().then(() => {
-        alert("Berhasil Logout.");
-      }).catch(console.error); 
-    }
+    // 3. AUTHENTICATION (GOOGLE OAUTH)
+    document.getElementById("btnLogin").addEventListener("click", () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider).catch((err) => alert("Login gagal: " + err.message));
+    });
 
-    auth.onAuthStateChanged(user => {
-      const adminEls = document.querySelectorAll('.admin-hidden');
-      const btnLogin = document.getElementById('btn-login');
-      const btnLogout = document.getElementById('btn-logout');
-      
-      if(user && ALLOWED_ADMINS.includes(user.email)) {
-        adminEls.forEach(el => el.classList.remove('hidden'));
-        btnLogin.classList.add('hidden');
-        btnLogout.classList.remove('hidden');
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      signOut(auth);
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user && ALLOWED_ADMINS.includes(user.email)) {
+        isAdmin = true;
+        document.getElementById("btnLogin").classList.add("hidden");
+        document.getElementById("userInfo").classList.remove("hidden");
+        document.getElementById("userEmail").textContent = user.email;
+        toggleAdminUI(true);
       } else {
-        adminEls.forEach(el => el.classList.add('hidden'));
-        btnLogin.classList.remove('hidden');
-        btnLogout.classList.add('hidden');
-        if(user) {
-          alert(`Email ${user.email} tidak memiliki akses admin.`);
-          auth.signOut();
-        }
+        isAdmin = false;
+        document.getElementById("btnLogin").classList.remove("hidden");
+        document.getElementById("userInfo").classList.add("hidden");
+        toggleAdminUI(false);
       }
-      // Re-render table to hide/show action buttons if data is already loaded
-      db.ref('siswa').once('value').then(renderSiswaTable);
+      renderMatriksSiswa();
     });
 
-    function switchTab(t) {
-      document.querySelectorAll('.tab-btn').forEach(b => { 
-        b.classList.remove('active', 'bg-blue-600/10', 'text-blue-400'); 
-        b.classList.add('text-slate-400'); 
-      });
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-      document.getElementById(`tab-${t}`).classList.add('active', 'bg-blue-600/10', 'text-blue-400');
-      document.getElementById(`content-${t}`).classList.remove('hidden');
-    }
-
-    // 4. CORE LOGIC: DATA SISWA & ANALITIK
-    db.ref('siswa').on('value', (snapshot) => {
-      renderSiswaTable(snapshot);
-      updateDashboardStats();
-    });
-
-    db.ref('meta_data').on('value', () => updateDashboardStats());
-    db.ref('audit_logs').limitToLast(20).on('value', (snapshot) => renderAuditLogs(snapshot));
-
-    function renderSiswaTable(snapshot) {
-      const tbody = document.getElementById('siswaTableBody');
-      tbody.innerHTML = '';
-      if (!snapshot.exists()) {
-        return tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">Data siswa kosong. Silakan tambahkan data ke Firebase.</td></tr>';
-      }
-      
-      const isAdmin = auth.currentUser && ALLOWED_ADMINS.includes(auth.currentUser.email);
-      
-      snapshot.forEach(child => {
-        const id = child.key;
-        const s = child.val();
-        const tunggakanColor = s.tunggakan > 0 ? 'text-rose-400' : 'text-emerald-400';
-        
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-800/50 transition-colors">
-            <td class="p-3 font-medium">${s.nama}</td>
-            <td class="p-3 text-blue-400 font-bold">${formatRp(s.total_bayar || 0)}</td>
-            <td class="p-3 ${tunggakanColor}">${formatRp(s.tunggakan || 0)}</td>
-            <td class="p-3 text-center admin-hidden ${isAdmin ? '' : 'hidden'}">
-              <button onclick="editKasSiswa('${id}', '${s.nama}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-[10px] font-bold shadow-md transition">Edit Kas</button>
-            </td>
-          </tr>
-        `;
+    function toggleAdminUI(show) {
+      document.querySelectorAll(".admin-only").forEach(el => {
+        if (show) el.classList.remove("hidden");
+        else el.classList.add("hidden");
       });
     }
 
-    function editKasSiswa(id, nama) {
-      const bayar = prompt(`Masukkan tambahan bayar untuk ${nama} (Angka saja tanpa titik, contoh: 5000):`, "0");
-      if (bayar && !isNaN(bayar) && bayar !== "0") {
-        const ref = db.ref(`siswa/${id}`);
-        ref.once('value').then(snap => {
-          let s = snap.val();
-          let newTotal = (s.total_bayar || 0) + parseInt(bayar);
-          let newTunggakan = (s.tunggakan || 0) - parseInt(bayar);
-          if(newTunggakan < 0) newTunggakan = 0;
-          
-          ref.update({ total_bayar: newTotal, tunggakan: newTunggakan }).then(() => {
-            db.ref('audit_logs').push({
-              timestamp: firebase.database.ServerValue.TIMESTAMP,
-              aktor_admin: auth.currentUser.email,
-              alasan_revisi: `Update kas ${nama}: +${formatRp(bayar)}`
-            });
-          });
-        });
-      }
-    }
+    // 4. REALTIME DATA BINDING & METRICS
+    const siswaRef = ref(db, "siswa");
+    onValue(siswaRef, (snapshot) => {
+      localSiswaData = snapshot.val() || {};
+      calculateMetrics();
+      renderMatriksSiswa();
+    });
 
-    async function updateDashboardStats() {
-      try {
-        const siswaSnap = await db.ref('siswa').once('value');
-        let kasSiswa = 0, totalTunggakan = 0;
-        if (siswaSnap.exists()) {
-          siswaSnap.forEach(child => {
-            kasSiswa += (child.val().total_bayar || 0);
-            totalTunggakan += (child.val().tunggakan || 0);
+    const metaRef = ref(db, "meta_data");
+    onValue(metaRef, (snapshot) => {
+      localMetaData = snapshot.val() || { total_physical_cash: 0, external_funds: 0, last_calibration: 0 };
+      calculateMetrics();
+    });
+
+    function calculateMetrics() {
+      let totalDigitalSiswa = 0;
+      let totalTunggakan = 0;
+
+      Object.values(localSiswaData).forEach(siswa => {
+        let lunasCount = 0;
+        if (siswa.minggu) {
+          Object.values(siswa.minggu).forEach(st => {
+            if (st === "LUNAS") lunasCount++;
           });
         }
+        totalDigitalSiswa += (lunasCount * IURAN_PER_WEEK);
+        totalTunggakan += ((TOTAL_WEEKS - lunasCount) * IURAN_PER_WEEK);
+      });
 
-        const metaSnap = await db.ref('meta_data/keuangan').once('value');
-        let totalFisik = 0, lastReconcile = 0, danaEksternal = 0;
-        if (metaSnap.exists()) {
-          totalFisik = metaSnap.val().uang_fisik || 0;
-          lastReconcile = metaSnap.val().last_reconcile || 0;
-          danaEksternal = metaSnap.val().dana_eksternal || 0;
-        }
+      const totalExternal = localMetaData.external_funds || 0;
+      const totalSystem = totalDigitalSiswa + totalExternal;
+      const totalPhysical = localMetaData.total_physical_cash || 0;
 
-        let totalSistem = kasSiswa + danaEksternal;
-        let selisih = totalFisik - totalSistem;
-        let selisihText = selisih === 0 ? "Klop (Aman)" : (selisih > 0 ? `Lebih ${formatRp(selisih)}` : `Kurang ${formatRp(Math.abs(selisih))}`);
-        let selisihColor = selisih === 0 ? "text-emerald-500" : "text-rose-500";
+      document.getElementById("statTotalSystem").textContent = `Rp ${totalSystem.toLocaleString("id-ID")}`;
+      document.getElementById("statTotalPhysical").textContent = `Rp ${totalPhysical.toLocaleString("id-ID")}`;
+      document.getElementById("statTotalTunggakan").textContent = `Rp ${totalTunggakan.toLocaleString("id-ID")}`;
+      document.getElementById("statExternal").textContent = `Rp ${totalExternal.toLocaleString("id-ID")}`;
 
-        document.getElementById('stat-total-sistem').innerText = formatRp(totalSistem);
-        document.getElementById('stat-detail-sistem').innerText = `Siswa: ${formatRp(kasSiswa)} | Eksternal: ${formatRp(danaEksternal)}`;
-        document.getElementById('stat-tunggakan').innerText = formatRp(totalTunggakan);
-        document.getElementById('stat-total-fisik').innerText = formatRp(totalFisik);
+      document.getElementById("reconSystemVal").textContent = `Rp ${totalSystem.toLocaleString("id-ID")}`;
+      
+      if (localMetaData.last_calibration) {
+        const lastDate = new Date(localMetaData.last_calibration);
+        document.getElementById("reconLastDate").textContent = lastDate.toLocaleString("id-ID");
         
-        let selisihEl = document.getElementById('stat-selisih');
-        selisihEl.innerText = `Selisih: ${selisihText}`;
-        selisihEl.className = `text-[11px] mt-1 font-bold ${selisihColor}`;
-
-        const badge = document.getElementById('badge-reconcile');
-        if (Date.now() - lastReconcile > 7 * 24 * 60 * 60 * 1000 || lastReconcile === 0) {
-          badge.className = "px-2 py-0.5 text-[10px] rounded-full bg-red-500/20 text-red-400 font-bold cursor-pointer animate-pulse admin-hidden transition " + (auth.currentUser && ALLOWED_ADMINS.includes(auth.currentUser.email) ? "" : "hidden");
-          badge.innerText = "Cek Fisik (Overdue)!";
+        const diffDays = (Date.now() - localMetaData.last_calibration) / (1000 * 60 * 60 * 24);
+        if (diffDays > 7) {
+          document.getElementById("overdueAlert").classList.remove("hidden");
         } else {
-          badge.className = "px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/20 text-emerald-400 font-bold cursor-pointer admin-hidden transition hover:bg-emerald-500/30 " + (auth.currentUser && ALLOWED_ADMINS.includes(auth.currentUser.email) ? "" : "hidden");
-          badge.innerText = "Fisik Terkalibrasi";
+          document.getElementById("overdueAlert").classList.add("hidden");
         }
-      } catch (error) { console.error("Error loading stats:", error); }
-    }
-
-    // 5. FITUR REKONSILIASI & DANA EKSTERNAL
-    function openReconcileModal() {
-      let inputFisik = prompt("Masukkan total uang fisik riil di kotak kas saat ini (Angka saja):", "0");
-      if (inputFisik !== null && !isNaN(inputFisik)) {
-        db.ref('meta_data/keuangan').update({
-          uang_fisik: parseInt(inputFisik),
-          last_reconcile: firebase.database.ServerValue.TIMESTAMP
-        });
+      } else {
+        document.getElementById("reconLastDate").textContent = "Belum pernah";
       }
     }
 
-    function tambahDanaEksternal() {
-      let inputEksternal = prompt("Masukkan total Dana Eksternal saat ini (Dana sisa acara, sumbangan, dll):", "0");
-      if (inputEksternal !== null && !isNaN(inputEksternal)) {
-        db.ref('meta_data/keuangan').update({
-          dana_eksternal: parseInt(inputEksternal)
-        }).then(() => {
-          db.ref('audit_logs').push({
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            aktor_admin: auth.currentUser.email,
-            alasan_revisi: `Update Dana Eksternal menjadi: ${formatRp(inputEksternal)}`
-          });
-        });
-      }
-    }
+    // 5. RENDER TABLE MATRIKS
+    function renderMatriksSiswa() {
+      const tbody = document.getElementById("siswaTableBody");
+      tbody.innerHTML = "";
 
-    // 6. EKSPOR EXCEL & AUDIT LOGS
-    function renderAuditLogs(snapshot) {
-      const tbody = document.getElementById('auditTableBody');
-      tbody.innerHTML = '';
-      if(!snapshot.exists()) return tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-500">Belum ada riwayat aktivitas.</td></tr>';
-      
-      let logs = [];
-      snapshot.forEach(child => logs.push(child.val()));
-      logs.reverse().forEach(log => {
-        tbody.innerHTML += `
-          <tr class="border-b border-slate-800 hover:bg-slate-800/30">
-            <td class="p-3 text-[11px] text-slate-400">${new Date(log.timestamp).toLocaleString('id-ID')}</td>
-            <td class="p-3 text-[11px] text-blue-300">${log.aktor_admin}</td>
-            <td class="p-3 text-[11px]">${log.alasan_revisi}</td>
-          </tr>
+      Object.keys(localSiswaData).forEach(id => {
+        const s = localSiswaData[id];
+        let lunasCount = 0;
+        
+        let weeksHtml = "";
+        for (let w = 1; w <= TOTAL_WEEKS; w++) {
+          const wKey = `m${w}`;
+          const isLunas = s.minggu && s.minggu[wKey] === "LUNAS";
+          if (isLunas) lunasCount++;
+
+          weeksHtml += `
+            <td class="py-2 px-2 text-center">
+              <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold ${isLunas ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                ${isLunas ? 'LUNAS' : 'BELUM'}
+              </span>
+            </td>
+          `;
+        }
+
+        const totalLunas = lunasCount * IURAN_PER_WEEK;
+        const tunggakan = (TOTAL_WEEKS - lunasCount) * IURAN_PER_WEEK;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-semibold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200">${s.nama}</td>
+          ${weeksHtml}
+          <td class="py-2.5 px-4 text-right font-medium text-emerald-600">Rp ${totalLunas.toLocaleString("id-ID")}</td>
+          <td class="py-2.5 px-4 text-right font-medium ${tunggakan > 0 ? 'text-rose-600' : 'text-slate-400'}">Rp ${tunggakan.toLocaleString("id-ID")}</td>
+          <td class="py-2.5 px-4 text-center admin-only ${isAdmin ? '' : 'hidden'}">
+            <button onclick="openRevisiModal('${id}', '${s.nama}')" class="text-indigo-600 hover:text-indigo-900 font-semibold text-xs">Revisi</button>
+          </td>
         `;
+        tbody.appendChild(tr);
       });
     }
 
-    function handleExportKas() {
-      db.ref('siswa').once('value').then(snap => {
-        if (!snap.exists()) return alert("Data kosong, tidak ada yang bisa diekspor.");
-        let data = [];
-        snap.forEach(c => data.push({ "Nama": c.val().nama, "Total Bayar": c.val().total_bayar || 0, "Tunggakan": c.val().tunggakan || 0 }));
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Kas");
-        XLSX.writeFile(wb, "Rekap_Kas_X4.xlsx");
-      });
-    }
+    // 6. ADMIN REVISION & AUDIT LOGGING
+    window.openRevisiModal = function(id, nama) {
+      document.getElementById("revSiswaId").value = id;
+      document.getElementById("revNamaSiswa").textContent = nama;
+      document.getElementById("revReasonInput").value = "";
+      
+      const targetWeekSelect = document.getElementById("revTargetWeek");
+      targetWeekSelect.innerHTML = `
+        <select id="revWeekSelectInput" class="border rounded px-2 py-1 text-xs">
+          <option value="m1">Minggu 1</option>
+          <option value="m2">Minggu 2</option>
+          <option value="m3">Minggu 3</option>
+          <option value="m4">Minggu 4</option>
+        </select>
+      `;
+      window.toggleModal('modalRevisi');
+    };
 
-    function handleExportAudit() {
-      db.ref('audit_logs').once('value').then(snap => {
-        if (!snap.exists()) return alert("Log audit kosong.");
-        let data = [];
-        snap.forEach(c => data.push({ "Waktu": new Date(c.val().timestamp).toLocaleString('id-ID'), "Admin": c.val().aktor_admin, "Alasan": c.val().alasan_revisi }));
-        data.reverse();
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Audit Trail");
-        XLSX.writeFile(wb, "Audit_Log_X4.xlsx");
-      });
-    }
+    window.submitRevision = async function() {
+      const id = document.getElementById("revSiswaId").value;
+      const weekKey = document.getElementById("revWeekSelectInput").value;
+      const newStatus = document.getElementById("revStatusSelect").value;
+      const reason = document.getElementById("revReasonInput").value.trim();
 
-    lucide.createIcons();
+      if (!reason) {
+        alert("Alasan perubahan wajib diisi!");
+        return;
+      }
+
+      const oldStatus = (localSiswaData[id].minggu && localSiswaData[id].minggu[weekKey]) ? localSiswaData[id].minggu[weekKey] : "BELUM";
+
+      // Write Revision
+      await set(ref(db, `siswa/${id}/minggu/${weekKey}`), newStatus);
+
+      // Record Audit
+      await push(ref(db, "audit_logs"), {
+        timestamp: Date.now(),
+        admin_email: currentUser.email,
+        action: "REVISI_KAS",
+        details: `Mengubah status ${localSiswaData[id].nama} (${weekKey.toUpperCase()}) dari ${oldStatus} menjadi ${newStatus}`,
+        reason: reason,
+        target_id: id,
+        target_week: weekKey,
+        previous_value: oldStatus
+      });
+
+      window.toggleModal('modalRevisi');
+      loadAuditLogs(false);
+    };
+
+    // 7. AUDIT LOG LAZY LOADING & UNDO
+    window.loadAuditLogs = async function(isNext = false) {
+      const tbody = document.getElementById("auditTableBody");
+      if (!isNext) {
+        tbody.innerHTML = "";
+        lastAuditKey = null;
+      }
+
+      let auditQuery;
+      if (lastAuditKey) {
+        auditQuery = query(ref(db, "audit_logs"), orderByChild("timestamp"), endBefore(lastAuditKey), limitToLast(15));
+      } else {
+        auditQuery = query(ref(db, "audit_logs"), orderByChild("timestamp"), limitToLast(15));
+      }
+
+      const snapshot = await get(auditQuery);
+      if (!snapshot.exists()) return;
+
+      const data = [];
+      snapshot.forEach(child => {
+        data.push({ key: child.key, ...child.val() });
+      });
+
+      data.reverse(); // Newest first
+      lastAuditKey = data[data.length - 1].timestamp;
+
+      data.forEach(log => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="py-2 px-4 whitespace-nowrap text-slate-500">${new Date(log.timestamp).toLocaleString("id-ID")}</td>
+          <td class="py-2 px-4 font-mono text-indigo-600">${log.admin_email}</td>
+          <td class="py-2 px-4 font-bold text-slate-700">${log.action}</td>
+          <td class="py-2 px-4 text-slate-600">${log.details}</td>
+          <td class="py-2 px-4 italic text-slate-500">${log.reason || '-'}</td>
+          <td class="py-2 px-4 text-center admin-only ${isAdmin ? '' : 'hidden'}">
+            ${log.action === 'REVISI_KAS' ? `<button onclick="rollbackAudit('${log.key}', '${log.target_id}', '${log.target_week}', '${log.previous_value}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2 py-1 rounded text-[10px] font-bold border border-rose-200">Undo</button>` : '-'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+
+    window.rollbackAudit = async function(logKey, targetId, weekKey, previousValue) {
+      if (!confirm("Apakah Anda yakin ingin membatalkan (rollback) perubahan ini?")) return;
+
+      await set(ref(db, `siswa/${targetId}/minggu/${weekKey}`), previousValue);
+      await push(ref(db, "audit_logs"), {
+        timestamp: Date.now(),
+        admin_email: currentUser.email,
+        action: "ROLLBACK",
+        details: `Membatalkan perubahan log [${logKey}]. Mengembalikan status ke ${previousValue}`,
+        reason: "Eksekusi fitur Rollback/Undo"
+      });
+
+      loadAuditLogs(false);
+    };
+
+    // 8. REKONSILIASI & DANA EKSTERNAL
+    window.submitReconciliation = async function() {
+      const val = parseFloat(document.getElementById("inputPhysicalCash").value);
+      if (isNaN(val)) return alert("Masukkan nominal yang valid!");
+
+      await update(ref(db, "meta_data"), {
+        total_physical_cash: val,
+        last_calibration: Date.now()
+      });
+
+      await push(ref(db, "audit_logs"), {
+        timestamp: Date.now(),
+        admin_email: currentUser.email,
+        action: "KALIBRASI_FISIK",
+        details: `Pembaruan fisik kas sebesar Rp ${val.toLocaleString("id-ID")}`,
+        reason: "Kalibrasi fisik berkala"
+      });
+
+      alert("Kalibrasi fisik berhasil disimpan!");
+      document.getElementById("inputPhysicalCash").value = "";
+    };
+
+    window.submitExternalFund = async function() {
+      const amount = parseFloat(document.getElementById("inputExtAmount").value);
+      const desc = document.getElementById("inputExtDesc").value.trim();
+
+      if (isNaN(amount) || !desc) return alert("Isi nominal dan deskripsi dengan benar!");
+
+      const currentExt = localMetaData.external_funds || 0;
+      const newExt = currentExt + amount;
+
+      await update(ref(db, "meta_data"), { external_funds: newExt });
+
+      await push(ref(db, "audit_logs"), {
+        timestamp: Date.now(),
+        admin_email: currentUser.email,
+        action: "DANA_EKSTERNAL",
+        details: `Penambahan dana eksternal Rp ${amount.toLocaleString("id-ID")} (${desc})`,
+        reason: desc
+      });
+
+      alert("Dana eksternal berhasil ditambahkan!");
+      document.getElementById("inputExtAmount").value = "";
+      document.getElementById("inputExtDesc").value = "";
+    };
+
+    // 9. PUBLIC LOOKUP
+    window.searchLookup = function() {
+      const queryStr = document.getElementById("inputLookupName").value.toLowerCase().trim();
+      const resultDiv = document.getElementById("lookupResult");
+
+      if (!queryStr) {
+        resultDiv.classList.add("hidden");
+        return;
+      }
+
+      const match = Object.values(localSiswaData).find(s => s.nama.toLowerCase().includes(queryStr));
+
+      if (match) {
+        resultDiv.classList.remove("hidden");
+        document.getElementById("lookupNama").textContent = match.nama;
+
+        let lunasCount = 0;
+        let weeksHtml = "";
+
+        for (let w = 1; w <= TOTAL_WEEKS; w++) {
+          const wKey = `m${w}`;
+          const isLunas = match.minggu && match.minggu[wKey] === "LUNAS";
+          if (isLunas) lunasCount++;
+
+          weeksHtml += `
+            <div class="p-2 rounded border ${isLunas ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'}">
+              <span class="block text-[10px] font-bold">M${w}</span>
+              <span class="text-[11px] font-semibold">${isLunas ? 'LUNAS' : 'BELUM'}</span>
+            </div>
+          `;
+        }
+
+        const tunggakan = (TOTAL_WEEKS - lunasCount) * IURAN_PER_WEEK;
+        const tunggakanEl = document.getElementById("lookupTunggakan");
+        tunggakanEl.textContent = `Rp ${tunggakan.toLocaleString("id-ID")}`;
+        tunggakanEl.className = `text-lg font-bold ${tunggakan > 0 ? 'text-rose-600' : 'text-emerald-600'}`;
+
+        document.getElementById("lookupDetailWeeks").innerHTML = weeksHtml;
+      } else {
+        resultDiv.classList.add("hidden");
+      }
+    };
+
+    // 10. EXCEL STUDIO (EXPORTS)
+    window.exportKasMain = function() {
+      const exportData = [];
+      Object.values(localSiswaData).forEach(s => {
+        let lunasCount = 0;
+        for (let w = 1; w <= TOTAL_WEEKS; w++) {
+          if (s.minggu && s.minggu[`m${w}`] === "LUNAS") lunasCount++;
+        }
+        exportData.push({
+          "Nama Siswa": s.nama,
+          "Minggu 1": (s.minggu && s.minggu.m1) || "BELUM",
+          "Minggu 2": (s.minggu && s.minggu.m2) || "BELUM",
+          "Minggu 3": (s.minggu && s.minggu.m3) || "BELUM",
+          "Minggu 4": (s.minggu && s.minggu.m4) || "BELUM",
+          "Total Bayar (Rp)": lunasCount * IURAN_PER_WEEK,
+          "Tunggakan (Rp)": (TOTAL_WEEKS - lunasCount) * IURAN_PER_WEEK
+        });
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Kas Utama X-4");
+      XLSX.writeFile(wb, "Laporan_Kas_Utama_X4.xlsx");
+    };
+
+    window.exportAuditLog = async function() {
+      const snapshot = await get(ref(db, "audit_logs"));
+      if (!snapshot.exists()) return alert("Tidak ada data audit log!");
+
+      const exportData = [];
+      snapshot.forEach(child => {
+        const val = child.val();
+        exportData.push({
+          "Waktu": new Date(val.timestamp).toLocaleString("id-ID"),
+          "Admin Email": val.admin_email,
+          "Aksi": val.action,
+          "Detail": val.details,
+          "Alasan": val.reason || "-"
+        });
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Audit Trail");
+      XLSX.writeFile(wb, "Audit_Trail_Kas_X4.xlsx");
+    };
+
+    // 11. TAMBAH SISWA
+    window.submitTambahSiswa = async function() {
+      const nama = document.getElementById("inputNamaSiswa").value.trim();
+      if (!nama) return alert("Nama tidak boleh kosong!");
+
+      const newRef = push(ref(db, "siswa"));
+      await set(newRef, {
+        nama: nama,
+        minggu: { m1: "BELUM", m2: "BELUM", m3: "BELUM", m4: "BELUM" }
+      });
+
+      await push(ref(db, "audit_logs"), {
+        timestamp: Date.now(),
+        admin_email: currentUser.email,
+        action: "TAMBAH_SISWA",
+        details: `Menambahkan siswa baru: ${nama}`,
+        reason: "Pembaruan daftar murid"
+      });
+
+      window.toggleModal('modalSiswa');
+      document.getElementById("inputNamaSiswa").value = "";
+    };
+
+    // UI Navigation Helpers
+    window.switchTab = function(tabName) {
+      ['dasbor', 'rekonsiliasi', 'lookup', 'audit'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add("hidden");
+        const btn = document.getElementById(`tab-${t}`);
+        btn.classList.remove("border-indigo-600", "text-indigo-600", "font-semibold");
+        btn.classList.add("border-transparent", "text-slate-500", "font-medium");
+      });
+
+      document.getElementById(`view-${tabName}`).classList.remove("hidden");
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      activeBtn.classList.remove("border-transparent", "text-slate-500", "font-medium");
+      activeBtn.classList.add("border-indigo-600", "text-indigo-600", "font-semibold");
+
+      if (tabName === 'audit') loadAuditLogs(false);
+    };
+
+    window.toggleModal = function(id) {
+      document.getElementById(id).classList.toggle("hidden");
+    };
   </script>
 </body>
 </html>
