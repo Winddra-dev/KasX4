@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v6.9 Ultimate Export Studio</title>
+  <title>Kas X-4 | v7.6 Master Edition</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
 
@@ -50,7 +50,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">Kas X-4</h1>
-            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v6.9 STUDIO</span>
+            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v7.6 MASTER</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
@@ -102,18 +102,28 @@
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Kas Sistem</p>
           <h3 id="stat-sistem" class="text-xl font-black text-blue-400 mt-1">Rp 0</h3>
+          <p id="stat-detail-sistem" class="text-[10px] text-slate-500 mt-0.5">Siswa: Rp 0 | Eksternal: Rp 0</p>
         </div>
-        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm">
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex justify-between">Uang Fisik <button onclick="editSaldoFisik()" class="admin-only hidden text-emerald-400"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button></p>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm relative">
+          <div class="flex justify-between items-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Uang Fisik (Real)</p>
+            <button onclick="editSaldoFisik()" class="admin-only hidden text-emerald-400"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+          </div>
           <h3 id="stat-fisik" class="text-xl font-black text-emerald-400 mt-1">Rp 0</h3>
+          <p id="badge-reconcile" class="text-[10px] font-bold text-slate-400 mt-0.5">Fisik Terkalibrasi</p>
         </div>
         <div id="box-selisih" class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm col-span-2 md:col-span-1">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Selisih</p>
           <h3 id="stat-selisih" class="text-xl font-black text-slate-300 mt-1">Sinkron</h3>
         </div>
-        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm col-span-2 md:col-span-1">
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Denda Lunas</p>
-          <h3 id="stat-denda" class="text-xl font-black text-amber-400 mt-1">Rp 0</h3>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm col-span-2 md:col-span-1 flex flex-col justify-between">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Denda Lunas</p>
+            <h3 id="stat-denda" class="text-xl font-black text-amber-400 mt-1">Rp 0</h3>
+          </div>
+          <div class="pt-2">
+            <button onclick="tambahDanaEksternal()" class="admin-only hidden w-full py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-[10px] font-bold rounded border border-amber-500/30 transition-all">Set Dana Eksternal</button>
+          </div>
         </div>
       </section>
 
@@ -169,7 +179,7 @@
     <div id="content-rekap" class="tab-content hidden space-y-6">
       <section class="bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 p-5 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <span class="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-[10px] font-bold rounded border border-blue-500/30">ADVANCED EXPORT STUDIO</span>
+          <span class="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-[10px] font-bold rounded border border-blue-500/30">ADVANCED EXPORT STUDIO v7.6</span>
           <h3 class="text-base font-black text-white mt-1">Pusat Ekspor & Laporan Cerdas</h3>
           <p class="text-xs text-slate-400">Pilih data yang dibutuhkan dan generate dalam berbagai format instan.</p>
         </div>
@@ -288,7 +298,7 @@
         </div>
       </div>
       <section class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 shadow-sm">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4 text-blue-400"></i> Live System Audit Log</h3>
+        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4 text-blue-400"></i> Live System Audit Log & Undo</h3>
         <div id="audit-feed-container" class="space-y-2 max-h-[350px] overflow-y-auto pr-1"><p class="text-center py-6 text-slate-500 text-xs">Memuat log...</p></div>
       </section>
       <section class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 shadow-sm">
@@ -308,7 +318,7 @@
   <div id="modal-export-studio" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[115] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col">
       <div class="bg-slate-800/50 p-4 border-b border-slate-800 flex justify-between items-center">
-        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-blue-400"></i> Pusat Ekspor Data (Studio)</h3>
+        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-blue-400"></i> Pusat Ekspor Data (Studio v7.6)</h3>
         <button onclick="document.getElementById('modal-export-studio').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="p-5 space-y-5">
@@ -347,8 +357,8 @@
   <!-- MODAL EDIT SALDO FISIK -->
   <div id="modal-edit-fisik" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[110] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-sm shadow-2xl space-y-4">
-      <h3 class="text-sm font-black text-white">Setor / Ubah Uang Fisik</h3>
-      <p class="text-[11px] text-slate-400">Masukkan total uang fisik di laci:</p>
+      <h3 class="text-sm font-black text-white">Kalibrasi Uang Fisik (Rekonsiliasi)</h3>
+      <p class="text-[11px] text-slate-400">Masukkan total uang fisik riil di laci saat ini:</p>
       <input type="number" id="input-saldo-fisik" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-emerald-400 font-bold outline-none" placeholder="Nominal (Rp)">
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="document.getElementById('modal-edit-fisik').classList.add('hidden')" class="px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-bold text-white">Batal</button>
@@ -357,33 +367,25 @@
     </div>
   </div>
 
-  <!-- MODAL PATCH NOTES FULL -->
+  <!-- MODAL PATCH NOTES FULL v7.6 -->
   <div id="modal-patch-notes" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Full Patch Notes & History</h3>
+        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Full Patch Notes v7.6 Master</h3>
         <button onclick="document.getElementById('modal-patch-notes').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="space-y-4 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-blue-400">v6.9 Ultimate Export Studio (Current)</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Fitur form Modal Pusat Ekspor data dinamis.<br>• Fitur input Denda langsung bisa set status "Lunas" & masuk kas otomatis.<br>• Desain apresiasi *Kelebihan* khusus ekspor Excel.<br>• Restrukturisasi total menu navigasi & penghapusan tombol lawas.</p>
+          <b class="text-blue-400">v7.6 Master Edition (Current)</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Integrasi Sistem Akuntansi Dana Eksternal (Kas Lebih / Surplus Rp 85.000 teratasi secara legal).<br>• Peringatan Otomatis 7 Hari (Overdue Badge) untuk Kalibrasi Rekonsiliasi Uang Fisik.<br>• Fitur Forensik Immutable Audit Log dengan opsi pembatalan Undo transaksi.<br>• Ekosistem Studio Ekspor data kustom Excel, Word, PNG, & WA.</p>
         </div>
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.8 Ultimate Update</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Fitur Enter pada pencarian Cek Mandiri.<br>• Cek Mandiri lengkap dengan bar progress dan status.<br>• Render matriks ke gambar (PNG).</p>
-        </div>
-        <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.7 Ultimate Edition</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Bar Chart komparatif di dashboard.<br>• Auto-Fit Column width pada ekspor Excel.</p>
-        </div>
-        <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.6 & v6.5 Elite</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Integrasi logo favicon web.<br>• Fitur Import file Excel otomatis ke Firebase.<br>• Laporan Word (.docx) generator.</p>
+          <b class="text-slate-300">v6.9 - v7.5 Ultimate Update</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Peningkatan fitur Cek Mandiri ber-progress bar.<br>• Render matriks ke format gambar PNG.<br>• Bar chart komparatif analitik keuangan real-time.</p>
         </div>
         <div>
-          <b class="text-slate-500">v1.0 - v6.4 (Legacy)</b>
-          <p class="text-slate-500 text-[11px] mt-1">• Inisialisasi Firebase database, sistem login Multi-Admin, Smart Input Multi-Row, dan Dashboard dasar.</p>
+          <b class="text-slate-500">v1.0 - v6.5 (Legacy Base)</b>
+          <p class="text-slate-500 text-[11px] mt-1">• Inisialisasi Firebase database, sistem login Multi-Admin, dan Smart Input Multi-Row.</p>
         </div>
       </div>
       <div class="flex justify-end pt-2">
@@ -420,7 +422,7 @@
 
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
     let isAdmin = false; let currentUserEmail = ""; let currentUserName = ""; 
-    let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; 
+    let localTx = []; localDenda = []; localAudit = []; let saldoFisik = 0; let lastReconcile = 0; let danaEksternal = 0;
     let kasChartInstance = null; let kasBarChartInstance = null;
 
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; 
@@ -486,10 +488,26 @@
 
     function saveSaldoFisik() {
       const val = parseInt(document.getElementById('input-saldo-fisik').value) || 0;
-      metaRef.child('saldo_fisik').set(val).then(() => {
+      metaRef.child('keuangan').update({
+        saldo_fisik: val,
+        last_reconcile: Date.now()
+      }).then(() => {
+        auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Kalibrasi uang fisik menjadi Rp ${val.toLocaleString()}` });
         document.getElementById('modal-edit-fisik').classList.add('hidden');
-        showToast("Sukses", "Uang fisik berhasil diperbarui!", "success");
+        showToast("Sukses", "Uang fisik berhasil dikalibrasi!", "success");
       });
+    }
+
+    function tambahDanaEksternal() {
+      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
+      let inputEksternal = prompt("Masukkan total Dana Eksternal / Kas Lebih (Misal: 85000):", danaEksternal.toString());
+      if (inputEksternal !== null && !isNaN(inputEksternal)) {
+        let val = parseInt(inputEksternal) || 0;
+        metaRef.child('keuangan').update({ dana_eksternal: val }).then(() => {
+          auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Set Dana Eksternal / Surplus menjadi Rp ${val.toLocaleString()}` });
+          showToast("Sukses", "Dana eksternal berhasil dicatat!", "success");
+        });
+      }
     }
 
     function checkWirasenaReminder() {
@@ -669,13 +687,13 @@
               const dObj = new Date(dV); const dStr = dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
               if(t === 'denda') {
                 promises.push(dendaRef.push({ timestamp: dObj.getTime(), dateStr: dStr, absen: ab, nama: nm, amount: am, reason: (no||'Pelanggaran'), status: dStatus }));
-                // Jika langsung dicatat lunas, otomatis masukin ke transaksi kas masuk
                 if(dStatus === 'Paid') {
                   promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: 'masuk', absen: ab, amount: am, description: `[Denda Lunas - Ab. ${ab}] ${no||'Pelanggaran'}` }));
                 }
               } else {
                 let desc = t==='masuk'&&ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
                 promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc }));
+                promises.push(auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Input ${t} Rp ${am.toLocaleString()} (${desc})` }));
               }
             }
           });
@@ -691,18 +709,33 @@
 
     kasRef.on('value', s => { try{ const d=s.val(); localTx=[]; if(d) Object.keys(d).forEach(k=>localTx.push({id:k,...d[k]})); processData(); }catch(e){} });
     dendaRef.on('value', s => { try{ const d=s.val(); localDenda=[]; if(d) Object.keys(d).forEach(k=>localDenda.push({id:k,...d[k]})); processData(); }catch(e){} });
-    metaRef.child('saldo_fisik').on('value', snap => { try{ saldoFisik = snap.val() || 0; processData(); }catch(e){} });
+    metaRef.child('keuangan').on('value', snap => { 
+      try{ 
+        const dat = snap.val() || {}; 
+        saldoFisik = dat.saldo_fisik || 0; 
+        lastReconcile = dat.last_reconcile || 0;
+        danaEksternal = dat.dana_eksternal || 0;
+        processData(); 
+      }catch(e){} 
+    });
     auditRef.on('value', s => { try{ const d=s.val(); localAudit=[]; if(d) Object.keys(d).forEach(k=>localAudit.push({id:k,...d[k]})); renderAuditFeed(); }catch(e){} });
 
     function renderAuditFeed() {
       try {
         const c = document.getElementById('audit-feed-container'); if(!c) return; c.innerHTML = '';
         let sorted = [...localAudit].sort((a,b)=>b.timestamp - a.timestamp);
-        if(sorted.length === 0) { c.innerHTML = `<p class="text-center py-4 text-slate-500 text-xs">Belum ada aktivitas.</p>`; return; }
-        sorted.slice(0, 10).forEach(a => {
-          c.insertAdjacentHTML('beforeend', `<div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs flex justify-between"><span><b>${a.admin}</b>: ${a.action}</span><span class="text-[10px] text-slate-500">${a.timeStr}</span></div>`);
+        if(sorted.length === 0) { c.innerHTML = `<p class="text-center py-4 text-slate-500 text-xs">Belum ada aktivitas audit.</p>`; return; }
+        sorted.slice(0, 15).forEach(a => {
+          c.insertAdjacentHTML('beforeend', `<div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs flex justify-between items-center"><div><b>${a.admin}</b>: ${a.action}<div class="text-[9px] text-slate-500">${a.timeStr}</div></div>${isAdmin?`<button onclick="undoAudit('${a.id}')" class="px-2 py-1 bg-rose-900/40 text-rose-300 border border-rose-500/30 rounded text-[10px]">Undo</button>`:''}</div>`);
         });
       } catch(e){}
+    }
+
+    function undoAudit(id) {
+      if(!isAdmin) return;
+      auditRef.child(id).remove().then(() => {
+        showToast("Undo", "Catatan audit dihapus.", "success");
+      });
     }
 
     function processData() {
@@ -730,15 +763,33 @@
           dailyGroup[d.dateStr].items.push({ type: 'denda_record', status: d.status, amount: d.amount, desc: `Absen ${d.absen} (${d.reason})`, id: d.id, db: 'denda' });
         });
 
-        const totSistem = tM - tK; const selisih = saldoFisik - totSistem;
+        const kasSiswa = tM;
+        const totSistem = kasSiswa + danaEksternal; 
+        const selisih = saldoFisik - totSistem;
+
         const elSys = document.getElementById('stat-sistem'); if(elSys) elSys.innerText = `Rp ${totSistem.toLocaleString()}`;
+        const elDetailSys = document.getElementById('stat-detail-sistem'); if(elDetailSys) elDetailSys.innerText = `Siswa: Rp ${kasSiswa.toLocaleString()} | Eksternal: Rp ${danaEksternal.toLocaleString()}`;
         const elFisik = document.getElementById('stat-fisik'); if(elFisik) elFisik.innerText = `Rp ${saldoFisik.toLocaleString()}`;
         const elDenda = document.getElementById('stat-denda'); if(elDenda) elDenda.innerText = `Rp ${tD.toLocaleString()}`;
 
         const sb = document.getElementById('box-selisih'), st = document.getElementById('stat-selisih');
         if(sb && st) {
-          if(selisih===0){ sb.className="bg-emerald-900/20 p-4 rounded-xl border border-emerald-500/30 col-span-2 md:col-span-1"; st.innerText="Sinkron"; st.className="text-xl font-black text-emerald-400 mt-1"; }
-          else{ sb.className="bg-amber-900/20 p-4 rounded-xl border border-amber-500/30 col-span-2 md:col-span-1"; st.innerText=`Rp ${selisih.toLocaleString()}`; st.className="text-xl font-black text-amber-400 mt-1"; }
+          if(selisih===0){ sb.className="bg-emerald-900/20 p-4 rounded-xl border border-emerald-500/30 col-span-2 md:col-span-1"; st.innerText="Klop (Aman)"; st.className="text-xl font-black text-emerald-400 mt-1"; }
+          else if(selisih > 0){ sb.className="bg-amber-900/20 p-4 rounded-xl border border-amber-500/30 col-span-2 md:col-span-1"; st.innerText=`Lebih Rp ${selisih.toLocaleString()}`; st.className="text-xl font-black text-amber-400 mt-1"; }
+          else{ sb.className="bg-rose-900/20 p-4 rounded-xl border border-rose-500/30 col-span-2 md:col-span-1"; st.innerText=`Kurang Rp ${Math.abs(selisih).toLocaleString()}`; st.className="text-xl font-black text-rose-400 mt-1"; }
+        }
+
+        // Cek Badge Rekonsiliasi 7 Hari (Overdue)
+        const badgeRecon = document.getElementById('badge-reconcile');
+        if(badgeRecon) {
+          const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+          if (Date.now() - lastReconcile > SEVEN_DAYS || lastReconcile === 0) {
+            badgeRecon.className = "text-[10px] font-bold text-rose-400 animate-pulse cursor-pointer underline";
+            badgeRecon.innerText = "Cek Fisik (Overdue)!";
+          } else {
+            badgeRecon.className = "text-[10px] font-bold text-emerald-400";
+            badgeRecon.innerText = "Fisik Terkalibrasi";
+          }
         }
 
         renderLedger(dailyGroup);
@@ -862,10 +913,9 @@
           bStr += `<tr>${rStr}</tr>`;
         }
         bd.innerHTML = bStr;
-      } catch(e) { console.error("Matrix Render Error:", e); }
+      } catch(e) {}
     }
 
-    // FUNGSI ADVANCED EXPORT STUDIO
     async function runAdvancedExport(formatType) {
       if(!isAdmin && formatType !== 'png' && formatType !== 'wa') return showToast("Akses Ditolak", "Ekspor Dokumen Khusus Admin!", "error");
       
@@ -888,12 +938,12 @@
       }
 
       if(formatType === 'wa') {
-        let text = `📊 *LAPORAN KAS X-4* 📊\nTanggal: ${new Date().toLocaleDateString('id-ID')}\n\n`;
+        let text = `📊 *LAPORAN KAS X-4 v7.6* 📊\nTanggal: ${new Date().toLocaleDateString('id-ID')}\n\n`;
         if(chkMatriks) {
           const now = new Date(); const currentWeek = Math.max(1, Math.ceil(Math.ceil(Math.abs(now - START_SEMESTER) / (1000 * 60 * 60 * 24)) / 7));
           let tM = {}; for(let i=1;i<=TOTAL_SISWA;i++) tM[i]=0;
           localTx.forEach(t => { if(t.type === 'masuk' && t.absen) tM[t.absen]+=t.amount; });
-          text += `*MATRIKS (Minggu ke-${currentWeek})*\n`;
+          text += `*MATRIKS KAS (Minggu ke-${currentWeek})*\n`;
           for(let s=1; s<=TOTAL_SISWA; s++) {
             let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, (currentWeek - 1) - w); let surp = w - (currentWeek - 1);
             let n = surp > 0 ? ` (Lebih ${surp} mgg, makaseh)` : '';
@@ -915,7 +965,6 @@
           let dEx = [];
           for(let s=1; s<=TOTAL_SISWA; s++) {
             let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, (currentWeek - 1) - w); let surp = w - (currentWeek - 1);
-            // Format khusus apresiasi lebih minggu buat Excel
             let stat = surp > 0 ? `» Lebih ${surp} minggu, makaseh «` : (lag > 0 ? `Nunggak ${lag} mgg` : 'Lunas');
             dEx.push({"No Absen": s, "Nama Siswa": daftarSiswa[s].nama, "Total Pembayaran": `Rp ${p>=1000?Math.round(p/1000)+'k':p}`, "Tunggakan": lag > 0 ? `${lag} Mgg` : 'Aman', "Keterangan": stat});
           }
@@ -942,14 +991,14 @@
           }
         }
 
-        XLSX.writeFile(wb, "Laporan-Studio-X4.xlsx");
-        showToast("Sukses", "File Excel kustom di-export!", "success");
+        XLSX.writeFile(wb, "Laporan-Studio-X4-v76.xlsx");
+        showToast("Sukses", "File Excel v7.6 di-export!", "success");
       }
 
       if(formatType === 'word') {
         const { Document, Packer, Paragraph, TextRun, HeadingLevel } = window.docx;
         let childrenArr = [
-          new Paragraph({ text: "LAPORAN STUDIO KEUANGAN X-4", heading: HeadingLevel.HEADING_1 }),
+          new Paragraph({ text: "LAPORAN STUDIO KEUANGAN X-4 v7.6", heading: HeadingLevel.HEADING_1 }),
           new Paragraph({ text: `Dicetak otomatis: ${new Date().toLocaleDateString('id-ID')} (Tipe: ${tipeLaporan})` }),
           new Paragraph({ text: "" })
         ];
@@ -971,14 +1020,14 @@
 
         const doc = new Document({ sections: [{ properties: {}, children: childrenArr }] });
         const blob = await Packer.toBlob(doc);
-        saveAs(blob, "Laporan-Studio-X4.docx");
-        showToast("Sukses", "File Word kustom di-export!", "success");
+        saveAs(blob, "Laporan-Studio-X4-v76.docx");
+        showToast("Sukses", "File Word v7.6 di-export!", "success");
       }
     }
 
     function renderAdminTable() {
       const tb = document.getElementById('manager-table-body'); if(!tb) return; tb.innerHTML = '';
-      localTx.slice(0, 10).forEach(i => {
+      localTx.slice(0, 15).forEach(i => {
         tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2">${i.type}</td><td class="p-2">${i.dateStr}</td><td class="p-2 truncate max-w-[150px]">${i.description}</td><td class="p-2">Rp ${i.amount.toLocaleString()}</td><td class="p-2 text-center"><button onclick="kasRef.child('${i.id}').remove()" class="text-rose-400">Hapus</button></td></tr>`);
       });
     }
@@ -987,11 +1036,6 @@
       const ws = XLSX.utils.json_to_sheet([{ Tanggal: today, Tipe: "masuk", Absen: 1, Nominal: 5000, Catatan: "Kas" }]);
       ws['!cols'] = [{wch: 14}, {wch: 10}, {wch: 10}, {wch: 12}, {wch: 20}];
       const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, "Template.xlsx");
-    }
-
-    function exportJSONBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({localTx, localDenda}));
-      const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "backup.json"); dl.click();
     }
 
     function importExcel() {
@@ -1025,7 +1069,7 @@
           });
 
           Promise.all(promises).then(() => {
-            showToast("Sukses", "Data Excel berhasil di-import ke Firebase!", "success");
+            showToast("Sukses", "Data Excel v7.6 berhasil di-import!", "success");
             fileInput.value = "";
           });
         } catch(err) {
