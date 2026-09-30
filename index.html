@@ -177,7 +177,7 @@
         <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring Pemasukan Tambahan & Pelunasan</h3>
-            <p class="text-[11px] text-slate-400">Masuk ke uang sistem, namun dipisah dari akumulasi matriks kas utama.</p>
+            <p class="text-[11px] text-slate-400">Daftar pemasukan tambahan (masuk ke uang sistem, dikecualikan dari total kas utama matriks).</p>
           </div>
           <div class="flex items-center gap-4">
             <div class="flex gap-2 text-xs font-bold">
@@ -186,7 +186,7 @@
             </div>
             <div class="flex items-center gap-2 pl-3 border-l border-slate-800">
               <div class="text-right">
-                <span class="text-[9px] text-slate-400 block font-bold uppercase">Total Kas Sistem</span>
+                <span class="text-[9px] text-slate-400 block font-bold uppercase">Kas Utama Matriks</span>
                 <span id="quick-total-kas" class="text-xs font-black text-emerald-400">Rp 0</span>
               </div>
               <button onclick="scrollToMatrix()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-bold shadow flex items-center gap-1"><i data-lucide="arrow-down" class="w-3.5 h-3.5"></i> Ke Matriks</button>
@@ -254,7 +254,7 @@
         <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & QRIS Method</h3>
-            <p class="text-[11px] text-slate-400">Catat kas masuk, pengeluaran, atau pemasukan tambahan terpisah.</p>
+            <p class="text-[11px] text-slate-400">Catat kas masuk, pengeluaran, atau pemasukan tambahan.</p>
           </div>
           <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
         </div>
@@ -408,7 +408,7 @@
       <div class="space-y-4 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
         <div class="pb-2 border-b border-slate-800">
           <b class="text-blue-400">v7.2 Patch Update (Current)</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Pemasukan tambahan (yang berstatus Lunas) kini <b>masuk ke total uang sistem (kas bersih/cashflow total)</b>, TETAPI <b>dikecualikan/tidak dicampur</b> ke dalam total iuran kas per siswa di tabel matriks.<br>• Penambahan fitur Batal Lunas tetap aktif.</p>
+          <p class="text-slate-400 text-[11px] mt-1">• Pemasukan tambahan yang lunas kini <b>masuk ke total uang sistem & uang fisik</b>, tetapi <b>dikecualikan dari total kas utama matriks</b> (agar perhitungan iuran wajib kas tetap bersih).<br>• Fitur Batal Lunas tetap aktif.</p>
         </div>
       </div>
       <div class="flex justify-end pt-2">
@@ -437,7 +437,7 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); const auth = firebase.auth();
     const kasRef = db.ref('transaksi_kas'); 
-    const dendaRef = db.ref('kas_denda'); // Database Pemasukan Tambahan
+    const dendaRef = db.ref('kas_denda'); // Pemasukan Tambahan
     const metaRef = db.ref('meta_data');
     const auditRef = db.ref('audit_trail');
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
@@ -674,6 +674,7 @@
               const nm = ab && daftarSiswa[ab] ? daftarSiswa[ab].nama : `Absen ${ab}`;
               const dObj = new Date(dV); const dStr = isNaN(dObj.getTime()) ? today : dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
               if(t === 'denda') {
+                // Pemasukan tambahan masuk ke database denda/tambahan
                 promises.push(dendaRef.push({ timestamp: dObj.getTime(), dateStr: dStr, absen: ab, nama: nm, amount: am, reason: (no||'Pemasukan Tambahan'), status: dStatus }));
               } else {
                 let desc = t==='masuk' && ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
@@ -710,7 +711,7 @@
 
     function processData() {
       try {
-        let tM=0, tK=0, tD=0, tBayar={}; for(let i=1;i<=TOTAL_SISWA;i++) tBayar[i]=0;
+        let tM=0, tK=0, tD_lunas=0, tBayar={}; for(let i=1;i<=TOTAL_SISWA;i++) tBayar[i]=0;
         let dailyGroup = {};
         
         localTx.forEach(t => {
@@ -730,20 +731,23 @@
 
         localDenda.forEach(d => {
           if(d.status === 'Paid') {
-            tD += d.amount; // Masuk ke total uang sistem (cashflow total)
+            tD_lunas += d.amount; // Masuk ke total uang sistem / fisik
           }
-          if(!dailyGroup[d.dateStr]) dailyGroup[d.dateStr] = { timestamp: t.timestamp || Date.now(), items: [] };
+          if(!dailyGroup[d.dateStr]) dailyGroup[d.dateStr] = { timestamp: d.timestamp, items: [] };
           dailyGroup[d.dateStr].items.push({ type: 'denda_record', status: d.status, amount: d.amount, desc: `Absen ${d.absen} (${d.reason})`, id: d.id, db: 'denda' });
         });
 
-        // TOTAL UANG SISTEM SEKARANG MENGGABUNGKAN KAS MASUK + PEMASUKAN TAMBAHAN (LUNAS) - PENGELUARAN
-        const totSistem = tM + tD - tK; 
+        // Uang sistem total memasukkan kas masuk + pemasukan tambahan lunas - pengeluaran
+        const totSistem = (tM + tD_lunas) - tK; 
         const selisih = saldoFisik - totSistem;
         
         const elSys = document.getElementById('stat-sistem'); if(elSys) elSys.innerText = `Rp ${totSistem.toLocaleString()}`;
-        const elQuick = document.getElementById('quick-total-kas'); if(elQuick) elQuick.innerText = `Rp ${totSistem.toLocaleString()}`;
+        
+        // Quick total kas di matriks HANYA menghitung murni kas masuk (tanpa tambahan)
+        const elQuick = document.getElementById('quick-total-kas'); if(elQuick) elQuick.innerText = `Rp ${tM.toLocaleString()}`;
+        
         const elFisik = document.getElementById('stat-fisik'); if(elFisik) elFisik.innerText = `Rp ${saldoFisik.toLocaleString()}`;
-        const elDenda = document.getElementById('stat-denda'); if(elDenda) elDenda.innerText = `Rp ${tD.toLocaleString()}`;
+        const elDenda = document.getElementById('stat-denda'); if(elDenda) elDenda.innerText = `Rp ${tD_lunas.toLocaleString()}`;
         
         const sb = document.getElementById('box-selisih'), st = document.getElementById('stat-selisih');
         if(sb && st) {
@@ -753,9 +757,9 @@
         renderLedger(dailyGroup);
         renderEStatementTable();
         renderDendaTable();
-        renderRekapTable(tBayar); // tBayar MURNI dari transaksi kas masuk, TIDAK DICAMPUR pemasukan tambahan sesuai permintaan Well!
+        renderRekapTable(tBayar); 
         renderAdminTable(); 
-        updateCharts(tM + tD, tK);
+        updateCharts(tM + tD_lunas, tK);
       } catch(e) {}
     }
 
@@ -827,7 +831,7 @@
       if(!isAdmin) return;
       dendaRef.child(id).update({ status: newStatus }).then(() => {
         auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Mengubah status pemasukan tambahan ID ${id} menjadi ${newStatus}` });
-        showToast("Berhasil", newStatus === 'Paid' ? "Pemasukan tambahan ditandai Lunas & masuk ke kas sistem." : "Status dikembalikan menjadi Belum Lunas (Batal Lunas).", "success");
+        showToast("Berhasil", newStatus === 'Paid' ? "Pemasukan tambahan ditandai Lunas dan masuk ke total uang sistem." : "Status dikembalikan menjadi Belum Lunas (Batal Lunas).", "success");
       });
     }
 
