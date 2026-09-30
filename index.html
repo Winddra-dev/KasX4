@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v6.9 Ultimate Export Studio</title>
+  <title>Kas X-4 | v7.0 Ultimate Audit & Revision Studio</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
-
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -14,11 +13,9 @@
   <script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
   <style>
     ::-webkit-scrollbar { height: 6px; width: 6px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
@@ -28,7 +25,6 @@
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen pb-16 antialiased selection:bg-blue-600/30">
-
   <!-- TOAST NOTIFICATION -->
   <div id="toast-box" class="fixed bottom-5 right-5 z-[999] bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 max-w-sm">
     <div id="toast-icon" class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
@@ -50,12 +46,11 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">Kas X-4</h1>
-            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v6.9 STUDIO</span>
+            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v7.0 REVISION</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
       </div>
-
       <div class="flex items-center gap-3">
         <div id="status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> <span id="status-text">ONLINE</span>
@@ -79,12 +74,11 @@
       <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Matriks 📊</button>
       <button onclick="switchTab('history')" id="tab-history" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">E-Statement 📜</button>
       <button onclick="switchTab('input')" id="tab-input" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-hidden">Smart Input</button>
-      <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-hidden">Live Audit 🛡️</button>
+      <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-hidden">Database & Revisi 🛡️</button>
     </div>
   </div>
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-
     <!-- ================= TAB 1: DASHBOARD ================= -->
     <div id="content-dashboard" class="tab-content space-y-6">
       <section id="wirasena-reminder-banner" class="hidden bg-gradient-to-r from-rose-950/80 via-slate-900 to-slate-900 border border-rose-500/40 p-4 rounded-xl shadow-xl flex items-center justify-between gap-4">
@@ -100,7 +94,7 @@
 
       <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm">
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Kas Sistem</p>
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Uang Sistem</p>
           <h3 id="stat-sistem" class="text-xl font-black text-blue-400 mt-1">Rp 0</h3>
         </div>
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm">
@@ -112,14 +106,14 @@
           <h3 id="stat-selisih" class="text-xl font-black text-slate-300 mt-1">Sinkron</h3>
         </div>
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm col-span-2 md:col-span-1">
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Denda Lunas</p>
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pemasukan Tambahan (Lunas)</p>
           <h3 id="stat-denda" class="text-xl font-black text-amber-400 mt-1">Rp 0</h3>
         </div>
       </section>
 
       <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
-          <div class="flex justify-between items-center"><h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Komposisi Arus Kas</h3><span class="text-[10px] text-slate-400 font-medium">Donut Ratio</span></div>
+          <div class="flex justify-between items-center"><h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-400"></i> Komposisi Arus Uang</h3><span class="text-[10px] text-slate-400 font-medium">Donut Ratio</span></div>
           <div class="h-48 w-full"><canvas id="kasChart"></canvas></div>
         </div>
         <div class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
@@ -154,7 +148,7 @@
           <div class="grid grid-cols-3 gap-2">
             <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Total Bayar</span><h5 id="res-total-kas" class="text-sm font-black text-emerald-400 mt-1">Rp 0</h5></div>
             <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Tunggakan</span><h5 id="res-tunggakan" class="text-sm font-black text-rose-400 mt-1">0 Mgg</h5></div>
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Denda Aktif</span><h5 id="res-total-denda" class="text-sm font-black text-amber-400 mt-1">Rp 0</h5></div>
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Tambahan Aktif</span><h5 id="res-total-denda" class="text-sm font-black text-amber-400 mt-1">Rp 0</h5></div>
           </div>
           <div class="space-y-1">
             <div class="flex justify-between text-[10px] text-slate-400 font-bold"><span>Progress Pembayaran Kas</span><span id="res-progress-pct">0%</span></div>
@@ -178,27 +172,39 @@
         </div>
       </section>
 
+      <!-- PEMASUKAN TAMBAHAN MONITORING SECTION -->
       <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl space-y-4 shadow-sm">
-        <div class="flex flex-wrap justify-between items-center gap-2">
+        <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
           <div>
-            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring & Pelunasan Denda Kelas</h3>
-            <p class="text-[11px] text-slate-400">Daftar pelanggaran siswa. Klik lunas untuk menyelesaikan denda.</p>
+            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring Pemasukan Tambahan & Pelunasan</h3>
+            <p class="text-[11px] text-slate-400">Daftار pemasukan tambahan / iuran khusus. Kelola pelunasan secara praktis.</p>
           </div>
-          <div class="flex gap-2 text-xs font-bold">
-            <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">Belum: <span id="count-unpaid">0</span></span>
-            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30">Lunas: <span id="count-paid">0</span></span>
+          <div class="flex items-center gap-4">
+            <div class="flex gap-2 text-xs font-bold">
+              <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">Belum: <span id="count-unpaid">0</span></span>
+              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30">Lunas: <span id="count-paid">0</span></span>
+            </div>
+            <!-- TOTAL KAS & SHORTCUT KE MATRIKS SESUAI PERMINTAAN -->
+            <div class="flex items-center gap-2 pl-3 border-l border-slate-800">
+              <div class="text-right">
+                <span class="text-[9px] text-slate-400 block font-bold uppercase">Total Kas Sistem</span>
+                <span id="quick-total-kas" class="text-xs font-black text-emerald-400">Rp 0</span>
+              </div>
+              <button onclick="scrollToMatrix()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-bold shadow flex items-center gap-1"><i data-lucide="arrow-down" class="w-3.5 h-3.5"></i> Ke Matriks</button>
+            </div>
           </div>
         </div>
         <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/50">
           <table class="w-full text-left text-xs min-w-[700px]">
             <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
-              <tr><th class="p-3 w-16 text-center">Absen</th><th class="p-3 w-36">Nama Siswa</th><th class="p-3">Alasan / Pelanggaran</th><th class="p-3 w-28">Nominal</th><th class="p-3 w-28 text-center">Status</th><th class="p-3 w-32 text-center">Aksi</th></tr>
+              <tr><th class="p-3 w-16 text-center">Absen</th><th class="p-3 w-36">Nama Siswa</th><th class="p-3">Keterangan / Sumber</th><th class="p-3 w-28">Nominal</th><th class="p-3 w-28 text-center">Status</th><th class="p-3 w-32 text-center">Aksi</th></tr>
             </thead>
-            <tbody id="denda-table-body" class="divide-y divide-slate-800 text-slate-300"><tr><td colspan="6" class="text-center py-4 text-slate-500">Memuat data denda...</td></tr></tbody>
+            <tbody id="denda-table-body" class="divide-y divide-slate-800 text-slate-300"><tr><td colspan="6" class="text-center py-4 text-slate-500">Memuat data pemasukan tambahan...</td></tr></tbody>
           </table>
         </div>
       </section>
 
+      <!-- TABEL MATRIKS UTAMA -->
       <section id="matriks-export-container" class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl shadow-sm space-y-4">
         <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
           <div>
@@ -249,7 +255,7 @@
         <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & QRIS Method</h3>
-            <p class="text-[11px] text-slate-400">Pilih metode pembayaran (Cash / QRIS Patungan Kelas).</p>
+            <p class="text-[11px] text-slate-400">Pilih metode pembayaran (Cash / QRIS Patungan Kelas) atau catat pemasukan tambahan.</p>
           </div>
           <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
         </div>
@@ -267,7 +273,7 @@
       </section>
     </div>
 
-    <!-- ================= TAB: TOOLS & AUDIT ================= -->
+    <!-- ================= TAB: DATABASE MANAGER & REVISI LENGKAP ================= -->
     <div id="content-tools" class="tab-content hidden space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3 shadow-sm">
@@ -279,29 +285,33 @@
           <div class="pt-2"><button onclick="downloadTemplate()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] font-bold text-white">Unduh Template Kosong</button></div>
         </div>
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3 shadow-sm">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="calculator" class="w-4 h-4 text-amber-400"></i> Kalkulator Kembalian</h3>
-          <div class="space-y-2 pt-1">
-            <input type="number" id="calc-total" placeholder="Total Tagihan (Rp)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
-            <input type="number" id="calc-paid" placeholder="Uang Diberikan (Rp)" oninput="calcChange()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
-            <p id="calc-result" class="text-xs font-bold text-emerald-400">Kembalian: Rp 0</p>
-          </div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Keamanan & Kebijakan Revisi</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Fitur Database Manager di bawah ini dirancang untuk memperbaiki kesalahan input masa lalu yang baru ditemukan. Setiap perubahan/edit akan dicatat dalam audit trail otomatis demi transparansi kelas.</p>
+          <button onclick="exportJSONBackup()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[11px] font-bold">Backup JSON Database</button>
         </div>
       </div>
+
       <section class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 shadow-sm">
         <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4 text-blue-400"></i> Live System Audit Log</h3>
-        <div id="audit-feed-container" class="space-y-2 max-h-[350px] overflow-y-auto pr-1"><p class="text-center py-6 text-slate-500 text-xs">Memuat log...</p></div>
+        <div id="audit-feed-container" class="space-y-2 max-h-[250px] overflow-y-auto pr-1"><p class="text-center py-6 text-slate-500 text-xs">Memuat log...</p></div>
       </section>
+
+      <!-- DATABASE MANAGER LENGKAP DENGAN FITUR EDIT / REVISI SEPENUHNYA -->
       <section class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 shadow-sm">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-blue-400"></i> Database Manager</h3>
-        <div class="overflow-x-auto max-h-[400px] overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/50">
-          <table class="w-full text-left text-[10px] sm:text-xs min-w-[700px]">
-            <thead class="bg-slate-900 text-slate-400 sticky top-0"><tr><th class="p-2">Kategori</th><th class="p-2">Tanggal</th><th class="p-2">Detail</th><th class="p-2">Nominal</th><th class="p-2 text-center">Aksi</th></tr></thead>
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-blue-400"></i> Database Manager & Sistem Revisi Lengkap</h3>
+          <span class="text-[10px] text-slate-400 font-medium">Klik tombol Edit untuk merevisi transaksi masa lalu</span>
+        </div>
+        <div class="overflow-x-auto max-h-[450px] overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/50">
+          <table class="w-full text-left text-[10px] sm:text-xs min-w-[750px]">
+            <thead class="bg-slate-900 text-slate-400 sticky top-0">
+              <tr><th class="p-2.5">Kategori / Database</th><th class="p-2.5">Tanggal</th><th class="p-2.5">Detail Transaksi</th><th class="p-2.5">Nominal</th><th class="p-2.5 text-center">Aksi (Edit / Hapus)</th></tr>
+            </thead>
             <tbody id="manager-table-body" class="divide-y divide-slate-800 text-slate-300"></tbody>
           </table>
         </div>
       </section>
     </div>
-
   </main>
 
   <!-- MODAL EXPORT STUDIO -->
@@ -312,17 +322,15 @@
         <button onclick="document.getElementById('modal-export-studio').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="p-5 space-y-5">
-        
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">1. Pilih Data yang Disertakan</label>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" id="chk-matriks" checked class="accent-blue-500 w-4 h-4"> Matriks Kas Kelas</label>
-            <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" id="chk-denda" checked class="accent-blue-500 w-4 h-4"> Data Denda</label>
+            <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" id="chk-denda" checked class="accent-blue-500 w-4 h-4"> Pemasukan Tambahan</label>
             <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" id="chk-masuk" checked class="accent-blue-500 w-4 h-4"> Pemasukan Harian</label>
             <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" id="chk-keluar" class="accent-blue-500 w-4 h-4"> Pengeluaran</label>
           </div>
         </div>
-
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">2. Tipe Laporan</label>
           <select id="sel-tipe-laporan" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 outline-none focus:border-blue-500">
@@ -330,7 +338,6 @@
             <option value="persiswa">Rekap Per Siswa (Agregasi)</option>
           </select>
         </div>
-
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">3. Format & Render Hasil</label>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -357,6 +364,42 @@
     </div>
   </div>
 
+  <!-- MODAL EDIT / REVISI TRANSAKSI LAMA -->
+  <div id="modal-edit-transaksi" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[125] flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4 text-blue-400"></i> Revisi Data Transaksi Lama</h3>
+        <button onclick="document.getElementById('modal-edit-transaksi').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <input type="hidden" id="edit-id">
+      <input type="hidden" id="edit-db">
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1 font-bold">Keterangan / Deskripsi:</label>
+          <input type="text" id="edit-desc" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-blue-500">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-400 mb-1 font-bold">Nominal (Rp):</label>
+            <input type="number" id="edit-amount" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-emerald-400 font-bold outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-bold">No. Absen (Opsional):</label>
+            <input type="number" id="edit-absen" min="1" max="28" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-blue-500">
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1 font-bold">Tanggal Transaksi:</label>
+          <input type="date" id="edit-date" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-blue-500">
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="document.getElementById('modal-edit-transaksi').classList.add('hidden')" class="px-3 py-2 bg-slate-800 rounded-lg text-xs font-bold text-white">Batal</button>
+        <button onclick="saveEditedTransaction()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold text-white shadow">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL PATCH NOTES FULL -->
   <div id="modal-patch-notes" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md shadow-2xl space-y-4">
@@ -366,24 +409,12 @@
       </div>
       <div class="space-y-4 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-blue-400">v6.9 Ultimate Export Studio (Current)</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Fitur form Modal Pusat Ekspor data dinamis.<br>• Fitur input Denda langsung bisa set status "Lunas" & masuk kas otomatis.<br>• Desain apresiasi *Kelebihan* khusus ekspor Excel.<br>• Restrukturisasi total menu navigasi & penghapusan tombol lawas.</p>
+          <b class="text-blue-400">v7.0 Ultimate Audit & Revision Studio (Current)</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Fitur revisi data lengkap & Database Manager untuk mengedit kesalahan input masa lalu.<br>• Restrukturisasi denda & dana eksternal menjadi Pemasukan Tambahan.<br>• Penambahan Total Kas & shortcut langsung ke Matriks.<br>• Optimalisasi ekspor PNG agar merender tabel matriks secara menyeluruh tanpa terpotong device view.</p>
         </div>
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.8 Ultimate Update</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Fitur Enter pada pencarian Cek Mandiri.<br>• Cek Mandiri lengkap dengan bar progress dan status.<br>• Render matriks ke gambar (PNG).</p>
-        </div>
-        <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.7 Ultimate Edition</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Bar Chart komparatif di dashboard.<br>• Auto-Fit Column width pada ekspor Excel.</p>
-        </div>
-        <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.6 & v6.5 Elite</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Integrasi logo favicon web.<br>• Fitur Import file Excel otomatis ke Firebase.<br>• Laporan Word (.docx) generator.</p>
-        </div>
-        <div>
-          <b class="text-slate-500">v1.0 - v6.4 (Legacy)</b>
-          <p class="text-slate-500 text-[11px] mt-1">• Inisialisasi Firebase database, sistem login Multi-Admin, Smart Input Multi-Row, dan Dashboard dasar.</p>
+          <b class="text-slate-300">v6.9 Ultimate Export Studio</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Pusat ekspor modal dinamis, denda langsung lunas, dan restrukturisasi navigasi.</p>
         </div>
       </div>
       <div class="flex justify-end pt-2">
@@ -403,32 +434,27 @@
         setTimeout(() => { box.classList.remove('show'); }, 3500);
       } catch(e) {}
     }
-
     const firebaseConfig = {
       apiKey: "AIzaSyDCfPEYWlVflCjA3cWsHiX5BYwxcI-Th24",
       authDomain: "kas-x4-26-27.firebaseapp.com",
       databaseURL: "https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "kas-x4-26-27"
     };
-
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); const auth = firebase.auth();
     const kasRef = db.ref('transaksi_kas'); 
-    const dendaRef = db.ref('kas_denda'); 
+    const dendaRef = db.ref('kas_denda'); // Difungsikan sebagai database Pemasukan Tambahan
     const metaRef = db.ref('meta_data');
     const auditRef = db.ref('audit_trail');
-
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
     let isAdmin = false; let currentUserEmail = ""; let currentUserName = ""; 
     let localTx = []; let localDenda = []; let localAudit = []; let saldoFisik = 0; 
     let kasChartInstance = null; let kasBarChartInstance = null;
-
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000; 
     let maxDetectedWeeks = 16;
     const START_SEMESTER = new Date("2026-07-20");
     const today = new Date().toISOString().split('T')[0];
     const daftarSiswa = {}; for(let i=1;i<=TOTAL_SISWA;i++) daftarSiswa[i] = {nama:`Siswa Absen ${i}`, wa:"6281234567890"};
-
     try { lucide.createIcons(); } catch(e) {}
 
     db.ref(".info/connected").on("value", s => {
@@ -442,9 +468,10 @@
 
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
     function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri.", 'success'); }
-
-    function openPatchNotes() {
-      document.getElementById('modal-patch-notes').classList.remove('hidden');
+    function openPatchNotes() { document.getElementById('modal-patch-notes').classList.remove('hidden'); }
+    function scrollToMatrix() {
+      switchTab('rekap');
+      document.getElementById('matriks-export-container').scrollIntoView({ behavior: 'smooth' });
     }
 
     auth.onAuthStateChanged(user => {
@@ -483,11 +510,11 @@
       document.getElementById('input-saldo-fisik').value = saldoFisik;
       document.getElementById('modal-edit-fisik').classList.remove('hidden');
     }
-
     function saveSaldoFisik() {
       const val = parseInt(document.getElementById('input-saldo-fisik').value) || 0;
       metaRef.child('saldo_fisik').set(val).then(() => {
         document.getElementById('modal-edit-fisik').classList.add('hidden');
+        auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Memperbarui Uang Fisik menjadi Rp ${val.toLocaleString()}` });
         showToast("Sukses", "Uang fisik berhasil diperbarui!", "success");
       });
     }
@@ -505,7 +532,6 @@
         localTx.filter(t => t.type === 'masuk' && t.absen === 28).forEach(t => paidTotal += t.amount);
         let weeksPaid = Math.floor(paidTotal / TARIF_MINGGU);
         let lagWeeks = (currentWeek - 1) - weeksPaid;
-
         if(lagWeeks > 0) {
           textElem.innerText = `Waduh Wir, kas kamu nunggak ${lagWeeks} minggu per hari ini. Segera bereskan ya!`;
         } else {
@@ -531,16 +557,12 @@
       } catch(e) {}
     }
 
-    function handleLookupKey(e) {
-      if(e.key === 'Enter') executeLookup();
-    }
-
+    function handleLookupKey(e) { if(e.key === 'Enter') executeLookup(); }
     function executeLookup() {
       try {
         const q = document.getElementById('lookup-input').value.trim().toLowerCase();
         const resContainer = document.getElementById('lookup-result-container');
         if(!q) return showToast("Peringatan", "Masukkan nama atau nomor absen!", "error");
-
         let foundAbsen = null;
         if(!isNaN(q)) {
           let num = parseInt(q);
@@ -550,35 +572,28 @@
             if(daftarSiswa[i].nama.toLowerCase().includes(q)) { foundAbsen = i; break; }
           }
         }
-
         if(!foundAbsen) {
           resContainer.classList.add('hidden');
           return showToast("Tidak Ditemukan", "Siswa tidak ditemukan dalam rentang 1-28.", "error");
         }
-
         const name = daftarSiswa[foundAbsen].nama;
         let totalKas = 0;
         let now = new Date();
         let diffTime = Math.abs(now - START_SEMESTER);
         let currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
-
-        localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen).forEach(t => {
-          totalKas += t.amount;
-        });
-
+        localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen).forEach(t => { totalKas += t.amount; });
         let weeksPaid = Math.floor(totalKas / TARIF_MINGGU);
         let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
         let surplus = weeksPaid - (currentWeek - 1);
-
         let totalDenda = 0;
         localDenda.filter(d => d.absen === foundAbsen && d.status === 'Unpaid').forEach(d => totalDenda += d.amount);
-
+        
         document.getElementById('res-name').innerText = name;
         document.getElementById('res-absen').innerText = `Nomor Absen: ${foundAbsen}`;
         document.getElementById('res-total-kas').innerText = `Rp ${totalKas.toLocaleString()}`;
         document.getElementById('res-tunggakan').innerText = lag > 0 ? `${lag} Mgg` : 'Aman';
         document.getElementById('res-total-denda').innerText = `Rp ${totalDenda.toLocaleString()}`;
-
+        
         let badge = document.getElementById('res-status-badge');
         if(lag > 0) {
           badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30";
@@ -590,12 +605,11 @@
           badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30";
           badge.innerText = "Lunas / Sesuai Target";
         }
-
         let targetTotal = (currentWeek - 1) * TARIF_MINGGU;
         let pct = targetTotal > 0 ? Math.min(100, Math.round((totalKas / (currentWeek * TARIF_MINGGU)) * 100)) : 100;
         document.getElementById('res-progress-pct').innerText = `${pct}%`;
         document.getElementById('res-progress-bar').style.width = `${pct}%`;
-
+        
         let historyList = document.getElementById('res-history-list');
         historyList.innerHTML = '';
         let myTx = localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen);
@@ -606,7 +620,6 @@
             historyList.insertAdjacentHTML('beforeend', `<div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between text-xs"><span>${tx.dateStr} - ${tx.description}</span><span class="font-bold text-emerald-400">+Rp ${tx.amount.toLocaleString()}</span></div>`);
           });
         }
-
         resContainer.classList.remove('hidden');
       } catch(e) {}
     }
@@ -617,7 +630,7 @@
         if(!tb) return;
         const tr = document.createElement('tr'); tr.className = "multi-row group";
         tr.innerHTML = `
-          <td class="p-1.5"><select onchange="handleTypeChange(this)" class="m-type w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 outline-none"><option value="masuk">Kas Masuk</option><option value="keluar">Pengeluaran</option><option value="denda">Catat Denda</option></select></td>
+          <td class="p-1.5"><select onchange="handleTypeChange(this)" class="m-type w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 outline-none"><option value="masuk">Kas Masuk</option><option value="keluar">Pengeluaran</option><option value="denda">Pemasukan Tambahan</option></select></td>
           <td class="p-1.5">
             <select class="m-method w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 outline-none"><option value="Cash">Cash Tunai</option><option value="QRIS Kelas">QRIS</option></select>
             <select class="m-status hidden w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-amber-400 font-bold outline-none"><option value="Unpaid">Belum Lunas</option><option value="Paid">Langsung Lunas</option></select>
@@ -625,7 +638,7 @@
           <td class="p-1.5"><input type="date" value="${today}" class="m-date w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 outline-none"></td>
           <td class="p-1.5"><input type="number" min="1" max="28" placeholder="No" class="m-absen w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs outline-none"></td>
           <td class="p-1.5"><input type="number" placeholder="Rp" required value="5000" class="m-amount w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-emerald-400 font-bold outline-none"></td>
-          <td class="p-1.5"><input type="text" placeholder="Catatan" class="m-note w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs outline-none"></td>
+          <td class="p-1.5"><input type="text" placeholder="Catatan / Sumber" class="m-note w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs outline-none"></td>
           <td class="p-1.5 text-center"><button type="button" onclick="this.closest('tr').remove()" class="p-1.5 text-slate-600 hover:text-rose-400"><i data-lucide="x" class="w-4 h-4"></i></button></td>
         `;
         tb.appendChild(tr); try{lucide.createIcons();}catch(e){}
@@ -642,8 +655,7 @@
         if(sel.value === 'masuk') { 
           amt.value = 5000; amt.className = "m-amount w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-emerald-400 font-bold outline-none";
           methodSel.classList.remove('hidden'); statusSel.classList.add('hidden');
-        }
-        else if (sel.value === 'denda') { 
+        } else if (sel.value === 'denda') { 
           amt.value = ''; amt.className = "m-amount w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-amber-400 font-bold outline-none";
           methodSel.classList.add('hidden'); statusSel.classList.remove('hidden');
         } else {
@@ -665,16 +677,15 @@
             const ab = parseInt(r.querySelector('.m-absen').value), am = parseInt(r.querySelector('.m-amount').value), no = r.querySelector('.m-note').value;
             
             if(am) {
-              const nm = daftarSiswa[ab]?daftarSiswa[ab].nama:`Absen ${ab}`;
-              const dObj = new Date(dV); const dStr = dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+              const nm = ab && daftarSiswa[ab] ? daftarSiswa[ab].nama : `Absen ${ab}`;
+              const dObj = new Date(dV); const dStr = isNaN(dObj.getTime()) ? today : dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
               if(t === 'denda') {
-                promises.push(dendaRef.push({ timestamp: dObj.getTime(), dateStr: dStr, absen: ab, nama: nm, amount: am, reason: (no||'Pelanggaran'), status: dStatus }));
-                // Jika langsung dicatat lunas, otomatis masukin ke transaksi kas masuk
+                promises.push(dendaRef.push({ timestamp: dObj.getTime(), dateStr: dStr, absen: ab, nama: nm, amount: am, reason: (no||'Pemasukan Tambahan'), status: dStatus }));
                 if(dStatus === 'Paid') {
-                  promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: 'masuk', absen: ab, amount: am, description: `[Denda Lunas - Ab. ${ab}] ${no||'Pelanggaran'}` }));
+                  promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: 'masuk', absen: ab, amount: am, description: `[Tambahan Lunas - Ab. ${ab}] ${no||'Pemasukan Tambahan'}` }));
                 }
               } else {
-                let desc = t==='masuk'&&ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
+                let desc = t==='masuk' && ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
                 promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc }));
               }
             }
@@ -683,6 +694,7 @@
             document.getElementById('multi-rows-container').innerHTML=''; 
             addMultiRow(); 
             switchTab('dashboard'); 
+            auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: "Menambahkan multi-transaksi baru" });
             showToast("Sukses", "Data berhasil disimpan!", "success"); 
           });
         } catch(err) {}
@@ -709,7 +721,6 @@
       try {
         let tM=0, tK=0, tD=0, tBayar={}; for(let i=1;i<=TOTAL_SISWA;i++) tBayar[i]=0;
         let dailyGroup = {};
-
         localTx.forEach(t => {
           if(t.type === 'masuk') { 
             tM+=t.amount; 
@@ -719,11 +730,9 @@
               if(calcW > maxDetectedWeeks) maxDetectedWeeks = calcW;
             }
           } else tK+=t.amount;
-
           if(!dailyGroup[t.dateStr]) dailyGroup[t.dateStr] = { timestamp: t.timestamp, items: [] };
           dailyGroup[t.dateStr].items.push({ type: t.type, amount: t.amount, desc: t.description, id: t.id, db: 'kas' });
         });
-
         localDenda.forEach(d => {
           if(d.status === 'Paid') tD+=d.amount;
           if(!dailyGroup[d.dateStr]) dailyGroup[d.dateStr] = { timestamp: d.timestamp, items: [] };
@@ -732,15 +741,15 @@
 
         const totSistem = tM - tK; const selisih = saldoFisik - totSistem;
         const elSys = document.getElementById('stat-sistem'); if(elSys) elSys.innerText = `Rp ${totSistem.toLocaleString()}`;
+        const elQuick = document.getElementById('quick-total-kas'); if(elQuick) elQuick.innerText = `Rp ${totSistem.toLocaleString()}`;
         const elFisik = document.getElementById('stat-fisik'); if(elFisik) elFisik.innerText = `Rp ${saldoFisik.toLocaleString()}`;
         const elDenda = document.getElementById('stat-denda'); if(elDenda) elDenda.innerText = `Rp ${tD.toLocaleString()}`;
-
+        
         const sb = document.getElementById('box-selisih'), st = document.getElementById('stat-selisih');
         if(sb && st) {
           if(selisih===0){ sb.className="bg-emerald-900/20 p-4 rounded-xl border border-emerald-500/30 col-span-2 md:col-span-1"; st.innerText="Sinkron"; st.className="text-xl font-black text-emerald-400 mt-1"; }
           else{ sb.className="bg-amber-900/20 p-4 rounded-xl border border-amber-500/30 col-span-2 md:col-span-1"; st.innerText=`Rp ${selisih.toLocaleString()}`; st.className="text-xl font-black text-amber-400 mt-1"; }
         }
-
         renderLedger(dailyGroup);
         renderEStatementTable();
         renderDendaTable();
@@ -754,7 +763,6 @@
       const lg = document.getElementById('ledger-container'); if(!lg) return; lg.innerHTML = '';
       const sortedDates = Object.keys(dailyGroup).sort((a,b) => dailyGroup[b].timestamp - dailyGroup[a].timestamp);
       if(sortedDates.length === 0) { lg.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada aktivitas.</p>'; return; }
-
       sortedDates.forEach((dateStr) => {
         const day = dailyGroup[dateStr]; let dayIn = 0; let detailHTML = '';
         day.items.forEach(item => {
@@ -770,7 +778,7 @@
 
     function renderEStatementTable() {
       const tb = document.getElementById('estatement-table-body'); if(!tb) return; tb.innerHTML = '';
-      let combined = [...localTx, ...localDenda.map(d=>({ timestamp: d.timestamp, dateStr: d.dateStr, description: `Denda (${d.reason})`, id: d.id, amount: d.amount, type: 'denda' }))].sort((a,b)=>b.timestamp-a.timestamp);
+      let combined = [...localTx, ...localDenda.map(d=>({ timestamp: d.timestamp, dateStr: d.dateStr, description: `Tambahan (${d.reason})`, id: d.id, amount: d.amount, type: 'denda' }))].sort((a,b)=>b.timestamp-a.timestamp);
       if(combined.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-500">Kosong.</td></tr>`; return; }
       combined.forEach(item => {
         tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-3">${item.dateStr}</td><td class="p-3">${item.description}</td><td class="p-3 font-mono text-[10px]">${item.id||'-'}</td><td class="p-3">Cash</td><td class="p-3 text-right font-bold">Rp ${item.amount.toLocaleString()}</td></tr>`);
@@ -788,7 +796,6 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } } } }
           });
         }
-
         const ctxBar = document.getElementById('kasBarChart');
         if(ctxBar) {
           if(kasBarChartInstance) kasBarChartInstance.destroy();
@@ -815,8 +822,9 @@
     function payDenda(id, ab, nm, am, rz) {
       if(!isAdmin) return;
       dendaRef.child(id).update({ status: 'Paid' }).then(() => {
-        kasRef.push({ timestamp: Date.now(), dateStr: today, type: 'masuk', absen: ab, amount: am, description: `[Denda Lunas - Ab. ${ab}] ${rz}` });
-        showToast("Sukses", "Denda dilunasi!", "success");
+        kasRef.push({ timestamp: Date.now(), dateStr: today, type: 'masuk', absen: ab, amount: am, description: `[Tambahan Lunas - Ab. ${ab}] ${rz}` });
+        auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Melunasi pemasukan tambahan Absen ${ab} senilai Rp ${am.toLocaleString()}` });
+        showToast("Sukses", "Pemasukan tambahan dilunasi & dicatat ke kas!", "success");
       });
     }
 
@@ -828,33 +836,31 @@
         const diffTime = Math.abs(now - START_SEMESTER);
         const currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
         const totalWeeks = Math.max(8, maxDetectedWeeks);
-
         const weekLabel = document.getElementById('current-week-label');
         if(weekLabel) weekLabel.innerText = `M${currentWeek}`;
-
-        let hStr = `<tr><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center text-slate-300 font-bold">Ab</th><th class="p-2 border border-slate-800 bg-slate-900 text-slate-300 font-bold">Nama</th><th class="p-2 border border-slate-800 text-right bg-slate-900 text-slate-300 font-bold">Total & Keterangan</th><th class="p-2 border border-slate-800 text-center bg-slate-900 text-slate-300 font-bold">Tunggakan</th>`;
+        
+        let hStr = `<tr class="whitespace-nowrap"><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center text-slate-300 font-bold">Ab</th><th class="p-2 border border-slate-800 bg-slate-900 text-slate-300 font-bold">Nama</th><th class="p-2 border border-slate-800 text-right bg-slate-900 text-slate-300 font-bold">Total & Keterangan</th><th class="p-2 border border-slate-800 text-center bg-slate-900 text-slate-300 font-bold">Tunggakan</th>`;
         for(let m=1; m<=totalWeeks; m++) {
           let isCurrent = (m === currentWeek);
           let thClass = isCurrent ? "p-1 border border-indigo-500/60 text-center text-[9px] w-10 text-indigo-300 font-black bg-indigo-950/40" : "p-1 border border-slate-800 text-center text-[9px] w-10 text-slate-400 font-bold";
           hStr += `<th class="${thClass}">M${m}</th>`;
         }
         hd.innerHTML = hStr + `</tr>`;
-
+        
         let bStr = '';
         for(let s=1; s<=TOTAL_SISWA; s++) {
           let paid = tM[s] || 0;
           let weeksPaid = Math.floor(paid / TARIF_MINGGU);
           let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
           let surplusWeeks = weeksPaid - (currentWeek - 1);
-
           let ketText = surplusWeeks > 0 ? `<br><span class="text-[9px] text-emerald-400 font-bold italic">» Lebih ${surplusWeeks} mgg, makaseh «</span>` : (lag > 0 ? `<br><span class="text-[9px] text-rose-400 font-bold">⚠️ Nunggak ${lag} mgg</span>` : `<br><span class="text-[9px] text-slate-400 font-bold">✓ Pas / Aman</span>`);
           let tunggakanBadge = lag > 0 ? `<span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded text-[10px] font-extrabold">${lag} Mgg</span>` : `<span class="text-emerald-400 font-bold text-[10px]">Aman</span>`;
-
+          
           let rStr = `<td class="p-1.5 border border-slate-800 text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border border-slate-800 text-[10px] truncate max-w-[100px] text-slate-200 font-medium">${daftarSiswa[s].nama}</td><td class="p-1.5 border border-slate-800 text-right font-bold text-blue-400 text-[10px]">Rp ${paid.toLocaleString()}${ketText}</td><td class="p-1.5 border border-slate-800 text-center text-[10px]">${tunggakanBadge}</td>`;
           let b = paid;
           for(let m=1; m<=totalWeeks; m++) {
             let isCurrent = (m === currentWeek);
-            let tdBase = isCurrent ? "p-1 border border-indigo-500/40 text-center bg-indigo-950/20 " : "p-1 border border-slate-800 text-center ";
+            let tdBase = isCurrent ? "p-1 border border-indigo-500/40 text-center bg-indigo-950/25 " : "p-1 border border-slate-800 text-center ";
             if(b >= TARIF_MINGGU) { rStr += `<td class="${tdBase} text-emerald-400 font-black">✓</td>`; b -= TARIF_MINGGU; }
             else if(b > 0) { rStr += `<td class="${tdBase} text-blue-300 font-bold">⏳</td>`; b = 0; }
             else { rStr += `<td class="${tdBase} text-slate-600">-</td>`; }
@@ -862,10 +868,48 @@
           bStr += `<tr>${rStr}</tr>`;
         }
         bd.innerHTML = bStr;
-      } catch(e) { console.error("Matrix Render Error:", e); }
+      } catch(e) {}
     }
 
-    // FUNGSI ADVANCED EXPORT STUDIO
+    // FUNGSI REVISI / EDIT DATA LENGKAP
+    function openEditTransaction(id, dbSource, currentDesc, currentAmount, currentAbsen, currentDate) {
+      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-db').value = dbSource;
+      document.getElementById('edit-desc').value = currentDesc || '';
+      document.getElementById('edit-amount').value = currentAmount || 0;
+      document.getElementById('edit-absen').value = currentAbsen || '';
+      document.getElementById('edit-date').value = currentDate ? new Date(currentDate).toISOString().split('T')[0] : today;
+      document.getElementById('modal-edit-transaksi').classList.remove('hidden');
+    }
+
+    function saveEditedTransaction() {
+      if(!isAdmin) return;
+      const id = document.getElementById('edit-id').value;
+      const dbSource = document.getElementById('edit-db').value;
+      const desc = document.getElementById('edit-desc').value;
+      const amount = parseInt(document.getElementById('edit-amount').value) || 0;
+      const absen = parseInt(document.getElementById('edit-absen').value) || null;
+      const dateVal = document.getElementById('edit-date').value;
+      
+      const dObj = new Date(dateVal);
+      const dateStr = isNaN(dObj.getTime()) ? today : dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+      
+      const targetRef = dbSource === 'kas' ? kasRef.child(id) : dendaRef.child(id);
+      let updatePayload = { description: desc, amount: amount, dateStr: dateStr, timestamp: dObj.getTime() };
+      if(dbSource === 'kas') updatePayload.absen = absen;
+      else updatePayload.absen = absen, updatePayload.reason = desc;
+
+      targetRef.update(updatePayload).then(() => {
+        document.getElementById('modal-edit-transaksi').classList.add('hidden');
+        auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Merevisi transaksi ID: ${id} (${desc}, Rp ${amount.toLocaleString()})` });
+        showToast("Revisi Berhasil", "Data transaksi masa lalu berhasil diperbarui!", "success");
+      }).catch(err => {
+        showToast("Gagal Revisi", err.message, "error");
+      });
+    }
+
+    // FUNGSI ADVANCED EXPORT STUDIO & PNG OTOMATIS PENUH
     async function runAdvancedExport(formatType) {
       if(!isAdmin && formatType !== 'png' && formatType !== 'wa') return showToast("Akses Ditolak", "Ekspor Dokumen Khusus Admin!", "error");
       
@@ -878,10 +922,12 @@
       if(formatType === 'png') {
         if(!chkMatriks) return showToast("Perhatian", "Untuk Gambar PNG, pastikan centang Matriks Kas!", "error");
         document.getElementById('modal-export-studio').classList.add('hidden');
-        showToast("Memproses", "Merender matriks menjadi gambar PNG...", "success");
+        showToast("Memproses", "Merender matriks lengkap secara utuh menjadi PNG...", "success");
+        
         setTimeout(() => {
-          html2canvas(document.getElementById('matriks-export-container'), { backgroundColor: '#020617', scale: 2 }).then(canvas => {
-            canvas.toBlob(blob => { saveAs(blob, "Matriks-Keuangan-X4.png"); showToast("Sukses", "Gambar diunduh!", "success"); });
+          const el = document.getElementById('matriks-export-container');
+          html2canvas(el, { backgroundColor: '#020617', scale: 2, windowWidth: 1400 }).then(canvas => {
+            canvas.toBlob(blob => { saveAs(blob, "Matriks-Keuangan-X4-Lengkap.png"); showToast("Sukses", "Gambar PNG utuh berhasil diunduh!", "success"); });
           });
         }, 300);
         return;
@@ -896,8 +942,8 @@
           text += `*MATRIKS (Minggu ke-${currentWeek})*\n`;
           for(let s=1; s<=TOTAL_SISWA; s++) {
             let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, (currentWeek - 1) - w); let surp = w - (currentWeek - 1);
-            let n = surp > 0 ? ` (Lebih ${surp} mgg, makaseh)` : '';
-            text += `${s}. ${daftarSiswa[s].nama} - Rp${p} | ${lag > 0 ? 'Nunggak '+lag+' Mgg' : 'Aman'}${n}\n`;
+            let n = surp > 0 ? ` (Lebih ${surp} mgg)` : '';
+            text += `${s}. ${daftarSiswa[s].nama} - Rp${p} | ${lag>0?'Nunggak '+lag+'Mgg':'Aman'}${n}\n`;
           }
         }
         navigator.clipboard.writeText(text);
@@ -907,7 +953,6 @@
 
       if(formatType === 'excel') {
         const wb = XLSX.utils.book_new();
-        
         if(chkMatriks) {
           const currentWeek = Math.max(1, Math.ceil(Math.ceil(Math.abs(new Date() - START_SEMESTER) / (1000 * 60 * 60 * 24)) / 7));
           let tM = {}; for(let i=1;i<=TOTAL_SISWA;i++) tM[i]=0;
@@ -915,33 +960,23 @@
           let dEx = [];
           for(let s=1; s<=TOTAL_SISWA; s++) {
             let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, (currentWeek - 1) - w); let surp = w - (currentWeek - 1);
-            // Format khusus apresiasi lebih minggu buat Excel
             let stat = surp > 0 ? `» Lebih ${surp} minggu, makaseh «` : (lag > 0 ? `Nunggak ${lag} mgg` : 'Lunas');
-            dEx.push({"No Absen": s, "Nama Siswa": daftarSiswa[s].nama, "Total Pembayaran": `Rp ${p>=1000?Math.round(p/1000)+'k':p}`, "Tunggakan": lag > 0 ? `${lag} Mgg` : 'Aman', "Keterangan": stat});
+            dEx.push({"No Absen": s, "Nama Siswa": daftarSiswa[s].nama, "Total Pembayaran": `Rp ${p>=1000?Math.round(p/1000)+'k':p}`, "Tunggakan": lag>0?`${lag} Mgg` : 'Aman', "Keterangan": stat});
           }
           let ws = XLSX.utils.json_to_sheet(dEx); ws['!cols'] = [{wch: 10}, {wch: 22}, {wch: 18}, {wch: 12}, {wch: 30}];
           XLSX.utils.book_append_sheet(wb, ws, "Matriks Kas");
         }
-        
         if(chkDenda) {
-          let dEx = localDenda.map(d => ({"Absen": d.absen, "Nama": d.nama, "Nominal": d.amount, "Pelanggaran": d.reason, "Status": d.status}));
+          let dEx = localDenda.map(d => ({"Absen": d.absen, "Nama": d.nama, "Nominal": d.amount, "Sumber/Keterangan": d.reason, "Status": d.status}));
           let ws = XLSX.utils.json_to_sheet(dEx); ws['!cols'] = [{wch: 10}, {wch: 22}, {wch: 12}, {wch: 30}, {wch: 12}];
-          XLSX.utils.book_append_sheet(wb, ws, "Data Denda");
+          XLSX.utils.book_append_sheet(wb, ws, "Pemasukan Tambahan");
         }
-
         if(chkMasuk || chkKeluar) {
           let filteredTx = localTx.filter(t => (chkMasuk && t.type==='masuk') || (chkKeluar && t.type==='keluar'));
-          if(tipeLaporan === 'persiswa' && chkMasuk) {
-            let agM = {}; filteredTx.forEach(t => { if(t.absen){ agM[t.absen] = (agM[t.absen]||0) + t.amount; } });
-            let agEx = Object.keys(agM).map(k => ({"Absen":k, "Total Pemasukan": agM[k]}));
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(agEx), "Rekap Kas Masuk");
-          } else {
-            let txEx = filteredTx.map(t => ({"Tipe": t.type, "Tanggal": t.dateStr, "Keterangan": t.description, "Nominal": t.amount}));
-            let ws = XLSX.utils.json_to_sheet(txEx); ws['!cols'] = [{wch: 10}, {wch: 15}, {wch: 35}, {wch: 15}];
-            XLSX.utils.book_append_sheet(wb, ws, "Riwayat Transaksi");
-          }
+          let txEx = filteredTx.map(t => ({"Tipe": t.type, "Tanggal": t.dateStr, "Keterangan": t.description, "Nominal": t.amount}));
+          let ws = XLSX.utils.json_to_sheet(txEx); ws['!cols'] = [{wch: 10}, {wch: 15}, {wch: 35}, {wch: 15}];
+          XLSX.utils.book_append_sheet(wb, ws, "Riwayat Transaksi");
         }
-
         XLSX.writeFile(wb, "Laporan-Studio-X4.xlsx");
         showToast("Sukses", "File Excel kustom di-export!", "success");
       }
@@ -953,7 +988,6 @@
           new Paragraph({ text: `Dicetak otomatis: ${new Date().toLocaleDateString('id-ID')} (Tipe: ${tipeLaporan})` }),
           new Paragraph({ text: "" })
         ];
-
         if(chkMasuk || chkKeluar) {
           childrenArr.push(new Paragraph({ text: "Ringkasan Transaksi", heading: HeadingLevel.HEADING_2 }));
           localTx.slice(0, 30).filter(t => (chkMasuk && t.type==='masuk') || (chkKeluar && t.type==='keluar')).forEach(t => {
@@ -961,14 +995,6 @@
           });
           childrenArr.push(new Paragraph({ text: "" }));
         }
-
-        if(chkDenda) {
-          childrenArr.push(new Paragraph({ text: "Daftar Denda Belum Lunas", heading: HeadingLevel.HEADING_2 }));
-          localDenda.filter(d=>d.status==='Unpaid').forEach(d => {
-            childrenArr.push(new Paragraph({ children: [new TextRun(`• Absen ${d.absen} (${d.nama}) - ${d.reason}: Rp ${d.amount.toLocaleString()}`)] }));
-          });
-        }
-
         const doc = new Document({ sections: [{ properties: {}, children: childrenArr }] });
         const blob = await Packer.toBlob(doc);
         saveAs(blob, "Laporan-Studio-X4.docx");
@@ -978,8 +1004,15 @@
 
     function renderAdminTable() {
       const tb = document.getElementById('manager-table-body'); if(!tb) return; tb.innerHTML = '';
-      localTx.slice(0, 10).forEach(i => {
-        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2">${i.type}</td><td class="p-2">${i.dateStr}</td><td class="p-2 truncate max-w-[150px]">${i.description}</td><td class="p-2">Rp ${i.amount.toLocaleString()}</td><td class="p-2 text-center"><button onclick="kasRef.child('${i.id}').remove()" class="text-rose-400">Hapus</button></td></tr>`);
+      
+      // Render transaksi kas
+      localTx.forEach(i => {
+        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2.5 font-bold text-blue-400">Kas (${i.type})</td><td class="p-2.5">${i.dateStr}</td><td class="p-2.5 truncate max-w-[200px]">${i.description}</td><td class="p-2.5 font-bold">Rp ${i.amount.toLocaleString()}</td><td class="p-2.5 text-center space-x-2"><button onclick="openEditTransaction('${i.id}','kas','${i.description}',${i.amount},${i.absen||'null'},'${i.dateStr}')" class="text-blue-400 font-bold hover:underline">Edit</button><button onclick="kasRef.child('${i.id}').remove()" class="text-rose-400 font-bold hover:underline">Hapus</button></td></tr>`);
+      });
+
+      // Render pemasukan tambahan (dulu denda)
+      localDenda.forEach(d => {
+        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2.5 font-bold text-amber-400">Tambahan</td><td class="p-2.5">${d.dateStr}</td><td class="p-2.5">Ab. ${d.absen} (${d.nama}) - ${d.reason}</td><td class="p-2.5 font-bold text-amber-400">Rp ${d.amount.toLocaleString()}</td><td class="p-2.5 text-center space-x-2"><button onclick="openEditTransaction('${d.id}','denda','${d.reason}',${d.amount},${d.absen},'${d.dateStr}')" class="text-blue-400 font-bold hover:underline">Edit</button><button onclick="dendaRef.child('${d.id}').remove()" class="text-rose-400 font-bold hover:underline">Hapus</button></td></tr>`);
       });
     }
 
@@ -990,15 +1023,14 @@
     }
 
     function exportJSONBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({localTx, localDenda}));
-      const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "backup.json"); dl.click();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({localTx, localDenda, saldoFisik}));
+      const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "backup_database_x4.json"); dl.click();
     }
 
     function importExcel() {
       if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
       const fileInput = document.getElementById('import-file');
       if(fileInput.files.length === 0) return showToast("Peringatan", "Pilih file Excel terlebih dahulu!", "error");
-
       const file = fileInput.files[0];
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -1007,7 +1039,6 @@
           const workbook = XLSX.read(data, {type: 'array'});
           const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
           const rows = XLSX.utils.sheet_to_json(firstSheet);
-
           let promises = [];
           rows.forEach(r => {
             let tgl = r.Tanggal || today;
@@ -1019,12 +1050,11 @@
             let dObj = new Date(tgl);
             let dStr = isNaN(dObj.getTime()) ? today : dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
             let nm = absen && daftarSiswa[absen] ? daftarSiswa[absen].nama : `Absen ${absen}`;
-
             let desc = tipe === 'masuk' && absen ? `[Ab. ${absen} - ${nm}] (Excel) ${catatan}` : `(Excel) ${catatan}`;
             promises.push(kasRef.push({ timestamp: Date.now(), dateStr: dStr, type: tipe, absen: absen, amount: nominal, description: desc }));
           });
-
           Promise.all(promises).then(() => {
+            auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: "Mengimpor data batch via Excel" });
             showToast("Sukses", "Data Excel berhasil di-import ke Firebase!", "success");
             fileInput.value = "";
           });
@@ -1033,12 +1063,6 @@
         }
       };
       reader.readAsArrayBuffer(file);
-    }
-
-    function calcChange() {
-      const tot = parseFloat(document.getElementById('calc-total').value) || 0;
-      const paid = parseFloat(document.getElementById('calc-paid').value) || 0;
-      document.getElementById('calc-result').innerText = `Kembalian: Rp ${Math.max(0, paid - tot).toLocaleString()}`;
     }
   </script>
 </body>
