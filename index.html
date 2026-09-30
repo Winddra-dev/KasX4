@@ -1,559 +1,61 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas Kelas X-4 | v7.6 Master Edition</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  
-  <!-- Firebase SDK (Compat) -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAS X-4 | Master Edition v7.6</title>
+    
+    <!-- CSS Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+      <!-- Firebase SDK (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  
-  <style>
-    ::-webkit-scrollbar { height: 6px; width: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-  </style>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .sidebar-item.active { background: #3b82f6; color: white; }
+        .status-paid { color: #10b981; font-weight: 600; }
+        .status-unpaid { color: #ef4444; font-weight: 600; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen pb-16 antialiased">
+<body class="flex h-screen overflow-hidden">
 
-  <!-- HEADER & APP BAR -->
-  <header class="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <h1 class="text-md font-extrabold text-white">Kas X-4</h1>
-        <span onclick="showPatchNote()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] rounded cursor-pointer hover:bg-blue-500/30 transition">v7.6 MASTER</span>
-      </div>
-      
-      <div class="flex items-center gap-3">
-        <!-- Indikator Koneksi Firebase Realtime -->
-        <span id="conn-status" class="flex items-center gap-1 text-[10px] text-rose-400 font-bold bg-rose-500/10 px-2 py-1 rounded">
-          <div class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>Offline
-        </span>
+    <!-- SIDEBAR (Navigation 7.6) -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-blue-600">KAS X-4 <span class="text-xs text-gray-400">v7.6</span></h1>
+        </div>
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="#" onclick="switchPage('dashboard')" class="sidebar-item active flex items-center p-3 rounded-lg hover:bg-gray-100 transition">
+                <span class="mr-3">📊</span> Dashboard
+            </a>
+            <a href="#" onclick="switchPage('transaksi')" class="sidebar-item flex items-center p-3 rounded-lg hover:bg-gray-100 transition">
+                <span class="mr-3">💰</span> Transaksi Kas
+            </a>
+            <a href="#" onclick="switchPage('rekonsiliasi')" class="sidebar-item flex items-center p-3 rounded-lg hover:bg-gray-100 transition">
+                <span class="mr-3">⚖️</span> Rekonsiliasi
+            </a>
+            <a href="#" onclick="switchPage('audit')" class="sidebar-item flex items-center p-3 rounded-lg hover:bg-gray-100 transition">
+                <span class="mr-3">📜</span> Audit Log
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-200">
+            <div id="userInfo" class="text-sm text-gray-600">Memuat user...</div>
+            <button onclick="logout()" class="mt-2 text-xs text-red-500 hover:underline">Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
         
-        <button id="btn-login" onclick="loginGoogle()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-[11px] font-bold text-white transition shadow-lg">Admin Access</button>
-        <button id="btn-logout" onclick="logoutGoogle()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-bold text-white hidden transition">Logout</button>
-      </div>
-    </div>
-  </header>
-  
-  <!-- NAVIGATION TABS -->
-  <div class="bg-slate-900 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 py-2 flex gap-1 overflow-x-auto no-scrollbar">
-      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-bold rounded-lg bg-blue-600/10 text-blue-400 transition">Dashboard</button>
-      <button onclick="switchTab('lookup')" id="tab-lookup" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 transition">Cek Mandiri</button>
-      <button onclick="switchTab('audit')" id="tab-audit" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 admin-hidden hidden transition">Live Audit</button>
-    </div>
-  </div>
-
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-    
-    <!-- ================= TAB 1: DASHBOARD ================= -->
-    <div id="content-dashboard" class="tab-content space-y-6">
-      
-      <!-- WIDGET ANALITIK KEUANGAN -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-          <p class="text-xs text-slate-400 font-bold mb-1">Total Sistem (Siswa + Eksternal)</p>
-          <h3 id="stat-total-sistem" class="text-2xl font-black text-blue-400">Rp 0</h3>
-          <p id="stat-detail-sistem" class="text-[11px] mt-1 text-slate-500">Siswa: Rp 0 | Eksternal: Rp 0</p>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg relative">
-          <div class="flex justify-between items-start">
-            <p class="text-xs text-slate-400 font-bold mb-1">Uang Fisik (Real)</p>
-            <span id="badge-reconcile" class="px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/20 text-emerald-400 font-bold cursor-pointer admin-hidden hidden transition hover:bg-emerald-500/30" onclick="openReconcileModal()">Fisik Terkalibrasi</span>
-          </div>
-          <h3 id="stat-total-fisik" class="text-2xl font-black text-emerald-400">Rp 0</h3>
-          <p id="stat-selisih" class="text-[11px] mt-1 text-slate-500">Selisih: Rp 0</p>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-          <p class="text-xs text-slate-400 font-bold mb-1">Total Tunggakan</p>
-          <h3 id="stat-tunggakan" class="text-2xl font-black text-rose-400">Rp 0</h3>
-        </div>
-
-        <!-- ACTION PUSAT EKSPOR & DANA EKSTERNAL -->
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col justify-center gap-2 shadow-lg">
-           <button onclick="tambahDanaEksternal()" class="w-full py-1.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-500 text-xs font-bold rounded flex items-center justify-center gap-2 admin-hidden hidden transition">
-            <i data-lucide="plus-circle" class="w-3 h-3"></i> Set Dana Eksternal
-          </button>
-          <button onclick="handleExportKas()" id="btn-export-kas" class="w-full py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-xs font-bold rounded flex items-center justify-center gap-2 transition">
-            <i data-lucide="download" class="w-3 h-3"></i> Laporan Kas (Excel)
-          </button>
-        </div>
-      </div>
-      
-      <!-- TABEL MATRIKS UTAMA -->
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-white">Matriks Kas Siswa</h2>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto shadow-lg">
-        <table class="w-full text-left text-xs whitespace-nowrap">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th class="p-3">Nama Siswa</th>
-              <th class="p-3">Total Bayar</th>
-              <th class="p-3">Tunggakan</th>
-              <th class="p-3 text-center admin-hidden hidden">Aksi Revisi</th>
-            </tr>
-          </thead>
-          <tbody id="siswaTableBody" class="divide-y divide-slate-800 text-slate-300">
-            <tr><td colspan="4" class="p-4 text-center text-slate-500">Memuat data kas dari Firebase...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ================= TAB 2: CEK MANDIRI ================= -->
-    <div id="content-lookup" class="tab-content hidden space-y-4">
-      <h2 class="text-xl font-bold text-white">Cek Status Pembayaran Mandiri</h2>
-      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-lg max-w-xl space-y-4">
-        <p class="text-xs text-slate-400">Ketik nama lengkap Anda untuk melihat detail riwayat dan status minggu pembayaran kas.</p>
-        <div class="flex gap-2">
-          <input type="text" id="lookupInput" placeholder="Cth: Wirasena..." class="flex-1 bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-sm text-slate-200 outline-none focus:border-blue-500 transition">
-          <button onclick="jalankanCekMandiri()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">Cek</button>
-        </div>
-        <div id="lookupResult" class="mt-4 space-y-2 text-xs"></div>
-      </div>
-    </div>
-
-    <!-- ================= TAB 3: LIVE AUDIT & EXPORT ================= -->
-    <div id="content-audit" class="tab-content hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-white">Live System Audit Log & Forensik</h3>
-        <button onclick="handleExportAudit()" id="btn-export-audit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded flex items-center gap-2 transition">
-          <i data-lucide="file-text" class="w-4 h-4"></i> Ekspor Audit (Excel)
-        </button>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl overflow-x-auto shadow-lg">
-        <table class="w-full text-left text-xs whitespace-nowrap">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th class="p-3">Waktu</th>
-              <th class="p-3">Siswa Terkait</th>
-              <th class="p-3">Admin</th>
-              <th class="p-3">Keterangan / Alasan</th>
-              <th class="p-3 text-center">Aksi Undo</th>
-            </tr>
-          </thead>
-          <tbody id="auditTableBody" class="divide-y divide-slate-800 text-slate-300">
-             <tr><td colspan="5" class="p-4 text-center text-slate-500">Memuat log sistem...</td></tr>
-          </tbody>
-        </table>
-        <!-- Lazy Loading Cursor Button -->
-        <div class="flex justify-center mt-6 mb-2">
-          <button id="btnLoadMore" onclick="loadAuditLogs(true)" class="px-6 py-2 bg-slate-800 text-blue-400 border border-blue-500/30 rounded-full hover:bg-slate-700 transition text-xs font-bold">
-            Muat Lebih Banyak Log
-          </button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- ================= MODAL: PATCH NOTES ================= -->
-  <div id="patchNoteModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity">
-    <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-96 shadow-2xl relative">
-      <h3 class="text-xl font-bold text-emerald-400 mb-2">Patch Notes v7.6 Master</h3>
-      <p class="text-slate-400 text-sm mb-4">Rekapitulasi evolusi sistem Kas X-4:</p>
-      <ul class="text-slate-300 text-xs list-disc pl-5 mb-6 space-y-2">
-        <li><b>v1.0 - v3.0:</b> Struktur dasar HTML, CSS Tailwind, dan integrasi awal Firebase Database.</li>
-        <li><b>v4.0 - v5.5:</b> Penambahan Cek Mandiri, Navigasi Anti-Bug, dan Akses Admin berbasis Google Auth.</li>
-        <li><b>v6.0 - v6.9:</b> Pembuatan Audit Log Immutable, Modal Revisi Terstruktur, dan Cursor Pagination (Lazy Load).</li>
-        <li><b>v7.0 - v7.6:</b> Pusat Ekspor Excel, Analitik Keuangan Realtime, Kalibrasi Uang Fisik, Rekonsiliasi Selisih, serta Manajemen Dana Eksternal (Kas Lebih).</li>
-      </ul>
-      <button onclick="closePatchNote()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs transition">Paham, Tutup</button>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: EDIT / REVISI KAS ================= -->
-  <div id="editModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity">
-    <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl w-96 shadow-2xl">
-      <h3 class="text-xl font-bold text-slate-200 mb-2">Revisi Data Kas Siswa</h3>
-      <p id="editNamaSiswa" class="text-blue-400 mb-4 font-semibold text-sm"></p>
-      
-      <div class="mb-4">
-        <label class="block text-slate-400 text-xs mb-1 font-semibold">Pilih Minggu Pembayaran</label>
-        <select id="editMinggu" class="w-full bg-slate-950 border border-slate-800 text-slate-200 p-2.5 rounded-lg text-xs outline-none focus:border-blue-500">
-          <option value="minggu_1">Minggu ke-1</option>
-          <option value="minggu_2">Minggu ke-2</option>
-          <option value="minggu_3">Minggu ke-3</option>
-          <option value="minggu_4">Minggu ke-4</option>
-          <option value="minggu_5">Minggu ke-5</option>
-        </select>
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-slate-400 text-xs mb-1 font-semibold">Ubah Status Menjadi</label>
-        <select id="editStatus" class="w-full bg-slate-950 border border-slate-800 text-slate-200 p-2.5 rounded-lg text-xs outline-none focus:border-blue-500">
-          <option value="true">Lunas (Tandai Bayar)</option>
-          <option value="false">Belum Lunas (Cabut Centang)</option>
-        </select>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-slate-400 text-xs mb-1 font-semibold">Alasan Revisi (Wajib)</label>
-        <input type="text" id="editAlasan" placeholder="Cth: Salah klik minggu lalu" class="w-full bg-slate-950 border border-slate-800 text-slate-200 p-2.5 rounded-lg text-xs outline-none focus:border-blue-500">
-      </div>
-
-      <div class="flex justify-end gap-2 mt-6">
-        <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition">Batal</button>
-        <button onclick="saveRevisi()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition">Simpan Revisi</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= JAVASCRIPT ENGINE ================= -->
-  <script>
-    // 1. INISIALISASI FIREBASE
-    const firebaseConfig = {
-      apiKey: "AIzaSyDCfPEYWlVflCjA3cWsHiX5BYwxcI-Th24",
-      authDomain: "kas-x4-26-27.firebaseapp.com",
-      databaseURL: "https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "kas-x4-26-27"
-    };
-    
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-    
-    const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
-    const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-
-    // 2. KONEKSI REALTIME STATUS
-    const connStatus = document.getElementById('conn-status');
-    db.ref('.info/connected').on('value', (snap) => {
-      if (snap.val() === true) {
-        connStatus.innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></div>Online';
-        connStatus.className = 'flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded transition-all';
-      } else {
-        connStatus.innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>Offline';
-        connStatus.className = 'flex items-center gap-1 text-[10px] text-rose-400 font-bold bg-rose-500/10 px-2 py-1 rounded transition-all';
-      }
-    });
-
-    // 3. AUTHENTICATION & NAVIGASI
-    function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(console.error); }
-    function logoutGoogle() { auth.signOut().then(() => alert("Berhasil Logout.")).catch(console.error); }
-
-    auth.onAuthStateChanged(user => {
-      const adminEls = document.querySelectorAll('.admin-hidden');
-      const btnLogin = document.getElementById('btn-login');
-      const btnLogout = document.getElementById('btn-logout');
-      
-      if(user && ALLOWED_ADMINS.includes(user.email)) {
-        adminEls.forEach(el => el.classList.remove('hidden'));
-        btnLogin.classList.add('hidden');
-        btnLogout.classList.remove('hidden');
-      } else {
-        adminEls.forEach(el => el.classList.add('hidden'));
-        btnLogin.classList.remove('hidden');
-        btnLogout.classList.add('hidden');
-      }
-      db.ref('siswa').once('value').then(renderSiswaTable);
-    });
-
-    function switchTab(t) {
-      document.querySelectorAll('.tab-btn').forEach(b => { 
-        b.classList.remove('active', 'bg-blue-600/10', 'text-blue-400'); 
-        b.classList.add('text-slate-400'); 
-      });
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-      document.getElementById(`tab-${t}`).classList.add('active', 'bg-blue-600/10', 'text-blue-400');
-      document.getElementById(`content-${t}`).classList.remove('hidden');
-      if(t === 'audit') loadAuditLogs(false);
-    }
-
-    function showPatchNote() { document.getElementById('patchNoteModal').classList.remove('hidden'); }
-    function closePatchNote() { document.getElementById('patchNoteModal').classList.add('hidden'); }
-
-    // 4. CORE: DATA SISWA & MATRIKS
-    db.ref('siswa').on('value', (snapshot) => {
-      renderSiswaTable(snapshot);
-      updateDashboardStats();
-    });
-    db.ref('meta_data').on('value', () => updateDashboardStats());
-
-    function renderSiswaTable(snapshot) {
-      const tbody = document.getElementById('siswaTableBody');
-      tbody.innerHTML = '';
-      if (!snapshot.exists()) return tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">Data siswa kosong.</td></tr>';
-      
-      const isAdmin = auth.currentUser && ALLOWED_ADMINS.includes(auth.currentUser.email);
-      
-      snapshot.forEach(child => {
-        const id = child.key;
-        const s = child.val();
-        const tunggakanColor = s.tunggakan > 0 ? 'text-rose-400' : 'text-emerald-400';
-        
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-800/50 transition-colors">
-            <td class="p-3 font-medium text-white">${s.nama}</td>
-            <td class="p-3 text-blue-400 font-bold">${formatRp(s.total_bayar || 0)}</td>
-            <td class="p-3 ${tunggakanColor} font-bold">${formatRp(s.tunggakan || 0)}</td>
-            <td class="p-3 text-center admin-hidden ${isAdmin ? '' : 'hidden'}">
-              <button onclick="openEditModal('${id}', '${s.nama}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold transition">Revisi</button>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    // 5. MODAL REVISI & AUDIT LOG TERSTRUKTUR
-    let currentEditId = null;
-    function openEditModal(idSiswa, namaSiswa) {
-      currentEditId = idSiswa;
-      document.getElementById('editNamaSiswa').innerText = `Siswa: ${namaSiswa}`;
-      document.getElementById('editAlasan').value = '';
-      document.getElementById('editModal').classList.remove('hidden');
-    }
-    function closeEditModal() {
-      document.getElementById('editModal').classList.add('hidden');
-      currentEditId = null;
-    }
-
-    async function saveRevisi() {
-      if (!currentEditId) return;
-      const minggu = document.getElementById('editMinggu').value;
-      const statusBaru = document.getElementById('editStatus').value === "true";
-      const alasan = document.getElementById('editAlasan').value.trim();
-      const namaSiswa = document.getElementById('editNamaSiswa').innerText.replace('Siswa: ', '');
-      
-      if(!alasan) return alert("Alasan revisi wajib diisi!");
-
-      const kasRef = db.ref(`siswa/${currentEditId}/pembayaran`);
-      try {
-        const snap = await kasRef.child(minggu).once('value');
-        const statusLama = snap.val() || false;
-        if(statusLama === statusBaru) return alert("Status sudah sama, tidak ada perubahan.");
-
-        await kasRef.update({ [minggu]: statusBaru });
-        
-        await db.ref('audit_logs').push({
-          timestamp: Date.now(),
-          id_siswa: currentEditId,
-          nama_siswa: namaSiswa,
-          minggu_revisi: minggu,
-          aktor_admin: auth.currentUser.email,
-          alasan_revisi: alasan,
-          status_sebelum: statusLama,
-          status_sesudah: statusBaru,
-          is_rolled_back: false
-        });
-
-        closeEditModal();
-        alert("Revisi berhasil disimpan dan tercatat di Audit Log!");
-      } catch(e) {
-        console.error(e);
-        alert("Gagal melakukan revisi.");
-      }
-    }
-
-    // 6. ANALITIK & REKONSILIASI KEUANGAN (MENANGANI KAS LEBIH)
-    async function updateDashboardStats() {
-      try {
-        const siswaSnap = await db.ref('siswa').once('value');
-        let kasSiswa = 0, totalTunggakan = 0;
-        if (siswaSnap.exists()) {
-          siswaSnap.forEach(child => {
-            kasSiswa += (child.val().total_bayar || 0);
-            totalTunggakan += (child.val().tunggakan || 0);
-          });
-        }
-
-        const metaSnap = await db.ref('meta_data/keuangan').once('value');
-        let totalFisik = 0, lastReconcile = 0, danaEksternal = 0;
-        if (metaSnap.exists()) {
-          totalFisik = metaSnap.val().uang_fisik || 0;
-          lastReconcile = metaSnap.val().last_reconcile || 0;
-          danaEksternal = metaSnap.val().dana_eksternal || 0;
-        }
-
-        let totalSistem = kasSiswa + danaEksternal;
-        let selisih = totalFisik - totalSistem;
-        let selisihText = selisih === 0 ? "Klop (Aman)" : (selisih > 0 ? `Lebih ${formatRp(selisih)}` : `Kurang ${formatRp(Math.abs(selisih))}`);
-        let selisihColor = selisih === 0 ? "text-emerald-500" : "text-amber-400";
-
-        document.getElementById('stat-total-sistem').innerText = formatRp(totalSistem);
-        document.getElementById('stat-detail-sistem').innerText = `Siswa: ${formatRp(kasSiswa)} | Eksternal: ${formatRp(danaEksternal)}`;
-        document.getElementById('stat-tunggakan').innerText = formatRp(totalTunggakan);
-        document.getElementById('stat-total-fisik').innerText = formatRp(totalFisik);
-        
-        let selisihEl = document.getElementById('stat-selisih');
-        selisihEl.innerText = `Selisih: ${selisihText}`;
-        selisihEl.className = `text-[11px] mt-1 font-bold ${selisihColor}`;
-
-        const badge = document.getElementById('badge-reconcile');
-        const isAdmin = auth.currentUser && ALLOWED_ADMINS.includes(auth.currentUser.email);
-        if(isAdmin) badge.classList.remove('hidden'); else badge.classList.add('hidden');
-
-        if (Date.now() - lastReconcile > 7 * 24 * 60 * 60 * 1000 || lastReconcile === 0) {
-          badge.className = "px-2 py-0.5 text-[10px] rounded-full bg-red-500/20 text-red-400 font-bold cursor-pointer animate-pulse admin-hidden";
-          badge.innerText = "Cek Fisik (Overdue)!";
-        } else {
-          badge.className = "px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/20 text-emerald-400 font-bold cursor-pointer admin-hidden";
-          badge.innerText = "Fisik Terkalibrasi";
-        }
-      } catch (error) { console.error("Error loading stats:", error); }
-    }
-
-    function openReconcileModal() {
-      let inputFisik = prompt("Masukkan total uang fisik riil di kotak kas saat ini (Angka saja):", "0");
-      if (inputFisik !== null && !isNaN(inputFisik)) {
-        db.ref('meta_data/keuangan').update({
-          uang_fisik: parseInt(inputFisik),
-          last_reconcile: firebase.database.ServerValue.TIMESTAMP
-        }).then(() => alert("Uang fisik berhasil dikalibrasi!"));
-      }
-    }
-
-    function tambahDanaEksternal() {
-      let inputEksternal = prompt("Masukkan total Dana Eksternal / Kas Lebih (Misal: 85000):", "0");
-      if (inputEksternal !== null && !isNaN(inputEksternal)) {
-        db.ref('meta_data/keuangan').update({
-          dana_eksternal: parseInt(inputEksternal)
-        }).then(() => {
-          db.ref('audit_logs').push({
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            aktor_admin: auth.currentUser.email,
-            alasan_revisi: `Membukukan Dana Eksternal sebesar ${formatRp(inputEksternal)}`,
-            is_rolled_back: true
-          });
-          alert("Dana eksternal berhasil diset. Selisih kas kini klop!");
-        });
-      }
-    }
-
-    // 7. CEK MANDIRI SISWA
-    function jalankanCekMandiri() {
-      const keyword = document.getElementById('lookupInput').value.toLowerCase().trim();
-      const resultDiv = document.getElementById('lookupResult');
-      if(!keyword) return resultDiv.innerHTML = '<p class="text-rose-400">Masukkan nama terlebih dahulu.</p>';
-
-      db.ref('siswa').once('value').then(snap => {
-        if(!snap.exists()) return;
-        let found = false;
-        resultDiv.innerHTML = '';
-        snap.forEach(child => {
-          let s = child.val();
-          if(s.nama.toLowerCase().includes(keyword)) {
-            found = true;
-            let statusBadge = (s.tunggakan === 0) ? '<span class="text-emerald-400 font-bold">LUNAS</span>' : `<span class="text-rose-400 font-bold">Tunggakan: ${formatRp(s.tunggakan)}</span>`;
-            resultDiv.innerHTML += `
-              <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
-                <p class="font-bold text-white text-sm">${s.nama}</p>
-                <p>Total Bayar: <span class="text-blue-400 font-bold">${formatRp(s.total_bayar || 0)}</span></p>
-                <p>Status: ${statusBadge}</p>
-              </div>
-            `;
-          }
-        });
-        if(!found) resultDiv.innerHTML = '<p class="text-slate-500">Siswa tidak ditemukan.</p>';
-      });
-    }
-
-    // 8. LAZY LOADING AUDIT & ROLLBACK (UNDO)
-    let lastVisibleLogKey = null;
-    const LOGS_PER_PAGE = 15;
-    let isAuditFinished = false;
-
-    async function loadAuditLogs(isLoadMore = false) {
-      if (isLoadMore && isAuditFinished) return;
-      let query = db.ref('audit_logs').orderByKey();
-
-      if (isLoadMore && lastVisibleLogKey) {
-        query = query.endBefore(lastVisibleLogKey).limitToLast(LOGS_PER_PAGE);
-      } else {
-        query = query.limitToLast(LOGS_PER_PAGE);
-        document.getElementById('auditTableBody').innerHTML = '';
-        lastVisibleLogKey = null;
-        isAuditFinished = false;
-      }
-
-      const snap = await query.once('value');
-      if (!snap.exists()) {
-        if (isLoadMore) {
-          isAuditFinished = true;
-          document.getElementById('btnLoadMore').innerText = "Semua Log Telah Dimuat";
-        } else {
-          document.getElementById('auditTableBody').innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">Belum ada log aktivitas.</td></tr>';
-        }
-        return;
-      }
-
-      let logs = [];
-      snap.forEach(child => logs.push({ key: child.key, ...child.val() }));
-      logs.reverse();
-      lastVisibleLogKey = logs[logs.length - 1].key;
-
-      const tbody = document.getElementById('auditTableBody');
-      logs.forEach(log => {
-        let actionBtn = !log.is_rolled_back && log.id_siswa
-          ? `<button onclick="rollbackAction('${log.key}', '${log.id_siswa}', '${log.minggu_revisi}', ${log.status_sebelum})" class="px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-[10px] font-bold transition">Undo</button>` 
-          : `<span class="text-slate-500 italic text-[11px]">Terkunci / Sistem</span>`;
-
-        tbody.innerHTML += `
-          <tr class="border-b border-slate-800 hover:bg-slate-800/30">
-            <td class="p-3 text-[11px] text-slate-400">${new Date(log.timestamp).toLocaleString('id-ID')}</td>
-            <td class="p-3 text-[11px] text-emerald-400 font-semibold">${log.nama_siswa || 'Sistem / Umum'}</td>
-            <td class="p-3 text-[11px] text-blue-300">${log.aktor_admin}</td>
-            <td class="p-3 text-[11px]">${log.alasan_revisi}</td>
-            <td class="p-3 text-center">${actionBtn}</td>
-          </tr>
-        `;
-      });
-    }
-
-    async function rollbackAction(auditKey, idSiswa, minggu, statusSebelum) {
-      if(!confirm("Yakin ingin membatalkan revisi ini dan mengembalikan nilai kas?")) return;
-      try {
-        await db.ref(`siswa/${idSiswa}/pembayaran`).update({ [minggu]: statusSebelum });
-        await db.ref(`audit_logs/${auditKey}`).update({ is_rolled_back: true });
-        await db.ref('audit_logs').push({
-          timestamp: Date.now(),
-          aktor_admin: auth.currentUser.email,
-          alasan_revisi: `Melakukan Undo pada log ID: ${auditKey}`,
-          is_rolled_back: true
-        });
-        alert("Undo berhasil dieksekusi.");
-        loadAuditLogs(false);
-      } catch(e) {
-        console.error(e);
-        alert("Gagal melakukan pembatalan.");
-      }
-    }
-
-    // 9. PUSAT EKSPOR EXCEL
-    function handleExportKas() {
-      db.ref('siswa').once('value').then(snap => {
-        if (!snap.exists()) return alert("Data kosong");
-        let data = [];
-        snap.forEach(c => data.push({ "Nama Siswa": c.val().nama, "Total Bayar": c.val().total_bayar || 0, "Tunggakan": c.val().tunggakan || 0 }));
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Laporan Kas");
-        XLSX.writeFile(wb, "Rekap_Kas_Kelas_X4.xlsx");
-      });
-    }
-
-    function handleExportAudit() {
-      db.ref('audit_logs').once('value').then(snap => {
-        if (!snap.exists()) return alert("Log audit kosong");
-        let data = [];
-        snap.forEach(c => data.push({ "Waktu": new Date(c.val().timestamp).toLocaleString('id-ID'), "Admin": c.val().aktor_admin, "Keterangan": c.val().alasan_revisi }));
-        data.reverse();
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Audit Trail");
-        XLSX.writeFile(wb, "Audit_Log_Admin_X4.xlsx");
-      });
-    }
-
-    lucide.createIcons();
-  </script>
-</body>
-</html>
+        <!-- TOPBAR -->
+        <header class="h-16 glass border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10">
+            <h2 id="pageTitle" class="text-xl font-semibold text-gray-800">Dashboard</h2>
+            <div class="flex items-center space-x-4">
+                <button onclick="triggerExcelImport()" class="bg-green-500 hover:bg-green-
