@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v7.0 Ultimate Audit & Revision Studio</title>
+  <title>Kas X-4 | v7.1 Ultimate Audit & Revision Studio</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,7 +31,7 @@
       <i data-lucide="check-circle-2" class="w-5 h-5"></i>
     </div>
     <div>
-      <h5 id="toast-title" class="text-xs font-black tracking-wide">Berhasil!</h5>
+      <h5 id="toast-title" class="text-xs font-black tracking-wide">Berhasil, Well!</h5>
       <p id="toast-msg" class="text-[11px] text-slate-300 mt-0.5">Pesan sistem.</p>
     </div>
   </div>
@@ -46,7 +46,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">Kas X-4</h1>
-            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v7.0 REVISION</span>
+            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v7.1 REVISION</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Financial & Transparent Audit System</p>
         </div>
@@ -85,7 +85,7 @@
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-rose-500/20 text-rose-400 rounded-lg border border-rose-500/30"><i data-lucide="bell-ring" class="w-5 h-5 animate-bounce"></i></div>
           <div>
-            <h4 class="text-xs font-black text-white">Peringatan AI Khusus Wirasena (Absen 28) 🚨</h4>
+            <h4 class="text-xs font-black text-white">Peringatan AI Khusus Well (Absen 28) 🚨</h4>
             <p id="wirasena-reminder-text" class="text-[11px] text-slate-300 mt-0.5">Memeriksa status keuangan pribadimu...</p>
           </div>
         </div>
@@ -106,7 +106,7 @@
           <h3 id="stat-selisih" class="text-xl font-black text-slate-300 mt-1">Sinkron</h3>
         </div>
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm col-span-2 md:col-span-1">
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pemasukan Tambahan (Lunas)</p>
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tambahan (Lunas)</p>
           <h3 id="stat-denda" class="text-xl font-black text-amber-400 mt-1">Rp 0</h3>
         </div>
       </section>
@@ -177,14 +177,13 @@
         <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring Pemasukan Tambahan & Pelunasan</h3>
-            <p class="text-[11px] text-slate-400">Daftار pemasukan tambahan / iuran khusus. Kelola pelunasan secara praktis.</p>
+            <p class="text-[11px] text-slate-400">Daftar pemasukan tambahan terpisah dari kas utama.</p>
           </div>
           <div class="flex items-center gap-4">
             <div class="flex gap-2 text-xs font-bold">
               <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">Belum: <span id="count-unpaid">0</span></span>
               <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30">Lunas: <span id="count-paid">0</span></span>
             </div>
-            <!-- TOTAL KAS & SHORTCUT KE MATRIKS SESUAI PERMINTAAN -->
             <div class="flex items-center gap-2 pl-3 border-l border-slate-800">
               <div class="text-right">
                 <span class="text-[9px] text-slate-400 block font-bold uppercase">Total Kas Sistem</span>
@@ -197,7 +196,7 @@
         <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/50">
           <table class="w-full text-left text-xs min-w-[700px]">
             <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
-              <tr><th class="p-3 w-16 text-center">Absen</th><th class="p-3 w-36">Nama Siswa</th><th class="p-3">Keterangan / Sumber</th><th class="p-3 w-28">Nominal</th><th class="p-3 w-28 text-center">Status</th><th class="p-3 w-32 text-center">Aksi</th></tr>
+              <tr><th class="p-3 w-16 text-center">Absen</th><th class="p-3 w-36">Nama Siswa</th><th class="p-3">Keterangan / Sumber</th><th class="p-3 w-28">Nominal</th><th class="p-3 w-28 text-center">Status</th><th class="p-3 w-36 text-center">Aksi</th></tr>
             </thead>
             <tbody id="denda-table-body" class="divide-y divide-slate-800 text-slate-300"><tr><td colspan="6" class="text-center py-4 text-slate-500">Memuat data pemasukan tambahan...</td></tr></tbody>
           </table>
@@ -255,7 +254,7 @@
         <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & QRIS Method</h3>
-            <p class="text-[11px] text-slate-400">Pilih metode pembayaran (Cash / QRIS Patungan Kelas) atau catat pemasukan tambahan.</p>
+            <p class="text-[11px] text-slate-400">Catat kas masuk, pengeluaran, atau pemasukan tambahan terpisah.</p>
           </div>
           <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
         </div>
@@ -286,7 +285,7 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3 shadow-sm">
           <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Keamanan & Kebijakan Revisi</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">Fitur Database Manager di bawah ini dirancang untuk memperbaiki kesalahan input masa lalu yang baru ditemukan. Setiap perubahan/edit akan dicatat dalam audit trail otomatis demi transparansi kelas.</p>
+          <p class="text-xs text-slate-400 leading-relaxed">Fitur Database Manager di bawah ini dirancang untuk merevisi kesalahan input masa lalu secara praktis dan tercatat di audit log.</p>
           <button onclick="exportJSONBackup()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[11px] font-bold">Backup JSON Database</button>
         </div>
       </div>
@@ -296,11 +295,10 @@
         <div id="audit-feed-container" class="space-y-2 max-h-[250px] overflow-y-auto pr-1"><p class="text-center py-6 text-slate-500 text-xs">Memuat log...</p></div>
       </section>
 
-      <!-- DATABASE MANAGER LENGKAP DENGAN FITUR EDIT / REVISI SEPENUHNYA -->
       <section class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 shadow-sm">
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-blue-400"></i> Database Manager & Sistem Revisi Lengkap</h3>
-          <span class="text-[10px] text-slate-400 font-medium">Klik tombol Edit untuk merevisi transaksi masa lalu</span>
+          <span class="text-[10px] text-slate-400 font-medium">Klik Edit untuk merevisi transaksi masa lalu</span>
         </div>
         <div class="overflow-x-auto max-h-[450px] overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/50">
           <table class="w-full text-left text-[10px] sm:text-xs min-w-[750px]">
@@ -409,12 +407,8 @@
       </div>
       <div class="space-y-4 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-blue-400">v7.0 Ultimate Audit & Revision Studio (Current)</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Fitur revisi data lengkap & Database Manager untuk mengedit kesalahan input masa lalu.<br>• Restrukturisasi denda & dana eksternal menjadi Pemasukan Tambahan.<br>• Penambahan Total Kas & shortcut langsung ke Matriks.<br>• Optimalisasi ekspor PNG agar merender tabel matriks secara menyeluruh tanpa terpotong device view.</p>
-        </div>
-        <div class="pb-2 border-b border-slate-800">
-          <b class="text-slate-300">v6.9 Ultimate Export Studio</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Pusat ekspor modal dinamis, denda langsung lunas, dan restrukturisasi navigasi.</p>
+          <b class="text-blue-400">v7.1 Patch Update (Current)</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Penambahan fitur <b>Batal Lunas</b> pada Pemasukan Tambahan.<br>• Pemisahan total: Pemasukan tambahan kini tidak lagi diakumulasikan ke dalam kas masuk utama.<br>• Panggilan khusus "Well" diaktifkan.</p>
         </div>
       </div>
       <div class="flex justify-end pt-2">
@@ -443,7 +437,7 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); const auth = firebase.auth();
     const kasRef = db.ref('transaksi_kas'); 
-    const dendaRef = db.ref('kas_denda'); // Difungsikan sebagai database Pemasukan Tambahan
+    const dendaRef = db.ref('kas_denda'); // Database Pemasukan Tambahan
     const metaRef = db.ref('meta_data');
     const auditRef = db.ref('audit_trail');
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
@@ -467,7 +461,7 @@
     });
 
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
-    function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri.", 'success'); }
+    function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri, Well.", 'success'); }
     function openPatchNotes() { document.getElementById('modal-patch-notes').classList.remove('hidden'); }
     function scrollToMatrix() {
       switchTab('rekap');
@@ -506,7 +500,7 @@
     });
 
     function editSaldoFisik() {
-      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
+      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin, Well!", "error");
       document.getElementById('input-saldo-fisik').value = saldoFisik;
       document.getElementById('modal-edit-fisik').classList.remove('hidden');
     }
@@ -515,7 +509,7 @@
       metaRef.child('saldo_fisik').set(val).then(() => {
         document.getElementById('modal-edit-fisik').classList.add('hidden');
         auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Memperbarui Uang Fisik menjadi Rp ${val.toLocaleString()}` });
-        showToast("Sukses", "Uang fisik berhasil diperbarui!", "success");
+        showToast("Sukses", "Uang fisik berhasil diperbarui, Well!", "success");
       });
     }
 
@@ -533,9 +527,9 @@
         let weeksPaid = Math.floor(paidTotal / TARIF_MINGGU);
         let lagWeeks = (currentWeek - 1) - weeksPaid;
         if(lagWeeks > 0) {
-          textElem.innerText = `Waduh Wir, kas kamu nunggak ${lagWeeks} minggu per hari ini. Segera bereskan ya!`;
+          textElem.innerText = `Waduh Well, kas kamu nunggak ${lagWeeks} minggu per hari ini. Segera bereskan ya!`;
         } else {
-          textElem.innerText = `Mantap Wir! Status kas Absen 28 bersih tanpa tunggakan. 🔥`;
+          textElem.innerText = `Mantap Well! Status kas Absen 28 bersih tanpa tunggakan. 🔥`;
         }
         banner.classList.remove('hidden'); banner.classList.add('flex');
         try { lucide.createIcons(); } catch(e){}
@@ -562,7 +556,7 @@
       try {
         const q = document.getElementById('lookup-input').value.trim().toLowerCase();
         const resContainer = document.getElementById('lookup-result-container');
-        if(!q) return showToast("Peringatan", "Masukkan nama atau nomor absen!", "error");
+        if(!q) return showToast("Peringatan", "Masukkan nama atau nomor absen, Well!", "error");
         let foundAbsen = null;
         if(!isNaN(q)) {
           let num = parseInt(q);
@@ -680,10 +674,8 @@
               const nm = ab && daftarSiswa[ab] ? daftarSiswa[ab].nama : `Absen ${ab}`;
               const dObj = new Date(dV); const dStr = isNaN(dObj.getTime()) ? today : dObj.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
               if(t === 'denda') {
+                // Pemasukan tambahan TIDAK dimasukkan ke kas utama sesuai instruksi Well
                 promises.push(dendaRef.push({ timestamp: dObj.getTime(), dateStr: dStr, absen: ab, nama: nm, amount: am, reason: (no||'Pemasukan Tambahan'), status: dStatus }));
-                if(dStatus === 'Paid') {
-                  promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: 'masuk', absen: ab, amount: am, description: `[Tambahan Lunas - Ab. ${ab}] ${no||'Pemasukan Tambahan'}` }));
-                }
               } else {
                 let desc = t==='masuk' && ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
                 promises.push(kasRef.push({ timestamp: dObj.getTime(), dateStr: dStr, type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc }));
@@ -695,7 +687,7 @@
             addMultiRow(); 
             switchTab('dashboard'); 
             auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: "Menambahkan multi-transaksi baru" });
-            showToast("Sukses", "Data berhasil disimpan!", "success"); 
+            showToast("Sukses", "Data berhasil disimpan, Well!", "success"); 
           });
         } catch(err) {}
       });
@@ -778,7 +770,7 @@
 
     function renderEStatementTable() {
       const tb = document.getElementById('estatement-table-body'); if(!tb) return; tb.innerHTML = '';
-      let combined = [...localTx, ...localDenda.map(d=>({ timestamp: d.timestamp, dateStr: d.dateStr, description: `Tambahan (${d.reason})`, id: d.id, amount: d.amount, type: 'denda' }))].sort((a,b)=>b.timestamp-a.timestamp);
+      let combined = [...localTx, ...localDenda.filter(d=>d.status==='Paid').map(d=>({ timestamp: d.timestamp, dateStr: d.dateStr, description: `Tambahan Lunas (${d.reason})`, id: d.id, amount: d.amount, type: 'denda' }))].sort((a,b)=>b.timestamp-a.timestamp);
       if(combined.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-500">Kosong.</td></tr>`; return; }
       combined.forEach(item => {
         tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-3">${item.dateStr}</td><td class="p-3">${item.description}</td><td class="p-3 font-mono text-[10px]">${item.id||'-'}</td><td class="p-3">Cash</td><td class="p-3 text-right font-bold">Rp ${item.amount.toLocaleString()}</td></tr>`);
@@ -813,18 +805,22 @@
       let cUnpaid=0, cPaid=0;
       localDenda.forEach(d => {
         if(d.status==='Paid') cPaid++; else cUnpaid++;
-        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-3 text-center">${d.absen}</td><td class="p-3">${d.nama}</td><td class="p-3">${d.reason}</td><td class="p-3 font-bold text-amber-400">Rp ${d.amount.toLocaleString()}</td><td class="p-3 text-center">${d.status}</td><td class="p-3 text-center">${d.status==='Unpaid'?`<button onclick="payDenda('${d.id}',${d.absen},'${d.nama}',${d.amount},'${d.reason}')" class="px-2 py-1 bg-emerald-600 text-white rounded text-[10px]">Lunas</button>`:'Selesai'}</td></tr>`);
+        let actionBtn = d.status === 'Unpaid' 
+          ? `<button onclick="setDendaStatus('${d.id}','Paid')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold">Lunas</button>`
+          : `<button onclick="setDendaStatus('${d.id}','Unpaid')" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10px] font-bold">Batal Lunas</button>`;
+        
+        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-3 text-center">${d.absen}</td><td class="p-3">${d.nama}</td><td class="p-3">${d.reason}</td><td class="p-3 font-bold text-amber-400">Rp ${d.amount.toLocaleString()}</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${d.status==='Paid'?'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30':'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">${d.status}</span></td><td class="p-3 text-center">${actionBtn}</td></tr>`);
       });
       document.getElementById('count-unpaid').innerText = cUnpaid;
       document.getElementById('count-paid').innerText = cPaid;
     }
 
-    function payDenda(id, ab, nm, am, rz) {
+    // FUNGSI UBAH STATUS / BATAL LUNAS PEMASUKAN TAMBAHAN TANPA MASUK KE KAS UTAMA
+    function setDendaStatus(id, newStatus) {
       if(!isAdmin) return;
-      dendaRef.child(id).update({ status: 'Paid' }).then(() => {
-        kasRef.push({ timestamp: Date.now(), dateStr: today, type: 'masuk', absen: ab, amount: am, description: `[Tambahan Lunas - Ab. ${ab}] ${rz}` });
-        auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Melunasi pemasukan tambahan Absen ${ab} senilai Rp ${am.toLocaleString()}` });
-        showToast("Sukses", "Pemasukan tambahan dilunasi & dicatat ke kas!", "success");
+      dendaRef.child(id).update({ status: newStatus }).then(() => {
+        auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Mengubah status pemasukan tambahan ID ${id} menjadi ${newStatus}` });
+        showToast("Berhasil", newStatus === 'Paid' ? "Pemasukan tambahan ditandai Lunas." : "Status dikembalikan menjadi Belum Lunas (Batal Lunas).", "success");
       });
     }
 
@@ -871,9 +867,8 @@
       } catch(e) {}
     }
 
-    // FUNGSI REVISI / EDIT DATA LENGKAP
     function openEditTransaction(id, dbSource, currentDesc, currentAmount, currentAbsen, currentDate) {
-      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
+      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin, Well!", "error");
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-db').value = dbSource;
       document.getElementById('edit-desc').value = currentDesc || '';
@@ -903,15 +898,14 @@
       targetRef.update(updatePayload).then(() => {
         document.getElementById('modal-edit-transaksi').classList.add('hidden');
         auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: `Merevisi transaksi ID: ${id} (${desc}, Rp ${amount.toLocaleString()})` });
-        showToast("Revisi Berhasil", "Data transaksi masa lalu berhasil diperbarui!", "success");
+        showToast("Revisi Berhasil", "Data transaksi masa lalu berhasil diperbarui, Well!", "success");
       }).catch(err => {
         showToast("Gagal Revisi", err.message, "error");
       });
     }
 
-    // FUNGSI ADVANCED EXPORT STUDIO & PNG OTOMATIS PENUH
     async function runAdvancedExport(formatType) {
-      if(!isAdmin && formatType !== 'png' && formatType !== 'wa') return showToast("Akses Ditolak", "Ekspor Dokumen Khusus Admin!", "error");
+      if(!isAdmin && formatType !== 'png' && formatType !== 'wa') return showToast("Akses Ditolak", "Ekspor Khusus Admin, Well!", "error");
       
       const chkMatriks = document.getElementById('chk-matriks').checked;
       const chkDenda = document.getElementById('chk-denda').checked;
@@ -920,14 +914,14 @@
       const tipeLaporan = document.getElementById('sel-tipe-laporan').value;
 
       if(formatType === 'png') {
-        if(!chkMatriks) return showToast("Perhatian", "Untuk Gambar PNG, pastikan centang Matriks Kas!", "error");
+        if(!chkMatriks) return showToast("Perhatian", "Untuk Gambar PNG, centang Matriks Kas dulu, Well!", "error");
         document.getElementById('modal-export-studio').classList.add('hidden');
-        showToast("Memproses", "Merender matriks lengkap secara utuh menjadi PNG...", "success");
+        showToast("Memproses", "Merender matriks lengkap menjadi PNG...", "success");
         
         setTimeout(() => {
           const el = document.getElementById('matriks-export-container');
           html2canvas(el, { backgroundColor: '#020617', scale: 2, windowWidth: 1400 }).then(canvas => {
-            canvas.toBlob(blob => { saveAs(blob, "Matriks-Keuangan-X4-Lengkap.png"); showToast("Sukses", "Gambar PNG utuh berhasil diunduh!", "success"); });
+            canvas.toBlob(blob => { saveAs(blob, "Matriks-Keuangan-X4-Lengkap.png"); showToast("Sukses", "Gambar PNG berhasil diunduh!", "success"); });
           });
         }, 300);
         return;
@@ -947,7 +941,7 @@
           }
         }
         navigator.clipboard.writeText(text);
-        showToast("Berhasil", "Data berhasil disalin ke format WhatsApp!", "success");
+        showToast("Berhasil", "Data disalin ke format WhatsApp!", "success");
         return;
       }
 
@@ -978,7 +972,7 @@
           XLSX.utils.book_append_sheet(wb, ws, "Riwayat Transaksi");
         }
         XLSX.writeFile(wb, "Laporan-Studio-X4.xlsx");
-        showToast("Sukses", "File Excel kustom di-export!", "success");
+        showToast("Sukses", "File Excel di-export!", "success");
       }
 
       if(formatType === 'word') {
@@ -993,24 +987,21 @@
           localTx.slice(0, 30).filter(t => (chkMasuk && t.type==='masuk') || (chkKeluar && t.type==='keluar')).forEach(t => {
             childrenArr.push(new Paragraph({ children: [new TextRun(`• [${t.dateStr}] ${t.description} : Rp ${t.amount.toLocaleString()}`)] }));
           });
-          childrenArr.push(new Paragraph({ text: "" }));
         }
         const doc = new Document({ sections: [{ properties: {}, children: childrenArr }] });
         const blob = await Packer.toBlob(doc);
         saveAs(blob, "Laporan-Studio-X4.docx");
-        showToast("Sukses", "File Word kustom di-export!", "success");
+        showToast("Sukses", "File Word di-export!", "success");
       }
     }
 
     function renderAdminTable() {
       const tb = document.getElementById('manager-table-body'); if(!tb) return; tb.innerHTML = '';
       
-      // Render transaksi kas
       localTx.forEach(i => {
         tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2.5 font-bold text-blue-400">Kas (${i.type})</td><td class="p-2.5">${i.dateStr}</td><td class="p-2.5 truncate max-w-[200px]">${i.description}</td><td class="p-2.5 font-bold">Rp ${i.amount.toLocaleString()}</td><td class="p-2.5 text-center space-x-2"><button onclick="openEditTransaction('${i.id}','kas','${i.description}',${i.amount},${i.absen||'null'},'${i.dateStr}')" class="text-blue-400 font-bold hover:underline">Edit</button><button onclick="kasRef.child('${i.id}').remove()" class="text-rose-400 font-bold hover:underline">Hapus</button></td></tr>`);
       });
 
-      // Render pemasukan tambahan (dulu denda)
       localDenda.forEach(d => {
         tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2.5 font-bold text-amber-400">Tambahan</td><td class="p-2.5">${d.dateStr}</td><td class="p-2.5">Ab. ${d.absen} (${d.nama}) - ${d.reason}</td><td class="p-2.5 font-bold text-amber-400">Rp ${d.amount.toLocaleString()}</td><td class="p-2.5 text-center space-x-2"><button onclick="openEditTransaction('${d.id}','denda','${d.reason}',${d.amount},${d.absen},'${d.dateStr}')" class="text-blue-400 font-bold hover:underline">Edit</button><button onclick="dendaRef.child('${d.id}').remove()" class="text-rose-400 font-bold hover:underline">Hapus</button></td></tr>`);
       });
@@ -1028,9 +1019,9 @@
     }
 
     function importExcel() {
-      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin!", "error");
+      if(!isAdmin) return showToast("Akses Ditolak", "Khusus Admin, Well!", "error");
       const fileInput = document.getElementById('import-file');
-      if(fileInput.files.length === 0) return showToast("Peringatan", "Pilih file Excel terlebih dahulu!", "error");
+      if(fileInput.files.length === 0) return showToast("Peringatan", "Pilih file Excel dulu, Well!", "error");
       const file = fileInput.files[0];
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -1055,7 +1046,7 @@
           });
           Promise.all(promises).then(() => {
             auditRef.push({ timestamp: Date.now(), timeStr: new Date().toLocaleString('id-ID'), admin: currentUserName, action: "Mengimpor data batch via Excel" });
-            showToast("Sukses", "Data Excel berhasil di-import ke Firebase!", "success");
+            showToast("Sukses", "Data Excel berhasil di-import!", "success");
             fileInput.value = "";
           });
         } catch(err) {
