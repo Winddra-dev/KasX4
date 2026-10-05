@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v7.4.1 Ultimate Studio & Analytics</title>
+  <title>Kas X-4 | v7.5 Ultimate Enterprise Analytics</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,7 +20,7 @@
     ::-webkit-scrollbar { height: 6px; width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-track, #0f172a); }
     ::-webkit-scrollbar-thumb { background: var(--bg-thumb, #334155); border-radius: 4px; }
-    #toast-box { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateY(100px); opacity: 0; pointer-events: none; }
+    #toast-box { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateY(100px); opacity: 0; pointer-events: none; z-index: 99999; }
     #toast-box.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 
     /* Theme Engine Variables */
@@ -31,7 +31,7 @@
 </head>
 <body class="theme-slate text-slate-100 font-sans min-h-screen pb-16 antialiased selection:bg-blue-600/30 transition-colors duration-300" id="body-theme">
   <!-- TOAST NOTIFICATION -->
-  <div id="toast-box" class="fixed bottom-5 right-5 z-[999] bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 max-w-sm">
+  <div id="toast-box" class="fixed bottom-5 right-5 z-[99999] bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 max-w-sm">
     <div id="toast-icon" class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
       <i data-lucide="check-circle-2" class="w-5 h-5"></i>
     </div>
@@ -51,13 +51,20 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">Kas X-4</h1>
-            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes">v7.4.1</span>
+            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes Full">v7.5</span>
           </div>
-          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Ultimate Analytics & 28 Student Registry</p>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">Enterprise Analytics & 28 Student Registry</p>
         </div>
       </div>
+      
+      <!-- KOTAK SARAN PINDAH KE HEADER -->
+      <div class="flex items-center gap-2">
+        <button onclick="switchTab('saran')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] font-bold text-slate-200 transition-all flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="message-square-plus" class="w-3.5 h-3.5 text-blue-400"></i> Kotak Saran & Aspirasi
+        </button>
+      </div>
+
       <div class="flex items-center gap-3">
-        <!-- THEME SELECTOR -->
         <select id="theme-selector" onchange="changeTheme(this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-[10px] rounded-lg px-2.5 py-1.5 outline-none font-bold">
           <option value="theme-slate">Dark Slate</option>
           <option value="theme-cyberpunk">Cyberpunk Neon</option>
@@ -78,16 +85,14 @@
     </div>
   </header>
 
-  <!-- NAVIGATION TABS -->
+  <!-- NAVIGATION TABS (DIPERBARUI POSISINYA) -->
   <div class="bg-slate-900 border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 py-2 flex gap-1 overflow-x-auto no-scrollbar">
       <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-4 py-2 text-xs font-bold rounded-lg bg-blue-600/10 text-blue-400 whitespace-nowrap transition-colors">Dashboard</button>
-      <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Analytics 📈</button>
-      <button onclick="switchTab('lookup')" id="tab-lookup" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Cek Mandiri 🔍</button>
-      <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Matriks 📊</button>
-      <button onclick="switchTab('history')" id="tab-history" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">E-Statement 📜</button>
       <button onclick="switchTab('input')" id="tab-input" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-restricted">Smart Input + Nota</button>
-      <button onclick="switchTab('saran')" id="tab-saran" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Kotak Saran 💡</button>
+      <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Matriks 📊</button>
+      <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">Analytics Enterprise 📈</button>
+      <button onclick="switchTab('history')" id="tab-history" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors">E-Statement 📜</button>
       <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 whitespace-nowrap transition-colors admin-restricted">Database & Revisi 🛡️</button>
     </div>
   </div>
@@ -106,9 +111,46 @@
         <button onclick="document.getElementById('wirasena-reminder-banner').remove()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
       </section>
 
-      <!-- DASHBOARD STATS GRID (DIRECT CLICKABLE) -->
+      <!-- CEK MANDIRI PINDAH KE PALING ATAS DASHBOARD -->
+      <section class="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950/40 border border-blue-500/30 p-5 md:p-8 rounded-xl shadow-2xl space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <span class="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 text-[10px] font-bold rounded border border-blue-500/30">PORTAL SISWA X-4</span>
+            <h2 class="text-lg font-black text-white mt-1">Cek Status Keuangan Mandiri</h2>
+            <p class="text-xs text-slate-400">Ketik nama atau nomor absenmu untuk melihat status kas, tunggakan, dan pemasukan tambahan.</p>
+          </div>
+          <button onclick="scrollToMatrixShortcut()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all">
+            <i data-lucide="table" class="w-4 h-4"></i> Tabel Rekap Kas Mingguan
+          </button>
+        </div>
+        <div class="max-w-xl mx-auto flex gap-2">
+          <input type="text" id="lookup-input" onkeydown="handleLookupKey(event)" placeholder="Masukkan Nama atau No. Absen (Contoh: 28 / Wirasena)..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-blue-500">
+          <button onclick="executeLookup()" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/30">Cek Status</button>
+        </div>
+        <div id="lookup-result-container" class="hidden max-w-2xl mx-auto bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-4 shadow-inner">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div><h4 id="res-name" class="text-sm font-bold text-white">-</h4><p id="res-absen" class="text-[10px] text-blue-400 font-semibold">-</p></div>
+            <div class="flex items-center gap-2">
+              <span id="res-badge-sultan" class="hidden px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black rounded-lg flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5"></i> Sultan Rajin</span>
+              <div id="res-status-badge" class="px-2.5 py-1 rounded text-[10px] font-bold">Status</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Total Kas Bayar</span><h5 id="res-total-kas" class="text-sm font-black text-emerald-400 mt-1">Rp 0</h5></div>
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Tunggakan</span><h5 id="res-tunggakan" class="text-sm font-black text-rose-400 mt-1">0 Mgg</h5></div>
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Tambahan / Denda</span><h5 id="res-total-denda" class="text-sm font-black text-amber-400 mt-1">Rp 0</h5></div>
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[10px] text-slate-400 font-bold"><span>Progress Pembayaran Kas</span><span id="res-progress-pct">0%</span></div>
+            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800"><div id="res-progress-bar" class="bg-blue-500 h-full w-0 transition-all duration-500"></div></div>
+          </div>
+          <div><h5 class="text-xs font-bold text-slate-300 mb-2">Riwayat Pembayaran & Catatan Pribadi:</h5><div id="res-history-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs"></div></div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD STATS GRID -->
       <section class="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div onclick="scrollToSection('stat-sistem')" class="bg-slate-900 hover:bg-slate-800/80 cursor-pointer p-4 rounded-xl border border-slate-800 shadow-sm transition-all">
+        <div onclick="switchTab('dashboard')" class="bg-slate-900 hover:bg-slate-800/80 cursor-pointer p-4 rounded-xl border border-slate-800 shadow-sm transition-all">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Uang Sistem</p>
           <h3 id="stat-sistem" class="text-xl font-black text-blue-400 mt-1">Rp 0</h3>
         </div>
@@ -116,29 +158,17 @@
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex justify-between">Uang Fisik <span class="admin-only hidden text-emerald-400"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></span></p>
           <h3 id="stat-fisik" class="text-xl font-black text-emerald-400 mt-1">Rp 0</h3>
         </div>
-        <div onclick="scrollToSection('ledger-container')" class="bg-slate-900 hover:bg-slate-800/80 cursor-pointer p-4 rounded-xl border border-slate-800 shadow-sm transition-all">
+        <div onclick="switchTab('history')" class="bg-slate-900 hover:bg-slate-800/80 cursor-pointer p-4 rounded-xl border border-slate-800 shadow-sm transition-all">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Pengeluaran</p>
           <h3 id="stat-keluar" class="text-xl font-black text-rose-400 mt-1">Rp 0</h3>
         </div>
-        <div onclick="scrollToMatrix()" class="bg-slate-900 hover:bg-slate-800/80 cursor-pointer p-4 rounded-xl border border-slate-800 shadow-sm transition-all">
+        <div onclick="switchTab('rekap')" class="bg-slate-900 hover:bg-slate-800/80 cursor-pointer p-4 rounded-xl border border-slate-800 shadow-sm transition-all">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tambahan (Lunas)</p>
           <h3 id="stat-denda" class="text-xl font-black text-amber-400 mt-1">Rp 0</h3>
         </div>
         <div id="box-selisih" class="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm col-span-2 md:col-span-1">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Selisih</p>
           <h3 id="stat-selisih" class="text-xl font-black text-slate-300 mt-1">Sinkron</h3>
-        </div>
-      </section>
-
-      <!-- DASHBOARD QUICK LOOKUP BANNER -->
-      <section class="bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-          <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="search" class="w-4 h-4 text-blue-400"></i> Cek Status Cepat Mandiri</h4>
-          <p class="text-[11px] text-slate-400">Ingin tahu status pembayaran kas atau tunggakanmu? Cek langsung di sini.</p>
-        </div>
-        <div class="flex gap-2 w-full md:w-auto">
-          <input type="text" id="dash-lookup-input" placeholder="No. Absen / Nama..." class="bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg text-xs text-white outline-none focus:border-blue-500">
-          <button onclick="executeDashLookup()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold shadow">Cek</button>
         </div>
       </section>
 
@@ -159,50 +189,27 @@
       </section>
     </div>
 
-    <!-- ================= TAB: ANALYTICS ================= -->
-    <div id="content-analytics" class="tab-content hidden space-y-6">
-      <section class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+    <!-- ================= TAB: SMART INPUT + NOTA FOTO ================= -->
+    <div id="content-input" class="tab-content hidden space-y-6 admin-restricted-content">
+      <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl relative overflow-hidden shadow-2xl">
+        <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-2">
           <div>
-            <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-blue-400"></i> Tren Kepatuhan Pembayaran Kas Mingguan</h3>
-            <p class="text-[11px] text-slate-400">Grafik analitik tingkat kedisiplinan anak-anak X-4 dari minggu ke minggu.</p>
+            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & Petty Cash Nota Foto</h3>
+            <p class="text-[11px] text-slate-400">Catat kas masuk, pengeluaran, serta pemasukan tambahan (absen tidak wajib diisi untuk tambahan bebas).</p>
           </div>
+          <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
         </div>
-        <div class="h-64 w-full"><canvas id="complianceChart"></canvas></div>
-      </section>
-    </div>
-
-    <!-- ================= TAB: CEK KAS MANDIRI ================= -->
-    <div id="content-lookup" class="tab-content hidden space-y-6">
-      <section class="bg-slate-900 border border-slate-800 p-5 md:p-8 rounded-xl shadow-xl space-y-6">
-        <div class="text-center max-w-xl mx-auto space-y-2">
-          <div class="inline-flex p-3 bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30 mb-1"><i data-lucide="search" class="w-6 h-6"></i></div>
-          <h2 class="text-lg font-black text-white">Cek Status Keuangan Mandiri</h2>
-          <p class="text-xs text-slate-400">Ketik nama atau nomor absenmu, lalu tekan <b>Enter</b> atau klik Cek untuk melihat status lengkap & Badge Sultan.</p>
-        </div>
-        <div class="max-w-md mx-auto flex gap-2">
-          <input type="text" id="lookup-input" onkeydown="handleLookupKey(event)" placeholder="Masukkan Nama atau No. Absen (Contoh: 28 / Wirasena)..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-blue-500">
-          <button onclick="executeLookup()" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/30">Cek</button>
-        </div>
-        <div id="lookup-result-container" class="hidden max-w-xl mx-auto bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-4">
-          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-            <div><h4 id="res-name" class="text-sm font-bold text-white">-</h4><p id="res-absen" class="text-[10px] text-blue-400 font-semibold">-</p></div>
-            <div class="flex items-center gap-2">
-              <span id="res-badge-sultan" class="hidden px-2 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black rounded-lg flex items-center gap-1"><i data-lucide="award" class="w-3 h-3"></i> Sultan Rajin</span>
-              <div id="res-status-badge" class="px-2.5 py-1 rounded text-[10px] font-bold">Status</div>
-            </div>
+        <form id="form-multi" class="space-y-4">
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/50">
+            <table class="w-full text-left text-xs min-w-[900px]">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr><th class="p-3 w-32">Tipe</th><th class="p-3 w-28">Metode</th><th class="p-3 w-32">Tanggal</th><th class="p-3 w-16">Absen</th><th class="p-3 w-36">Nama / Keterangan</th><th class="p-3 w-28">Nominal</th><th class="p-3">Catatan</th><th class="p-3 w-32">Foto Nota</th><th class="p-3 text-center w-12">Hapus</th></tr>
+              </thead>
+              <tbody id="multi-rows-container" class="divide-y divide-slate-800"></tbody>
+            </table>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Total Bayar</span><h5 id="res-total-kas" class="text-sm font-black text-emerald-400 mt-1">Rp 0</h5></div>
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Tunggakan</span><h5 id="res-tunggakan" class="text-sm font-black text-rose-400 mt-1">0 Mgg</h5></div>
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800"><span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Tambahan Aktif</span><h5 id="res-total-denda" class="text-sm font-black text-amber-400 mt-1">Rp 0</h5></div>
-          </div>
-          <div class="space-y-1">
-            <div class="flex justify-between text-[10px] text-slate-400 font-bold"><span>Progress Pembayaran Kas</span><span id="res-progress-pct">0%</span></div>
-            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800"><div id="res-progress-bar" class="bg-blue-500 h-full w-0 transition-all duration-500"></div></div>
-          </div>
-          <div><h5 class="text-xs font-bold text-slate-300 mb-2">Riwayat Pembayaran & Transaksi Pribadi:</h5><div id="res-history-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs"></div></div>
-        </div>
+          <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-black shadow-lg">SIMPAN KE DATABASE</button>
+        </form>
       </section>
     </div>
 
@@ -224,7 +231,7 @@
         <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
           <div>
             <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-amber-400"></i> Monitoring Pemasukan Tambahan & Pelunasan</h3>
-            <p class="text-[11px] text-slate-400">Daftar pemasukan tambahan (masuk ke uang sistem, dikecualikan dari total kas utama matriks).</p>
+            <p class="text-[11px] text-slate-400">Daftar pemasukan tambahan (masuk ke uang sistem, otomatis terintegrasi ke cek mandiri siswa).</p>
           </div>
           <div class="flex items-center gap-4">
             <div class="flex gap-2 text-xs font-bold">
@@ -236,7 +243,6 @@
                 <span class="text-[9px] text-slate-400 block font-bold uppercase">Kas Utama Matriks</span>
                 <span id="quick-total-kas" class="text-xs font-black text-emerald-400">Rp 0</span>
               </div>
-              <button onclick="scrollToMatrix()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-bold shadow flex items-center gap-1"><i data-lucide="arrow-down" class="w-3.5 h-3.5"></i> Ke Matriks</button>
             </div>
           </div>
         </div>
@@ -250,12 +256,12 @@
         </div>
       </section>
 
-      <!-- TABEL MATRIKS UTAMA DENGAN TOMBOL WHATSAPP ONE-CLICK -->
+      <!-- TABEL MATRIKS UTAMA DENGAN INDIKATOR KUNING TUNGGAKAN MINGGU AKTIF -->
       <section id="matriks-export-container" class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl shadow-sm space-y-4">
         <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
           <div>
-            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-blue-400"></i> Matriks Keuangan Korporat X-4 (28 Siswa)</h3>
-            <p class="text-[11px] text-slate-400">Minggu <span id="current-week-label" class="text-indigo-400 font-bold"></span> berstatus <span class="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30 font-bold">ON PROGRESS ⚡</span></p>
+            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-blue-400"></i> Matriks Keuangan Kelas X-4 (28 Siswa)</h3>
+            <p class="text-[11px] text-slate-400">Minggu <span id="current-week-label" class="text-indigo-400 font-bold"></span> berstatus <span class="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30 font-bold">ON PROGRESS ⚡</span> (Tunggakan minggu aktif ditandai kuning)</p>
           </div>
         </div>
         <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-1 font-mono">
@@ -265,6 +271,43 @@
             <tfoot id="rekap-footer" class="bg-slate-950 font-bold border-t border-slate-800"></tfoot>
           </table>
         </div>
+      </section>
+    </div>
+
+    <!-- ================= TAB: ANALYTICS ENTERPRISE ================= -->
+    <div id="content-analytics" class="tab-content hidden space-y-6">
+      <!-- BADGE RANKING EKSEKUTIF SECTION -->
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-900 border border-amber-500/30 p-4 rounded-xl shadow-xl space-y-2">
+          <div class="flex items-center gap-2 text-amber-400"><i data-lucide="crown" class="w-5 h-5"></i><h4 class="text-xs font-black uppercase">Donatur Terbanyak</h4></div>
+          <p id="badge-top-donatur" class="text-sm font-black text-white">-</p>
+          <span class="text-[10px] text-slate-400 block">Kontribusi kas & tambahan tertinggi</span>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 p-4 rounded-xl shadow-xl space-y-2">
+          <div class="flex items-center gap-2 text-emerald-400"><i data-lucide="shield-check" class="w-5 h-5"></i><h4 class="text-xs font-black uppercase">Pahlawan Kas (Sultan)</h4></div>
+          <p id="badge-pahlawan-kas" class="text-sm font-black text-white">-</p>
+          <span class="text-[10px] text-slate-400 block">Pembayaran paling rajin & surplus</span>
+        </div>
+        <div class="bg-gradient-to-br from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 p-4 rounded-xl shadow-xl space-y-2">
+          <div class="flex items-center gap-2 text-blue-400"><i data-lucide="zap" class="w-5 h-5"></i><h4 class="text-xs font-black uppercase">Pelanggar Rajin (Lunas)</h4></div>
+          <p id="badge-pelanggar-lunas" class="text-sm font-black text-white">-</p>
+          <span class="text-[10px] text-slate-400 block">Aktif dalam tambahan namun selalu lunas</span>
+        </div>
+        <div class="bg-gradient-to-br from-purple-950/40 via-slate-900 to-slate-900 border border-purple-500/30 p-4 rounded-xl shadow-xl space-y-2">
+          <div class="flex items-center gap-2 text-purple-400"><i data-lucide="trending-up" class="w-5 h-5"></i><h4 class="text-xs font-black uppercase">Indeks Kesehatan Kas</h4></div>
+          <p id="badge-health-index" class="text-sm font-black text-white">94.5% (Sehat)</p>
+          <span class="text-[10px] text-slate-400 block">Rasio likuiditas & kepatuhan kelas</span>
+        </div>
+      </section>
+
+      <section class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-blue-400"></i> Tren Kepatuhan Pembayaran Kas Mingguan</h3>
+            <p class="text-[11px] text-slate-400">Grafik analitik tingkat kedisiplinan anak-anak X-4 dari minggu ke minggu.</p>
+          </div>
+        </div>
+        <div class="h-64 w-full"><canvas id="complianceChart"></canvas></div>
       </section>
     </div>
 
@@ -292,30 +335,6 @@
             <tbody id="estatement-table-body" class="divide-y divide-slate-800 text-slate-300"><tr><td colspan="5" class="text-center py-6 text-slate-500">Memuat e-statement...</td></tr></tbody>
           </table>
         </div>
-      </section>
-    </div>
-
-    <!-- ================= TAB: SMART INPUT + NOTA FOTO ================= -->
-    <div id="content-input" class="tab-content hidden space-y-6 admin-restricted-content">
-      <section class="bg-slate-900 border border-slate-800 p-4 md:p-6 rounded-xl relative overflow-hidden shadow-2xl">
-        <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-2">
-          <div>
-            <h3 class="text-md font-bold text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i> Smart Multi-Input & Petty Cash Nota Foto</h3>
-            <p class="text-[11px] text-slate-400">Catat kas masuk, pengeluaran beserta foto nota dari kamera atau file galeri.</p>
-          </div>
-          <button type="button" onclick="addMultiRow()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all"><i data-lucide="plus" class="w-4 h-4 inline"></i> Tambah Baris</button>
-        </div>
-        <form id="form-multi" class="space-y-4">
-          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/50">
-            <table class="w-full text-left text-xs min-w-[900px]">
-              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
-                <tr><th class="p-3 w-32">Tipe</th><th class="p-3 w-28">Metode</th><th class="p-3 w-32">Tanggal</th><th class="p-3 w-16">Absen</th><th class="p-3 w-36">Nama / Keterangan</th><th class="p-3 w-28">Nominal</th><th class="p-3">Catatan</th><th class="p-3 w-32">Foto Nota</th><th class="p-3 text-center w-12">Hapus</th></tr>
-              </thead>
-              <tbody id="multi-rows-container" class="divide-y divide-slate-800"></tbody>
-            </table>
-          </div>
-          <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-black shadow-lg">SIMPAN KE DATABASE</button>
-        </form>
       </section>
     </div>
 
@@ -489,21 +508,25 @@
     </div>
   </div>
 
-  <!-- MODAL PATCH NOTES FULL -->
+  <!-- MODAL PATCH NOTES FULL (v1.0 - v7.5) -->
   <div id="modal-patch-notes" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-lg shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Full Patch Notes (v1.0 - v7.4.1)</h3>
+        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Full Patch Notes (v1.0 - v7.5)</h3>
         <button onclick="document.getElementById('modal-patch-notes').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="space-y-4 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-blue-400">v7.4.1 Ultimate Studio (Current)</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Penguncian ketat kolom non-admin (hanya admin/bendahara yang bisa input & database manager).<br>• Standarisasi format tanggal menjadi format DD MMMM YYYY (contoh: 01 Oktober 2026).<br>• Penambahan kolom nama pada pemasukan tambahan.<br>• Input pemasukan tambahan dibuat opsional (tanpa wajib isi nomor absen).</p>
+          <b class="text-blue-400">v7.5 Ultimate Enterprise (Current)</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Integrasi otomatis nama siswa di semua histori & e-statement.<br>• Integrasi pemasukan tambahan ke portal Cek Mandiri.<br>• Penanda kuning pada tunggakan minggu aktif.<br>• Pindah posisi Kotak Saran ke header atas & Cek Mandiri ke atas dashboard.<br>• Tambah badge ranking eksekutif & analytics perusahaan.<br>• Perbaikan tombol edit agar selalu responsif diklik.</p>
         </div>
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-blue-400">v7.4 Major Release</b>
-          <p class="text-slate-400 text-[11px] mt-1">• WhatsApp One-Click Reminder, Audit Analytics Chart, Multi-Theme, Badge Sultan, Petty Cash Nota Foto, Kotak Saran.</p>
+          <b class="text-blue-400">v7.4 - v7.4.1 Major Updates</b>
+          <p class="text-slate-400 text-[11px] mt-1">• WhatsApp One-Click Reminder, Audit Analytics Chart, Multi-Theme, Badge Sultan, Petty Cash Nota Foto, Kotak Saran, dan Penguncian Admin Ketat.</p>
+        </div>
+        <div class="pb-2 border-b border-slate-800">
+          <b class="text-blue-400">v1.0 - v7.3 Foundation & Firebase Studio</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Membangun basis data 28 siswa Kurikulum Merdeka SMA Mater Dei, Realtime Database Firebase, export Excel/Word/PNG, dan kalkulasi kas mingguan.</p>
         </div>
       </div>
       <div class="flex justify-end pt-2">
@@ -582,11 +605,7 @@
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast("Login Gagal", e.message, 'error')); }
     function logout() { auth.signOut(); switchTab('dashboard'); showToast("Logout", "Sesi admin diakhiri, Well.", 'success'); }
     function openPatchNotes() { document.getElementById('modal-patch-notes').classList.remove('hidden'); }
-    function scrollToMatrix() { switchTab('rekap'); document.getElementById('matriks-export-container').scrollIntoView({ behavior: 'smooth' }); }
-    function scrollToSection(id) {
-      if(id === 'ledger-container') document.getElementById('ledger-container').scrollIntoView({ behavior: 'smooth' });
-      else if(id === 'stat-sistem') switchTab('dashboard');
-    }
+    function scrollToMatrixShortcut() { switchTab('rekap'); document.getElementById('matriks-export-container').scrollIntoView({ behavior: 'smooth' }); }
 
     function changeTheme(themeClass) {
       const body = document.getElementById('body-theme');
@@ -606,7 +625,7 @@
           const avatar = document.getElementById('user-avatar');
           if(avatar) avatar.src = user.photoURL || 'https://via.placeholder.com/150';
           const roleLabel = document.getElementById('user-role-label');
-          if(roleLabel) roleLabel.innerText = user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara";
+          if(roleLabel) roleLabel.innerText = user.email === "awiendra55@gmail.com" ? "Admin Awiendra" : (user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara");
           const estName = document.getElementById('estatement-admin-name');
           if(estName) estName.innerText = currentUserName;
           
@@ -684,12 +703,6 @@
     }
 
     function handleLookupKey(e) { if(e.key === 'Enter') executeLookup(); }
-    function executeDashLookup() {
-      const val = document.getElementById('dash-lookup-input').value;
-      switchTab('lookup');
-      document.getElementById('lookup-input').value = val;
-      executeLookup();
-    }
 
     function executeLookup() {
       try {
@@ -716,10 +729,10 @@
         let currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
         localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen).forEach(t => { totalKas += t.amount; });
         let weeksPaid = Math.floor(totalKas / TARIF_MINGGU);
-        let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
-        let surplus = weeksPaid - (currentWeek - 1);
+        let lag = Math.max(0, currentWeek - weeksPaid);
+        let surplus = weeksPaid - currentWeek;
         let totalDenda = 0;
-        localDenda.filter(d => d.absen === foundAbsen && d.status === 'Unpaid').forEach(d => totalDenda += d.amount);
+        localDenda.filter(d => d.absen === foundAbsen && d.status === 'Paid').forEach(d => totalDenda += d.amount);
         
         document.getElementById('res-name').innerText = name;
         document.getElementById('res-absen').innerText = `Nomor Absen: ${foundAbsen}`;
@@ -747,19 +760,24 @@
           badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30";
           badge.innerText = "Lunas / Sesuai Target";
         }
-        let targetTotal = (currentWeek - 1) * TARIF_MINGGU;
-        let pct = targetTotal > 0 ? Math.min(100, Math.round((totalKas / (currentWeek * TARIF_MINGGU)) * 100)) : 100;
+        let targetTotal = currentWeek * TARIF_MINGGU;
+        let pct = targetTotal > 0 ? Math.min(100, Math.round((totalKas / targetTotal) * 100)) : 100;
         document.getElementById('res-progress-pct').innerText = `${pct}%`;
         document.getElementById('res-progress-bar').style.width = `${pct}%`;
         
         let historyList = document.getElementById('res-history-list');
         historyList.innerHTML = '';
         let myTx = localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen);
-        if(myTx.length === 0) {
+        let myDenda = localDenda.filter(d => d.absen === foundAbsen);
+        
+        if(myTx.length === 0 && myDenda.length === 0) {
           historyList.innerHTML = `<p class="text-slate-500 text-xs py-2">Belum ada riwayat pembayaran.</p>`;
         } else {
           myTx.forEach(tx => {
-            historyList.insertAdjacentHTML('beforeend', `<div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between text-xs"><span>${tx.dateStr} - ${tx.description}</span><span class="font-bold text-emerald-400">+Rp ${tx.amount.toLocaleString()}</span></div>`);
+            historyList.insertAdjacentHTML('beforeend', `<div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between text-xs"><span>${tx.dateStr} - Kas Masuk (${tx.description})</span><span class="font-bold text-emerald-400">+Rp ${tx.amount.toLocaleString()}</span></div>`);
+          });
+          myDenda.forEach(d => {
+            historyList.insertAdjacentHTML('beforeend', `<div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between text-xs"><span>${d.dateStr} - Tambahan (${d.reason}) [${d.status}]</span><span class="font-bold text-amber-400">+Rp ${d.amount.toLocaleString()}</span></div>`);
           });
         }
         resContainer.classList.remove('hidden');
@@ -833,7 +851,7 @@
             const photoInput = r.querySelector('.m-photo');
             
             if(am) {
-              const nm = customNama || (ab && daftarSiswa[ab] ? daftarSiswa[ab].nama : (ab ? `Absen ${ab}` : 'Umum'));
+              const nm = customNama || (ab && daftarSiswa[ab] ? daftarSiswa[ab].nama : (ab ? `Absen ${ab}` : 'Siswa Umum'));
               const dStr = formatDateIndo(dV);
               
               if(photoInput.files && photoInput.files[0]) {
@@ -855,7 +873,7 @@
       if(t === 'denda') {
         dendaRef.push({ timestamp: new Date(dV).getTime()||Date.now(), dateStr: dStr, absen: ab||0, nama: nm, amount: am, reason: (no||'Pemasukan Tambahan'), status: dStatus });
       } else {
-        let desc = t==='masuk' && ab ? `[Ab. ${ab} - ${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
+        let desc = t==='masuk' && ab ? `[${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
         if(photoUrl) desc += ` [Ada Nota]`;
         kasRef.push({ timestamp: new Date(dV).getTime()||Date.now(), dateStr: dStr, type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc, notaUrl: photoUrl||'' });
       }
@@ -956,7 +974,7 @@
         localDenda.forEach(d => {
           if(d.status === 'Paid') tD_lunas += d.amount;
           if(!dailyGroup[d.dateStr]) dailyGroup[d.dateStr] = { timestamp: d.timestamp, items: [] };
-          dailyGroup[d.dateStr].items.push({ type: 'denda_record', status: d.status, amount: d.amount, desc: `[${d.nama}] ${d.reason}`, id: d.id, db: 'denda' });
+          dailyGroup[d.dateStr].items.push({ type: 'denda_record', status: d.status, amount: d.amount, desc: `[${d.nama}] Tambahan: ${d.reason}`, id: d.id, db: 'denda' });
         });
 
         const totSistem = (tM + tD_lunas) - tK; 
@@ -980,6 +998,7 @@
         renderAdminTable(); 
         updateCharts(tM + tD_lunas, tK);
         updateComplianceChart(tBayar);
+        updateAnalyticsBadges(tBayar);
       } catch(e) {}
     }
 
@@ -1062,6 +1081,33 @@
       } catch(e) {}
     }
 
+    function updateAnalyticsBadges(tM) {
+      try {
+        let studentTotals = {};
+        for(let i=1; i<=TOTAL_SISWA; i++) studentTotals[i] = { name: daftarSiswa[i].nama, total: tM[i] || 0, dendaPaidCount: 0 };
+        
+        localDenda.forEach(d => {
+          if(d.absen >= 1 && d.absen <= TOTAL_SISWA && d.status === 'Paid') {
+            studentTotals[d.absen].total += d.amount;
+            studentTotals[d.absen].dendaPaidCount++;
+          }
+        });
+
+        let sortedByTotal = Object.values(studentTotals).sort((a,b) => b.total - a.total);
+        if(sortedByTotal.length > 0) {
+          document.getElementById('badge-top-donatur').innerText = `${sortedByTotal[0].name} (Rp ${sortedByTotal[0].total.toLocaleString()})`;
+          document.getElementById('badge-pahlawan-kas').innerText = `${sortedByTotal[1]?.name || sortedByTotal[0].name}`;
+        }
+
+        let sortedByDenda = Object.values(studentTotals).sort((a,b) => b.dendaPaidCount - a.dendaPaidCount);
+        if(sortedByDenda.length > 0 && sortedByDenda[0].dendaPaidCount > 0) {
+          document.getElementById('badge-pelanggar-lunas').innerText = `${sortedByDenda[0].name} (${sortedByDenda[0].dendaPaidCount}x Lunas)`;
+        } else {
+          document.getElementById('badge-pelanggar-lunas').innerText = `Belum ada data catatan`;
+        }
+      } catch(e) {}
+    }
+
     function renderDendaTable() {
       const tb = document.getElementById('denda-table-body'); if(!tb) return; tb.innerHTML = '';
       let cUnpaid=0, cPaid=0;
@@ -1109,11 +1155,24 @@
         let bStr = '';
         for(let s=1; s<=TOTAL_SISWA; s++) {
           let paid = tM[s] || 0;
+          let expectedPaidForCurrentWeek = currentWeek * TARIF_MINGGU;
+          let isCurrentWeekPaid = paid >= expectedPaidForCurrentWeek;
+          
           let weeksPaid = Math.floor(paid / TARIF_MINGGU);
-          let lag = Math.max(0, (currentWeek - 1) - weeksPaid);
-          let surplusWeeks = weeksPaid - (currentWeek - 1);
-          let ketText = surplusWeeks > 0 ? `<br><span class="text-[9px] text-emerald-400 font-bold italic">» Lebih ${surplusWeeks} mgg, makaseh «</span>` : (lag > 0 ? `<br><span class="text-[9px] text-rose-400 font-bold">⚠ Nunggak ${lag} mgg</span>` : `<br><span class="text-[9px] text-slate-400 font-bold">✓ Pas / Aman</span>`);
-          let tunggakanBadge = lag > 0 ? `<span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded text-[10px] font-extrabold">${lag} Mgg</span>` : `<span class="text-emerald-400 font-bold text-[10px]">Aman</span>`;
+          let lag = Math.max(0, currentWeek - weeksPaid);
+          let surplusWeeks = weeksPaid - currentWeek;
+          
+          let ketText = surplusWeeks > 0 ? `<br><span class="text-[9px] text-emerald-400 font-bold italic">» Lebih ${surplusWeeks} mgg, makaseh «</span>` : (lag > 0 ? `<br><span class="text-[9px] text-rose-400 font-bold">⚠ Nunggak ${lag} mgg</span>` : `<br><span class="text-[9px] text-slate-400 font-bold">✓ Aman</span>`);
+          
+          // Jika minggu aktif belum bayar, beri warna kuning pada tunggakan
+          let tunggakanBadge = '';
+          if(!isCurrentWeekPaid) {
+            tunggakanBadge = `<span class="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded text-[10px] font-extrabold animate-pulse">Belum M${currentWeek} (Kuning)</span>`;
+          } else if(lag > 0) {
+            tunggakanBadge = `<span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded text-[10px] font-extrabold">${lag} Mgg</span>`;
+          } else {
+            tunggakanBadge = `<span class="text-emerald-400 font-bold text-[10px]">Aman</span>`;
+          }
           
           let nameSiswa = daftarSiswa[s].nama;
           let waMsg = encodeURIComponent(`Halo ${nameSiswa}, ini pengingat Kas X-4. Status tunggakan kas kamu adalah ${lag > 0 ? lag + ' minggu' : 'aman (lunas)'}. Total pembayaran saat ini Rp ${paid.toLocaleString()}. Yuk segera bereskan ya, Well! Terima kasih.`);
@@ -1219,7 +1278,7 @@
           localTx.forEach(t => { if(t.type === 'masuk' && t.absen) tM[t.absen]+=t.amount; });
           text += `*MATRIKS (Minggu ke-${currentWeek})*\n`;
           for(let s=1; s<=TOTAL_SISWA; s++) {
-            let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, (currentWeek - 1) - w); let surp = w - (currentWeek - 1);
+            let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, currentWeek - w); let surp = w - currentWeek;
             let n = surp > 0 ? ` (Lebih ${surp} mgg)` : '';
             text += `${s}. ${daftarSiswa[s].nama} - Rp${p} | ${lag>0?'Nunggak '+lag+'Mgg':'Aman'}${n}\n`;
           }
@@ -1237,7 +1296,7 @@
           localTx.forEach(t => { if(t.type === 'masuk' && t.absen) tM[t.absen]+=t.amount; });
           let dEx = [];
           for(let s=1; s<=TOTAL_SISWA; s++) {
-            let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, (currentWeek - 1) - w); let surp = w - (currentWeek - 1);
+            let p = tM[s] || 0; let w = Math.floor(p / TARIF_MINGGU); let lag = Math.max(0, currentWeek - w); let surp = w - currentWeek;
             let stat = surp > 0 ? `» Lebih ${surp} minggu, makaseh «` : (lag > 0 ? `Nunggak ${lag} mgg` : 'Lunas');
             dEx.push({"No Absen": s, "Nama Siswa": daftarSiswa[s].nama, "Total Pembayaran": `Rp ${p>=1000?Math.round(p/1000)+'k':p}`, "Tunggakan": lag>0?`${lag} Mgg` : 'Aman', "Keterangan": stat});
           }
@@ -1300,7 +1359,7 @@
 
       allItems.forEach(i => {
         let colorClass = i.dbSource === 'kas' ? (i.cat.includes('masuk') ? 'text-blue-400' : 'text-rose-400') : 'text-amber-400';
-        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2.5 font-bold ${colorClass}">${i.cat}</td><td class="p-2.5">${i.dateStr}</td><td class="p-2.5 truncate max-w-[200px]">${i.desc}</td><td class="p-2.5 font-bold">Rp ${i.amount.toLocaleString()}</td><td class="p-2.5 text-center space-x-2"><button onclick="openEditTransaction('${i.id}','${i.dbSource}','${i.desc.replace(/'/g, "")}',${i.amount},${i.absen||'null'},'${i.dateStr}')" class="text-blue-400 font-bold hover:underline">Edit</button><button onclick="deleteTransaction('${i.id}','${i.dbSource}','${i.desc.replace(/'/g, "")}')" class="text-rose-400 font-bold hover:underline">Hapus</button></td></tr>`);
+        tb.insertAdjacentHTML('beforeend', `<tr class="border-b border-slate-800"><td class="p-2.5 font-bold ${colorClass}">${i.cat}</td><td class="p-2.5">${i.dateStr}</td><td class="p-2.5 truncate max-w-[200px]">${i.desc}</td><td class="p-2.5 font-bold">Rp ${i.amount.toLocaleString()}</td><td class="p-2.5 text-center space-x-2 relative z-10"><button type="button" onclick="openEditTransaction('${i.id}','${i.dbSource}','${i.desc.replace(/'/g, "")}',${i.amount},${i.absen||'null'},'${i.dateStr}')" class="text-blue-400 font-bold hover:underline cursor-pointer">Edit</button><button type="button" onclick="deleteTransaction('${i.id}','${i.dbSource}','${i.desc.replace(/'/g, "")}')" class="text-rose-400 font-bold hover:underline cursor-pointer">Hapus</button></td></tr>`);
       });
     }
 
@@ -1367,7 +1426,7 @@
             
             let dStr = formatDateIndo(tgl);
             let nm = absen && daftarSiswa[absen] ? daftarSiswa[absen].nama : `Absen ${absen}`;
-            let desc = tipe === 'masuk' && absen ? `[Ab. ${absen} - ${nm}] (Excel) ${catatan}` : `(Excel) ${catatan}`;
+            let desc = tipe === 'masuk' && absen ? `[${nm}] (Excel) ${catatan}` : `(Excel) ${catatan}`;
             promises.push(kasRef.push({ timestamp: new Date(tgl).getTime()||Date.now(), dateStr: dStr, type: tipe, absen: absen, amount: nominal, description: desc }));
           });
           Promise.all(promises).then(() => {
