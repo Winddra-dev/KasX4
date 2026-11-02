@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v7.7 Ultimate Enterprise Analytics</title>
+  <title>Kas X-4 | v7.7.1 Ultimate Enterprise Analytics</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -46,7 +46,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-md font-extrabold tracking-tight text-white leading-tight">Kas X-4</h1>
-            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes Full">v7.7</span>
+            <span onclick="openPatchNotes()" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black rounded cursor-pointer hover:bg-blue-500/40 transition-colors" title="Klik untuk Patch Notes Full">v7.7.1</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">Enterprise Analytics & 28 Student Registry</p>
         </div>
@@ -534,13 +534,13 @@
   <div id="modal-patch-notes" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-lg shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Full Patch Notes (v1.0 - v7.7)</h3>
+        <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-400"></i> Full Patch Notes (v1.0 - v7.7.1)</h3>
         <button onclick="document.getElementById('modal-patch-notes').classList.add('hidden')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="space-y-4 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-2">
         <div class="pb-2 border-b border-slate-800">
-          <b class="text-blue-400">v7.7 Ultimate Enterprise (Current)</b>
-          <p class="text-slate-400 text-[11px] mt-1">• Kolom tunggakan bersih tanpa total bayar.<br>• Hapus teks "(Kuning)" pada status tunggakan.<br>• Penambahan tanggal Senin di header matriks (Mulai 20 Jul 2026).<br>• Tombol Kirim WA dipindah ke Pusat Ekspor dengan pilihan nama siswa.<br>• Format WA baru: "[nama], kamu nunggak [total_nunggak] minggu. tolong bayar [total_yg_harus_dibayar] y."</p>
+          <b class="text-blue-400">v7.7.1 Ultimate Enterprise (Current)</b>
+          <p class="text-slate-400 text-[11px] mt-1">• Pembersihan total teks generik "[Absen x]" menjadi nama asli siswa secara presisi di seluruh riwayat.<br>• Sinkronisasi penuh online ke GitHub & Firebase.</p>
         </div>
       </div>
       <div class="flex justify-end pt-2">
@@ -607,7 +607,6 @@
 
     try { lucide.createIcons(); } catch(e) {}
 
-    // Populate dropdown WA di studio ekspor
     function populateWaDropdown() {
       const sel = document.getElementById('wa-select-siswa');
       if(!sel) return;
@@ -650,7 +649,7 @@
           const avatar = document.getElementById('user-avatar');
           if(avatar) avatar.src = user.photoURL || 'https://via.placeholder.com/150';
           const roleLabel = document.getElementById('user-role-label');
-          if(roleLabel) roleLabel.innerText = user.email === "awiendra55@gmail.com" ? "Admin Awiendra" : (user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelsy" : "Bendahara");
+          if(roleLabel) roleLabel.innerText = user.email === "awiendra55@gmail.com" ? "Admin Awiendra" : (user.email === "chelsyangelina5796@gmail.com" ? "Admin Chelse" : "Bendahara");
           const estName = document.getElementById('estatement-admin-name');
           if(estName) estName.innerText = currentUserName;
           
@@ -727,33 +726,44 @@
         let diffTime = Math.abs(now - START_SEMESTER);
         let currentWeek = Math.max(1, Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7));
         
+        let unpaidPastCount = 0;
+        let isCurrentWeekPaid = true;
+        
         localTx.filter(t => t.type === 'masuk' && t.absen === foundAbsen).forEach(t => { totalKas += t.amount; });
-        let weeksPaid = Math.floor(totalKas / TARIF_MINGGU);
-        let lag = Math.max(0, currentWeek - weeksPaid);
-        let surplus = weeksPaid - currentWeek;
+        
+        for(let w=1; w<=currentWeek; w++) {
+          let requiredAmt = w * TARIF_MINGGU;
+          if(totalKas < requiredAmt) {
+            if(w === currentWeek) isCurrentWeekPaid = false;
+            else unpaidPastCount++;
+          }
+        }
+        let totalUnpaidWeeks = unpaidPastCount + (!isCurrentWeekPaid ? 1 : 0);
+        let surplusWeeks = Math.floor(totalKas / TARIF_MINGGU) - currentWeek;
+        
         let totalDenda = 0;
         localDenda.filter(d => d.absen === foundAbsen && d.status === 'Paid').forEach(d => totalDenda += d.amount);
         
         document.getElementById('res-name').innerText = name;
         document.getElementById('res-absen').innerText = `Nomor Absen: ${foundAbsen}`;
         document.getElementById('res-total-kas').innerText = `Rp ${totalKas.toLocaleString()}`;
-        document.getElementById('res-tunggakan').innerText = lag > 0 ? `${lag} Mgg` : 'Aman';
+        document.getElementById('res-tunggakan').innerText = totalUnpaidWeeks > 0 ? `${totalUnpaidWeeks} Mgg` : 'Aman';
         document.getElementById('res-total-denda').innerText = `Rp ${totalDenda.toLocaleString()}`;
         
         const badgeSultan = document.getElementById('res-badge-sultan');
-        if(lag === 0) {
+        if(totalUnpaidWeeks === 0) {
           badgeSultan.classList.remove('hidden'); badgeSultan.classList.add('inline-flex');
         } else {
           badgeSultan.classList.add('hidden'); badgeSultan.classList.remove('inline-flex');
         }
 
         let badge = document.getElementById('res-status-badge');
-        if(lag > 0) {
+        if(totalUnpaidWeeks > 0) {
           badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30";
-          badge.innerText = `Nunggak ${lag} Mgg`;
-        } else if(surplus > 0) {
+          badge.innerText = `Nunggak ${totalUnpaidWeeks} Mgg`;
+        } else if(surplusWeeks > 0) {
           badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-          badge.innerText = `Lebih ${surplus} Mgg (Aman)`;
+          badge.innerText = `Lebih ${surplusWeeks} Mgg (Aman)`;
         } else {
           badge.className = "px-2.5 py-1 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30";
           badge.innerText = "Lunas / Sesuai Target";
@@ -880,7 +890,10 @@
       if(t === 'denda') {
         dendaRef.push({ timestamp: new Date(dV).getTime()||Date.now(), dateStr: dStr, absen: ab||0, nama: nm, amount: am, reason: (no||'Pemasukan Tambahan'), status: dStatus });
       } else {
-        let desc = t==='masuk' && ab ? `[${nm}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
+        // Otomatis bersihkan format nama asli dari absen tanpa sisa "Siswa Absen" generik
+        let finalNama = nm;
+        if(ab && daftarSiswa[ab]) finalNama = daftarSiswa[ab].nama;
+        let desc = t==='masuk' && ab ? `[${finalNama}] (${method}) ${no||'Kas'}` : `(${method}) ${no||'Pengeluaran'}`;
         if(photoUrl) desc += ` [Ada Nota]`;
         kasRef.push({ timestamp: new Date(dV).getTime()||Date.now(), dateStr: dStr, type: t, absen: t==='masuk'&&ab?ab:null, amount: am, description: desc, notaUrl: photoUrl||'' });
       }
@@ -963,7 +976,6 @@
       document.getElementById('modal-nota-viewer').classList.remove('hidden');
     }
 
-    // Fungsi Kirim WA baru dengan format persis permintaanmu
     function sendWaFromStudio() {
       const absenId = parseInt(document.getElementById('wa-select-siswa').value);
       const name = daftarSiswa[absenId].nama;
@@ -1014,7 +1026,14 @@
             tK+=t.amount;
           }
           if(!dailyGroup[t.dateStr]) dailyGroup[t.dateStr] = { timestamp: t.timestamp, items: [] };
-          dailyGroup[t.dateStr].items.push({ type: t.type, amount: t.amount, desc: t.description, id: t.id, db: 'kas', notaUrl: t.notaUrl });
+          
+          // Bersihkan deskripsi lama jika masih ada teks "[Absen X - Siswa Absen X]"
+          let cleanDesc = t.description;
+          if(t.absen && daftarSiswa[t.absen]) {
+            cleanDesc = cleanDesc.replace(/\[Absen\s*\d+\s*-\s*[^\]]+\]/g, `[${daftarSiswa[t.absen].nama}]`);
+          }
+          
+          dailyGroup[t.dateStr].items.push({ type: t.type, amount: t.amount, desc: cleanDesc, id: t.id, db: 'kas', notaUrl: t.notaUrl });
         });
 
         localDenda.forEach(d => {
@@ -1210,7 +1229,6 @@
         
         let hStr = `<tr class="whitespace-nowrap"><th class="p-2 border border-slate-800 w-8 bg-slate-900 text-center text-slate-300 font-bold">Ab</th><th class="p-2 border border-slate-800 bg-slate-900 text-slate-300 font-bold">Nama (28 Siswa)</th><th class="p-2 border border-slate-800 text-right bg-slate-900 text-slate-300 font-bold">Total Pembayaran</th><th class="p-2 border border-slate-800 text-center bg-slate-900 text-slate-300 font-bold">Tunggakan</th>`;
         
-        // Buat helper format tanggal Senin per minggu
         function getMondayOfWeek(weekNum) {
           let d = new Date(START_SEMESTER);
           d.setDate(d.getDate() + (weekNum - 1) * 7);
@@ -1242,7 +1260,6 @@
 
           let totalUnpaidTotal = unpaidPastCount + (!isCurrentWeekPaid ? 1 : 0);
           
-          // Sesuai permintaan: Tunggakan muncul di tunggakan aja, gausah total bayar, tanpa teks (kuning)
           let tunggakanBadge = '';
           if(totalUnpaidTotal > 0) {
             let colorBadge = unpaidPastCount > 0 ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" : "bg-amber-500/20 text-amber-300 border border-amber-500/40";
