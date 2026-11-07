@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v8.2 Master Final</title>
+  <title>Kas X-4 | v8.3 Ultimate Edition</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -24,6 +24,16 @@
 </head>
 <body class="font-sans min-h-screen pb-16 antialiased">
   
+  <!-- OFFLINE / ERROR BLOCKING SCREEN -->
+  <div id="offline-screen" class="hidden fixed inset-0 z-[999999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="card-theme border border-rose-500/50 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto"><i data-lucide="wifi-off" class="w-6 h-6"></i></div>
+      <h3 class="text-base font-black text-rose-400">FAILED TO LOAD / OFFLINE</h3>
+      <p class="text-xs opacity-75">Koneksi ke database Firebase terputus atau gagal dimuat. Periksa internetmu dan muat ulang halaman.</p>
+      <button onclick="window.location.reload()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow">Refresh Halaman / Report</button>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast-box" class="fixed bottom-5 right-5 z-[99999] bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 max-w-sm">
     <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
@@ -41,15 +51,15 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-sm font-black tracking-tight">Kas X-4</h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold rounded">v8.2</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold rounded">v8.3</span>
           </div>
           <p class="text-[10px] opacity-70">Kelas X-4 SMA Mater Dei</p>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <div id="db-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> <span id="db-status-text">Connecting...</span>
+        <div id="db-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> <span id="db-status-text">ONLINE</span>
         </div>
 
         <button onclick="toggleTheme()" class="p-2 card-theme border rounded-lg text-xs" title="Ganti Tema Light/Dark"><i data-lucide="moon" id="theme-icon" class="w-4 h-4"></i></button>
@@ -89,15 +99,21 @@
           <input type="text" id="lookup-input" onkeydown="if(event.key==='Enter') executeLookup()" placeholder="Cth: 28 / Wirasena..." class="flex-1 card-theme border rounded-xl px-4 py-2.5 text-xs outline-none focus:border-blue-500">
           <button onclick="executeLookup()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow">Cek</button>
         </div>
-        <div id="lookup-result" class="hidden card-theme border p-4 rounded-xl space-y-3">
-          <div class="flex justify-between items-center border-b pb-2">
-            <div><h4 id="res-name" class="text-xs font-bold">-</h4><p id="res-absen" class="text-[10px] text-blue-400">-</p></div>
-            <div id="res-status-badge" class="px-2.5 py-1 rounded text-[10px] font-bold">Status</div>
+        
+        <!-- HASIL CEK MANDIRI LENGKAP DENGAN HISTORI -->
+        <div id="lookup-result" class="hidden card-theme border p-5 rounded-2xl space-y-4 shadow-lg">
+          <div class="flex justify-between items-center border-b pb-3">
+            <div><h4 id="res-name" class="text-sm font-black">-</h4><p id="res-absen" class="text-[11px] text-blue-400 font-bold">-</p></div>
+            <div id="res-status-badge" class="px-3 py-1 rounded-lg text-xs font-bold">Status</div>
           </div>
-          <div class="grid grid-cols-3 gap-2 text-xs">
-            <div class="card-theme border p-2.5 rounded-lg"><span class="text-[9px] opacity-75 block">Total Bayar</span><strong id="res-total" class="text-emerald-400">Rp 0</strong></div>
-            <div class="card-theme border p-2.5 rounded-lg"><span class="text-[9px] opacity-75 block">Tunggakan</span><strong id="res-tung" class="text-rose-400">0 Mgg</strong></div>
-            <div class="card-theme border p-2.5 rounded-lg"><span class="text-[9px] opacity-75 block">Tambahan</span><strong id="res-denda" class="text-amber-400">Rp 0</strong></div>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <div class="card-theme border p-3 rounded-xl"><span class="text-[10px] opacity-75 block font-bold">Total Bayar</span><strong id="res-total" class="text-emerald-400 text-sm">Rp 0</strong></div>
+            <div class="card-theme border p-3 rounded-xl"><span class="text-[10px] opacity-75 block font-bold">Tunggakan</span><strong id="res-tung" class="text-rose-400 text-sm">Rp 0</strong></div>
+            <div class="card-theme border p-3 rounded-xl"><span class="text-[10px] opacity-75 block font-bold">Tambahan / Denda</span><strong id="res-denda" class="text-amber-400 text-sm">Rp 0</strong></div>
+          </div>
+          <div class="space-y-2 pt-2 border-t">
+            <h5 class="text-xs font-black uppercase text-blue-400">Riwayat Pembayaran & Catatan Pribadi:</h5>
+            <div id="res-history-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
           </div>
         </div>
       </section>
@@ -128,7 +144,7 @@
           <h3 class="text-xs font-black uppercase tracking-wider flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-blue-400"></i> Matriks Keuangan X-4 (28 Siswa)</h3>
           <button onclick="exportMatrixPNG()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow"><i data-lucide="image" class="w-4 h-4"></i> Ekspor PNG</button>
         </div>
-        <div id="matrix-container" class="overflow-x-auto rounded-xl border font-mono">
+        <div id="matrix-container" class="card-theme overflow-x-auto rounded-xl border font-mono p-2">
           <table class="w-full text-left text-[10px] border-collapse min-w-[900px]">
             <thead id="rekap-header" class="card-theme border-b"></thead>
             <tbody id="rekap-body" class="divide-y"></tbody>
@@ -314,7 +330,6 @@
 
     let localTx = []; let localDenda = []; let saldoFisik = 0; let isAdmin = false;
 
-    // Tambah baris dengan tanggal mengikuti baris terakhir
     function addMultiRow() {
       const tb = document.getElementById('multi-rows-container');
       if(!tb) return;
@@ -383,13 +398,18 @@
       document.getElementById(`content-${t}`).classList.remove('hidden');
     }
 
-    // Auto-reconnect database listeners
     kasRef.on('value', snap => {
       const d = snap.val(); localTx = [];
       if(d) Object.keys(d).forEach(k => localTx.push({id: k, ...d[k]}));
-      updateConnectionStatus(true);
+      document.getElementById('offline-screen').classList.add('hidden');
+      document.getElementById('db-status-badge').className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+      document.getElementById('db-status-text').innerText = "ONLINE";
       processData();
-    }, () => updateConnectionStatus(false));
+    }, () => {
+      document.getElementById('offline-screen').classList.remove('hidden');
+      document.getElementById('db-status-badge').className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30";
+      document.getElementById('db-status-text').innerText = "OFFLINE / ERROR";
+    });
 
     dendaRef.on('value', snap => {
       const d = snap.val(); localDenda = [];
@@ -402,17 +422,6 @@
       document.getElementById('stat-fisik').innerText = `Rp ${saldoFisik.toLocaleString()}`;
       document.getElementById('inp-saldo-fisik').value = saldoFisik;
     });
-
-    function updateConnectionStatus(isConnected) {
-      const badge = document.getElementById('db-status-badge'), text = document.getElementById('db-status-text');
-      if(isConnected) {
-        badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-        text.innerText = "ONLINE";
-      } else {
-        badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30";
-        text.innerText = "RECONNECTING...";
-      }
-    }
 
     function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => showToast("Gagal Login", e.message)); }
     function logout() { auth.signOut(); switchTab('dashboard'); }
@@ -576,10 +585,8 @@
           if(paid < w * TARIF_MINGGU) unpaid++;
         }
         let tunggakanNominal = unpaid * -5000;
-        let tunggakanClass = unpaid > 0 ? "bg-amber-500/20 text-amber-400 font-bold" : "text-emerald-400";
+        let tunggakanClass = unpaid > 1 ? "bg-rose-500/20 text-rose-400 font-bold" : (unpaid === 1 ? "bg-amber-500/20 text-amber-400 font-bold" : "text-emerald-400 font-bold");
         let tunggakanStr = unpaid > 0 ? `${tunggakanNominal.toLocaleString()}` : "Rp 0";
-
-        let badge = unpaid > 0 ? `<span class="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 rounded text-[9px] font-bold">${unpaid} Mgg</span>` : `<span class="text-emerald-400 font-bold">Aman</span>`;
 
         let rStr = `<td class="p-1.5 border text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border truncate max-w-[120px]">${daftarSiswa[s].nama}</td><td class="p-1.5 border text-right font-bold text-emerald-400">Rp ${paid.toLocaleString()}</td><td class="p-1.5 border text-center ${tunggakanClass}">${tunggakanStr}</td>`;
         let b = paid;
@@ -595,7 +602,7 @@
 
     function exportMatrixPNG() {
       const container = document.getElementById('matrix-container');
-      html2canvas(container, { scale: 2, backgroundColor: null }).then(canvas => {
+      html2canvas(container, { scale: 2, backgroundColor: '#0f172a' }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Matriks_Kas_X4_${new Date().toISOString().split('T')[0]}.png`;
         link.href = canvas.toDataURL('image/png');
@@ -626,16 +633,24 @@
       const curW = Math.max(1, Math.ceil(Math.ceil(Math.abs(now - START_SEMESTER) / (1000 * 60 * 60 * 24)) / 7));
       let tung = 0;
       for(let w=1; w<=curW; w++) if(total < w * TARIF_MINGGU) tung++;
+      let tunggakanNominal = tung * -5000;
 
       document.getElementById('res-name').innerText = daftarSiswa[found].nama;
-      document.getElementById('res-absen').innerText = `Absen: ${found}`;
+      document.getElementById('res-absen').innerText = `Nomor Absen: ${found}`;
       document.getElementById('res-total').innerText = `Rp ${total.toLocaleString()}`;
-      document.getElementById('res-tung').innerText = tung > 0 ? `${tung} Mgg` : 'Aman';
+      document.getElementById('res-tung').innerText = tung > 0 ? `${tunggakanNominal.toLocaleString()}` : "Rp 0";
       document.getElementById('res-denda').innerText = `Rp ${dendaTotal.toLocaleString()}`;
       
       const badge = document.getElementById('res-status-badge');
-      badge.className = tung > 0 ? "px-2.5 py-1 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400" : "px-2.5 py-1 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400";
+      badge.className = tung > 0 ? "px-3 py-1 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-400" : "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-400";
       badge.innerText = tung > 0 ? `Nunggak ${tung} Mgg` : "Lunas";
+
+      // Render histori pembayaran personal
+      let historyHTML = '';
+      localTx.filter(t => t.type === 'masuk' && t.absen === found).forEach(t => {
+        historyHTML += `<div class="card-theme border p-2.5 rounded-xl flex justify-between items-center text-xs"><span>${t.dateStr} - ${t.description}</span><strong class="text-emerald-400">+Rp ${t.amount.toLocaleString()}</strong></div>`;
+      });
+      document.getElementById('res-history-list').innerHTML = historyHTML || `<p class="text-xs opacity-50 py-2">Belum ada riwayat pembayaran.</p>`;
 
       res.classList.remove('hidden');
     }
@@ -653,20 +668,59 @@
       let tM = {}; for(let i=1; i<=TOTAL_SISWA; i++) tM[i] = 0;
       localTx.forEach(t => { if(t.type === 'masuk' && t.absen) tM[t.absen] += t.amount; });
 
-      let dataMatrix = [];
+      // Sheet 1: Matriks Siswa
+      let matrixData = [];
       for(let s=1; s<=TOTAL_SISWA; s++) {
-        let rowObj = { "No": s, "Nama Siswa": daftarSiswa[s].nama, "Total Bayar (Siswa)": tM[s] || 0 };
+        let rowObj = { "No Absen": s, "Nama Siswa": daftarSiswa[s].nama, "Total Bayar": tM[s] || 0 };
         let paid = tM[s] || 0;
-        for(let w=1; w<=Math.max(currentWeek, 24); w++) {
-          rowObj[`Minggu ${w}`] = (paid >= w * TARIF_MINGGU) ? "TRUE" : "FALSE";
+        let unpaid = 0;
+        for(let w=1; w<=currentWeek; w++) {
+          if(paid < w * TARIF_MINGGU) unpaid++;
+          rowObj[`M${w}`] = (paid >= w * TARIF_MINGGU) ? "TRUE" : "FALSE";
         }
-        dataMatrix.push(rowObj);
+        rowObj["Tunggakan Nominal"] = unpaid * -5000;
+        matrixData.push(rowObj);
       }
 
-      const ws = XLSX.utils.json_to_sheet(dataMatrix);
-      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Kas_X-4_Matriks");
-      XLSX.writeFile(wb, `Kas_X-4_2026_2027.xlsx`);
-      showToast("Sukses", "Excel Matriks berhasil di-export!");
+      // Sheet 2: Kas Harian & Transaksi
+      let txData = localTx.map(t => ({
+        "Tanggal": t.dateStr,
+        "Kategori": t.type,
+        "Absen": t.absen || "-",
+        "Keterangan": t.description,
+        "Nominal": t.amount
+      }));
+
+      // Sheet 3: Pemasukan Tambahan & Denda
+      let dendaData = localDenda.map(d => ({
+        "Nama": d.nama,
+        "Keterangan/Alasan": d.reason,
+        "Nominal": d.amount,
+        "Status": d.status
+      }));
+
+      // Hitung Total Summary
+      let totMasuk = localTx.filter(t => t.type === 'masuk').reduce((a,b) => a + b.amount, 0);
+      let totKeluar = localTx.filter(t => t.type === 'keluar').reduce((a,b) => a + b.amount, 0);
+      let totDendaLunas = localDenda.filter(d => d.status === 'Paid').reduce((a,b) => a + b.amount, 0);
+      let saldoSeharusnya = (totMasuk + totDendaLunas) - totKeluar;
+
+      let summaryData = [
+        { "Keterangan Ringkasan": "Total Kas Masuk Siswa", "Jumlah (Rp)": totMasuk },
+        { "Keterangan Ringkasan": "Total Pemasukan Tambahan (Lunas)", "Jumlah (Rp)": totDendaLunas },
+        { "Keterangan Ringkasan": "Total Pengeluaran Kas", "Jumlah (Rp)": totKeluar },
+        { "Keterangan Ringkasan": "Saldo Akhir Seharusnya (Sistem)", "Jumlah (Rp)": saldoSeharusnya },
+        { "Keterangan Ringkasan": "Uang Fisik di Laci", "Jumlah (Rp)": saldoFisik }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), "Matriks_Kas");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(txData), "Buku_Kas_Harian");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dendaData), "Pemasukan_Tambahan");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), "Ringkasan_Total");
+
+      XLSX.writeFile(wb, `Laporan_Kas_X-4_${new Date().toISOString().split('T')[0]}.xlsx`);
+      showToast("Sukses", "Laporan Excel lengkap berhasil diexport!");
     }
 
     function exportJSON() {
