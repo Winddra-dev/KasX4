@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v8.3 Ultimate Edition</title>
+  <title>Kas X-4 | v8.4 Anti-Failed</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,10 +15,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
     body.light-mode { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #cbd5e1; }
@@ -32,9 +31,9 @@
   <div id="offline-screen" class="hidden fixed inset-0 z-[999999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="card-theme border border-rose-500/50 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
       <div class="w-12 h-12 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto"><i data-lucide="wifi-off" class="w-6 h-6"></i></div>
-      <h3 class="text-base font-black text-rose-400">FAILED TO LOAD / OFFLINE</h3>
-      <p class="text-xs opacity-75">Koneksi ke database Firebase terputus atau gagal dimuat. Periksa internetmu dan muat ulang halaman.</p>
-      <button onclick="window.location.reload()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow">Refresh Halaman / Report</button>
+      <h3 class="text-base font-black text-rose-400">KONEKSI TERPUTUS</h3>
+      <p class="text-xs opacity-75">Perangkatmu kehilangan koneksi internet total. Periksa sinyal atau paket data.</p>
+      <button onclick="window.location.reload()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow">Muat Ulang Halaman</button>
     </div>
   </div>
 
@@ -55,7 +54,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-sm font-black tracking-tight">Kas X-4</h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold rounded">v8.3</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold rounded">v8.4</span>
           </div>
           <p class="text-[10px] opacity-70">Kelas X-4 SMA Mater Dei</p>
         </div>
@@ -104,7 +103,6 @@
           <button onclick="executeLookup()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow">Cek</button>
         </div>
         
-        <!-- HASIL CEK MANDIRI LENGKAP DENGAN HISTORI -->
         <div id="lookup-result" class="hidden card-theme border p-5 rounded-2xl space-y-4 shadow-lg">
           <div class="flex justify-between items-center border-b pb-3">
             <div><h4 id="res-name" class="text-sm font-black">-</h4><p id="res-absen" class="text-[11px] text-blue-400 font-bold">-</p></div>
@@ -402,6 +400,42 @@
       document.getElementById(`content-${t}`).classList.remove('hidden');
     }
 
+    // Auto-Healing Fetch Fallback (Anti-Failed di HP)
+    async function loadDataFallback() {
+      try {
+        const [resTx, resDenda, resMeta] = await Promise.all([
+          fetch("https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app/transaksi_kas.json"),
+          fetch("https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app/kas_denda.json"),
+          fetch("https://kas-x4-26-27-default-rtdb.asia-southeast1.firebasedatabase.app/meta_data.json")
+        ]);
+        
+        const txJson = await resTx.json();
+        const dendaJson = await resDenda.json();
+        const metaJson = await resMeta.json();
+
+        localTx = [];
+        if(txJson) Object.keys(txJson).forEach(k => localTx.push({id: k, ...txJson[k]}));
+
+        localDenda = [];
+        if(dendaJson) Object.keys(dendaJson).forEach(k => localDenda.push({id: k, ...dendaJson[k]}));
+
+        if(metaJson && metaJson.saldo_fisik !== undefined) {
+          saldoFisik = metaJson.saldo_fisik;
+          document.getElementById('stat-fisik').innerText = `Rp ${saldoFisik.toLocaleString()}`;
+          document.getElementById('inp-saldo-fisik').value = saldoFisik;
+        }
+
+        document.getElementById('offline-screen').classList.add('hidden');
+        document.getElementById('db-status-badge').className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        document.getElementById('db-status-text').innerText = "ONLINE (HYBRID)";
+        processData();
+      } catch(err) {
+        if(localTx.length === 0) {
+          document.getElementById('offline-screen').classList.remove('hidden');
+        }
+      }
+    }
+
     kasRef.on('value', snap => {
       const d = snap.val(); localTx = [];
       if(d) Object.keys(d).forEach(k => localTx.push({id: k, ...d[k]}));
@@ -410,9 +444,8 @@
       document.getElementById('db-status-text').innerText = "ONLINE";
       processData();
     }, () => {
-      document.getElementById('offline-screen').classList.remove('hidden');
-      document.getElementById('db-status-badge').className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30";
-      document.getElementById('db-status-text').innerText = "OFFLINE / ERROR";
+      // Jika WebSocket gagal, jalankan HTTP Fetch Fallback otomatis tanpa bikin gagal total
+      loadDataFallback();
     });
 
     dendaRef.on('value', snap => {
@@ -649,7 +682,6 @@
       badge.className = tung > 0 ? "px-3 py-1 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-400" : "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-400";
       badge.innerText = tung > 0 ? `Nunggak ${tung} Mgg` : "Lunas";
 
-      // Render histori pembayaran personal
       let historyHTML = '';
       localTx.filter(t => t.type === 'masuk' && t.absen === found).forEach(t => {
         historyHTML += `<div class="card-theme border p-2.5 rounded-xl flex justify-between items-center text-xs"><span>${t.dateStr} - ${t.description}</span><strong class="text-emerald-400">+Rp ${t.amount.toLocaleString()}</strong></div>`;
@@ -672,7 +704,6 @@
       let tM = {}; for(let i=1; i<=TOTAL_SISWA; i++) tM[i] = 0;
       localTx.forEach(t => { if(t.type === 'masuk' && t.absen) tM[t.absen] += t.amount; });
 
-      // Sheet 1: Matriks Siswa
       let matrixData = [];
       for(let s=1; s<=TOTAL_SISWA; s++) {
         let rowObj = { "No Absen": s, "Nama Siswa": daftarSiswa[s].nama, "Total Bayar": tM[s] || 0 };
@@ -686,7 +717,6 @@
         matrixData.push(rowObj);
       }
 
-      // Sheet 2: Kas Harian & Transaksi
       let txData = localTx.map(t => ({
         "Tanggal": t.dateStr,
         "Kategori": t.type,
@@ -695,7 +725,6 @@
         "Nominal": t.amount
       }));
 
-      // Sheet 3: Pemasukan Tambahan & Denda
       let dendaData = localDenda.map(d => ({
         "Nama": d.nama,
         "Keterangan/Alasan": d.reason,
@@ -703,7 +732,6 @@
         "Status": d.status
       }));
 
-      // Hitung Total Summary
       let totMasuk = localTx.filter(t => t.type === 'masuk').reduce((a,b) => a + b.amount, 0);
       let totKeluar = localTx.filter(t => t.type === 'keluar').reduce((a,b) => a + b.amount, 0);
       let totDendaLunas = localDenda.filter(d => d.status === 'Paid').reduce((a,b) => a + b.amount, 0);
