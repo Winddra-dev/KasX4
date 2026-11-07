@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kas X-4 | v8.1 Master Edition</title>
+  <title>Kas X-4 | v8.2 Master Final</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
     :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
-    body.light-mode { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; }
+    body.light-mode { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #cbd5e1; }
     body { background-color: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
     .card-theme { background-color: var(--card); border-color: var(--border); }
+    table, th, td { border-color: var(--border) !important; }
     #toast-box { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateY(100px); opacity: 0; pointer-events: none; z-index: 99999; }
     #toast-box.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
   </style>
@@ -39,14 +41,13 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-sm font-black tracking-tight">Kas X-4</h1>
-            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold rounded">v8.1</span>
+            <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold rounded">v8.2</span>
           </div>
           <p class="text-[10px] opacity-70">Kelas X-4 SMA Mater Dei</p>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <!-- Status Database -->
         <div id="db-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> <span id="db-status-text">Connecting...</span>
         </div>
@@ -123,8 +124,11 @@
 
       <!-- MATRIKS KAS MINGGUAN -->
       <section class="card-theme border p-5 rounded-2xl shadow-xl space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-blue-400"></i> Matriks Keuangan X-4 (28 Siswa)</h3>
-        <div class="overflow-x-auto rounded-xl border font-mono">
+        <div class="flex justify-between items-center flex-wrap gap-2">
+          <h3 class="text-xs font-black uppercase tracking-wider flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-blue-400"></i> Matriks Keuangan X-4 (28 Siswa)</h3>
+          <button onclick="exportMatrixPNG()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow"><i data-lucide="image" class="w-4 h-4"></i> Ekspor PNG</button>
+        </div>
+        <div id="matrix-container" class="overflow-x-auto rounded-xl border font-mono">
           <table class="w-full text-left text-[10px] border-collapse min-w-[900px]">
             <thead id="rekap-header" class="card-theme border-b"></thead>
             <tbody id="rekap-body" class="divide-y"></tbody>
@@ -135,7 +139,6 @@
 
     <!-- ================= TAB 2: TABEL & KAS HARIAN ================= -->
     <div id="content-tabel" class="tab-content hidden space-y-6">
-      <!-- Pemasukan Tambahan & Denda -->
       <section class="card-theme border p-5 rounded-2xl shadow-xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black uppercase tracking-wider flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Monitoring Pemasukan Tambahan & Denda</h3>
@@ -150,7 +153,6 @@
         </div>
       </section>
 
-      <!-- Pengeluaran Kas -->
       <section class="card-theme border p-5 rounded-2xl shadow-xl space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider flex items-center gap-2"><i data-lucide="arrow-down-circle" class="w-4 h-4 text-rose-400"></i> Rincian Pengeluaran Kas</h3>
         <div class="overflow-x-auto rounded-xl border">
@@ -163,7 +165,6 @@
         </div>
       </section>
 
-      <!-- Kas Harian (Kelompok per Hari + Warna) -->
       <section class="card-theme border p-5 rounded-2xl shadow-xl space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4 text-blue-400"></i> Buku Kas Harian (Grouped per Date)</h3>
         <div id="ledger-container" class="space-y-3">
@@ -174,7 +175,6 @@
 
     <!-- ================= TAB 3: INPUT & UANG FISIK + EKSPOR (ADMIN) ================= -->
     <div id="content-input" class="tab-content hidden space-y-6">
-      <!-- Multi Row Input Form -->
       <section class="card-theme border p-5 rounded-2xl shadow-xl space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
           <h3 class="text-xs font-black uppercase text-blue-400 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Smart Multi-Input Transaksi</h3>
@@ -201,7 +201,6 @@
         </form>
       </section>
 
-      <!-- Uang Fisik & Pusat Ekspor / Backup -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <section class="card-theme border p-5 rounded-xl space-y-4 shadow-xl">
           <h3 class="text-xs font-black uppercase text-emerald-400">Pengaturan Uang Fisik Laci</h3>
@@ -233,9 +232,9 @@
     <!-- ================= TAB 4: EDIT & REVISI (ADMIN) ================= -->
     <div id="content-edit" class="tab-content hidden space-y-6">
       <section class="card-theme border p-5 rounded-xl space-y-4 shadow-xl">
-        <h3 class="text-xs font-black uppercase text-amber-400">Database Manager & Sistem Revisi</h3>
+        <h3 class="text-xs font-black uppercase text-amber-400">Database Manager & Sistem Edit Revisi</h3>
         <div class="overflow-x-auto max-h-[450px] overflow-y-auto rounded-xl border">
-          <table class="w-full text-left text-xs min-w-[700px]">
+          <table class="w-full text-left text-xs min-w-[800px]">
             <thead class="card-theme border-b sticky top-0">
               <tr><th class="p-3">Kategori</th><th class="p-3">Tanggal</th><th class="p-3">Keterangan</th><th class="p-3">Nominal</th><th class="p-3 text-center">Aksi</th></tr>
             </thead>
@@ -246,6 +245,27 @@
     </div>
 
   </main>
+
+  <!-- MODAL EDIT -->
+  <div id="edit-modal" class="hidden fixed inset-0 z-[99999] bg-black/70 flex items-center justify-center p-4">
+    <div class="card-theme border p-6 rounded-2xl max-w-md w-full space-y-4 shadow-2xl">
+      <h3 class="text-sm font-black uppercase text-blue-400">Edit Transaksi</h3>
+      <input type="hidden" id="edit-id">
+      <input type="hidden" id="edit-cat">
+      <div>
+        <label class="block text-xs opacity-75 mb-1 font-bold">Keterangan / Nama:</label>
+        <input type="text" id="edit-desc" class="w-full card-theme border rounded-lg p-2.5 text-xs outline-none">
+      </div>
+      <div>
+        <label class="block text-xs opacity-75 mb-1 font-bold">Nominal (Rp):</label>
+        <input type="number" id="edit-amount" class="w-full card-theme border rounded-lg p-2.5 text-xs font-bold text-emerald-400 outline-none">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="saveEditData()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs">Simpan Perubahan</button>
+        <button onclick="document.getElementById('edit-modal').classList.add('hidden')" class="px-4 py-2.5 card-theme border font-bold rounded-lg text-xs">Batal</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     function showToast(title, msg) {
@@ -282,7 +302,6 @@
     const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
     const TOTAL_SISWA = 28; const TARIF_MINGGU = 5000;
     const START_SEMESTER = new Date("2026-07-20");
-    const todayStr = new Date().toISOString().split('T')[0];
 
     const daftarSiswaNames = [
       "Alves", "Sena", "Audrey", "B. Brandon", "Brandon F.", "Calista", "Carla", "Chelsy", 
@@ -295,13 +314,21 @@
 
     let localTx = []; let localDenda = []; let saldoFisik = 0; let isAdmin = false;
 
+    // Tambah baris dengan tanggal mengikuti baris terakhir
     function addMultiRow() {
       const tb = document.getElementById('multi-rows-container');
       if(!tb) return;
+      const rows = tb.querySelectorAll('.multi-row');
+      let lastDate = new Date().toISOString().split('T')[0];
+      if(rows.length > 0) {
+        const prevDate = rows[rows.length - 1].querySelector('.m-date').value;
+        if(prevDate) lastDate = prevDate;
+      }
+
       const tr = document.createElement('tr'); tr.className = "multi-row group";
       tr.innerHTML = `
         <td class="p-2"><select class="m-type w-full card-theme border rounded-lg p-2 text-xs outline-none"><option value="masuk">Kas Masuk</option><option value="keluar">Pengeluaran</option><option value="denda">Pemasukan Tambahan</option></select></td>
-        <td class="p-2"><input type="date" value="${todayStr}" class="m-date w-full card-theme border rounded-lg p-2 text-xs outline-none"></td>
+        <td class="p-2"><input type="date" value="${lastDate}" class="m-date w-full card-theme border rounded-lg p-2 text-xs outline-none"></td>
         <td class="p-2"><input type="number" min="1" max="28" placeholder="No" oninput="autofillAbsenRow(this)" class="m-absen w-full card-theme border rounded-lg p-2 text-xs outline-none"></td>
         <td class="p-2"><input type="text" placeholder="Nama / Detail" class="m-nama w-full card-theme border rounded-lg p-2 text-xs outline-none"></td>
         <td class="p-2"><input type="number" placeholder="Rp" value="5000" class="m-amount w-full card-theme border rounded-lg p-2 text-xs text-emerald-400 font-bold outline-none"></td>
@@ -356,6 +383,7 @@
       document.getElementById(`content-${t}`).classList.remove('hidden');
     }
 
+    // Auto-reconnect database listeners
     kasRef.on('value', snap => {
       const d = snap.val(); localTx = [];
       if(d) Object.keys(d).forEach(k => localTx.push({id: k, ...d[k]}));
@@ -382,7 +410,7 @@
         text.innerText = "ONLINE";
       } else {
         badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30";
-        text.innerText = "OFFLINE / ERROR";
+        text.innerText = "RECONNECTING...";
       }
     }
 
@@ -505,7 +533,27 @@
       let sorted = [...localTx].sort((a,b) => b.timestamp - a.timestamp);
       if(sorted.length === 0) { tb.innerHTML = `<tr><td colspan="5" class="text-center py-4 opacity-50">Kosong.</td></tr>`; return; }
       sorted.forEach(t => {
-        tb.insertAdjacentHTML('beforeend', `<tr class="border-b"><td class="p-3 font-bold">${t.type}</td><td class="p-3">${t.dateStr}</td><td class="p-3">${t.description}</td><td class="p-3">Rp ${t.amount.toLocaleString()}</td><td class="p-3 text-center"><button onclick="deleteTx('${t.id}')" class="text-rose-400 font-bold">Hapus</button></td></tr>`);
+        tb.insertAdjacentHTML('beforeend', `<tr class="border-b"><td class="p-3 font-bold">${t.type}</td><td class="p-3">${t.dateStr}</td><td class="p-3">${t.description}</td><td class="p-3">Rp ${t.amount.toLocaleString()}</td><td class="p-3 text-center flex justify-center gap-2"><button onclick="openEditModal('${t.id}', 'kas', '${t.description}', ${t.amount})" class="text-blue-400 font-bold">Edit</button><button onclick="deleteTx('${t.id}')" class="text-rose-400 font-bold">Hapus</button></td></tr>`);
+      });
+    }
+
+    function openEditModal(id, cat, desc, amount) {
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-cat').value = cat;
+      document.getElementById('edit-desc').value = desc;
+      document.getElementById('edit-amount').value = amount;
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function saveEditData() {
+      if(!isAdmin) return;
+      const id = document.getElementById('edit-id').value;
+      const desc = document.getElementById('edit-desc').value;
+      const amount = parseInt(document.getElementById('edit-amount').value) || 0;
+
+      kasRef.child(id).update({ description: desc, amount: amount }).then(() => {
+        showToast("Sukses", "Data berhasil diperbarui!");
+        document.getElementById('edit-modal').classList.add('hidden');
       });
     }
 
@@ -527,9 +575,13 @@
         for(let w=1; w<=currentWeek; w++) {
           if(paid < w * TARIF_MINGGU) unpaid++;
         }
+        let tunggakanNominal = unpaid * -5000;
+        let tunggakanClass = unpaid > 0 ? "bg-amber-500/20 text-amber-400 font-bold" : "text-emerald-400";
+        let tunggakanStr = unpaid > 0 ? `${tunggakanNominal.toLocaleString()}` : "Rp 0";
+
         let badge = unpaid > 0 ? `<span class="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 rounded text-[9px] font-bold">${unpaid} Mgg</span>` : `<span class="text-emerald-400 font-bold">Aman</span>`;
 
-        let rStr = `<td class="p-1.5 border text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border truncate max-w-[120px]">${daftarSiswa[s].nama}</td><td class="p-1.5 border text-right font-bold text-emerald-400">Rp ${paid.toLocaleString()}</td><td class="p-1.5 border text-center">${badge}</td>`;
+        let rStr = `<td class="p-1.5 border text-center font-bold text-blue-400">${s}</td><td class="p-1.5 border truncate max-w-[120px]">${daftarSiswa[s].nama}</td><td class="p-1.5 border text-right font-bold text-emerald-400">Rp ${paid.toLocaleString()}</td><td class="p-1.5 border text-center ${tunggakanClass}">${tunggakanStr}</td>`;
         let b = paid;
         for(let m=1; m<=currentWeek; m++) {
           if(b >= TARIF_MINGGU) { rStr += `<td class="p-1 border text-center text-emerald-400 font-bold">✓</td>`; b -= TARIF_MINGGU; }
@@ -539,6 +591,17 @@
       }
       bd.innerHTML = bStr;
       try { lucide.createIcons(); } catch(e) {}
+    }
+
+    function exportMatrixPNG() {
+      const container = document.getElementById('matrix-container');
+      html2canvas(container, { scale: 2, backgroundColor: null }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Matriks_Kas_X4_${new Date().toISOString().split('T')[0]}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast("Sukses", "Matriks berhasil diexport jadi PNG!");
+      });
     }
 
     function executeLookup() {
@@ -585,7 +648,6 @@
     }
 
     function exportExcel() {
-      // Menghasilkan format Excel Matriks persis seperti file CSV kamu
       const now = new Date();
       const currentWeek = Math.max(1, Math.ceil(Math.ceil(Math.abs(now - START_SEMESTER) / (1000 * 60 * 60 * 24)) / 7));
       let tM = {}; for(let i=1; i<=TOTAL_SISWA; i++) tM[i] = 0;
@@ -609,7 +671,7 @@
 
     function exportJSON() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ localTx, localDenda, saldoFisik }));
-      const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `backup_kas_x4_${todayStr}.json`); dl.click();
+      const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `backup_kas_x4.json`); dl.click();
     }
 
     function importJSONBackup(event) {
