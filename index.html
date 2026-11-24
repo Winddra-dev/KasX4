@@ -733,6 +733,19 @@
 
         function openConfirmModal(title, message, callback) {
             document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmCallback = callback;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('confirm-modal').classList.add('flex');
+        }
+
+        function closeConfirmModal(confirmed) {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            document.getElementById('confirm-modal').classList.remove('flex');
+            if (confirmed && typeof confirmCallback === 'function') confirmCallback();
+            confirmCallback = null;
+        }
+
         function getStudentFinancials(absen, targetMaxWeek = null) {
             const maxWeek = Math.max(currentWeek, Number(targetMaxWeek) || currentWeek);
             const student = STUDENTS.find(s => s.absen === absen);
@@ -839,6 +852,11 @@
             const isLunas = fin.weeksNunggak === 0;
             const badgeHtml = isLunas
                 ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 text-xs font-bold">Lunas (Aman)</span>`
+                : `<span class="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-500 border border-rose-500/30 text-xs font-bold">Nunggak ${fin.weeksNunggak} Mgg</span>`;
+
+            const tunggakanDisplay = fin.tunggakanNominal === 0 ? "Rp 0" : formatRupiah(fin.tunggakanNominal, false);
+            const tunggakanColor = fin.tunggakanNominal === 0 ? "text-emerald-500" : (fin.tunggakanNominal === -5000 ? "text-amber-500" : "text-rose-500");
+
             const weekChips = fin.weekDetails.map((w, idx) => {
                 if (w.status === 'paid') {
                     return `<span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-500 border border-emerald-500/20 text-[11px] font-semibold">M${idx + 1}: ✓ (${formatShortDate(w.dateStr)})</span>`;
@@ -859,6 +877,25 @@
                 : `<p class="text-xs text-[var(--text-muted)] italic">Belum ada riwayat pembayaran.</p>`;
 
             resultContainer.innerHTML = `
+                <div class="p-4 sm:p-5 rounded-2xl sub-surface/60 border border-[var(--border-table)] space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-table)] pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm">#${found.absen}</div>
+                            <div><h3 class="font-bold text-base">${found.nama}</h3><p class="text-xs text-[var(--text-muted)]">Absen ${found.absen} • Kelas X-4</p></div>
+                        </div>
+                        ${badgeHtml}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="card-surface p-3.5 rounded-xl"><span class="text-[11px] font-semibold text-[var(--text-muted)]">Total Bayar</span><p class="text-base sm:text-lg font-extrabold text-emerald-500 mt-0.5">${formatRupiah(fin.totalBayar)}</p></div>
+                        <div class="card-surface p-3.5 rounded-xl"><span class="text-[11px] font-semibold text-[var(--text-muted)]">Tunggakan Kas</span><p class="text-base sm:text-lg font-extrabold ${tunggakanColor} mt-0.5">${tunggakanDisplay}</p></div>
+                        <div class="card-surface p-3.5 rounded-xl"><span class="text-[11px] font-semibold text-[var(--text-muted)]">Tambahan / Denda</span><p class="text-base sm:text-lg font-extrabold text-amber-500 mt-0.5">${formatRupiah(fin.totalDendaAll)}</p><span class="text-[10px] text-[var(--text-muted)]">Belum lunas: ${formatRupiah(fin.totalDendaUnpaid)}</span></div>
+                    </div>
+                    <div class="space-y-2"><h4 class="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Status & Tanggal Setor Per Minggu</h4><div class="flex flex-wrap gap-1.5">${weekChips}</div></div>
+                    <div class="space-y-2"><h4 class="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Log Transaksi Pribadi</h4><div class="space-y-1.5 max-h-48 overflow-y-auto">${historyHtml}</div></div>
+                </div>
+            `;
+        }
+
         function renderMatrix(overrideMaxWeek = null) {
             const maxWeekToShow = Math.max(currentWeek, Number(overrideMaxWeek) || currentWeek);
             const theadRow = document.getElementById('matrix-thead-row');
