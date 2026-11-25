@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f172a">
-    <title>Kas X-4 — SMA Mater Dei</title>
+    <title>Kas @tenfour.crew</title>
+    
+    <!-- Favicon SVG Inline -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23059669'/%3E%3Cstop offset='100%25' stop-color='%230d9488'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Inter,Arial,sans-serif' font-weight='800' font-size='26'%3E10.4%3C/text%3E%3C/svg%3E">
     
     <!-- PWA Manifest Dinamis -->
     <link rel="manifest" id="pwa-manifest">
@@ -62,6 +65,7 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
@@ -73,9 +77,9 @@
         </div>
         <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-rose-500 mb-2">FAILED TO LOAD / OFFLINE</h2>
         <p id="offline-reason" class="text-slate-400 text-sm max-w-md mb-6">
-            Gagal menyinkronkan data dengan Google Sheets. Periksa koneksi internet kamu lalu muat ulang.
+            Gagal menyinkronkan data dengan Google Sheets. Periksa koneksi internet kamu lalu muat ulang halaman.
         </p>
-        <button onclick="window.location.reload()" class="px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm shadow-lg transition flex items-center gap-2">
+        <button onclick="window.location.reload()" class="px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm shadow-lg shadow-rose-600/25 transition flex items-center gap-2">
             <i data-lucide="refresh-cw" class="w-4 h-4"></i>
             <span>Refresh Halaman</span>
         </button>
@@ -99,7 +103,7 @@
             </div>
             <p id="confirm-message" class="text-sm text-[var(--text-muted)]">Apakah Anda yakin?</p>
             <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl text-xs font-semibold sub-surface">Batal</button>
+                <button onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl text-xs font-semibold sub-surface hover:opacity-80">Batal</button>
                 <button onclick="closeConfirmModal(true)" class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white">Ya, Lanjutkan</button>
             </div>
         </div>
@@ -120,7 +124,7 @@
             <form onsubmit="handleAdminLogin(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Email Admin Terdaftar</label>
-                    <input type="email" id="admin-email-input" placeholder="example@gmail.com" required class="w-full px-3 py-2.5 rounded-xl text-sm sub-surface border border-[var(--border-table)] focus:outline-none focus:border-emerald-500">
+                    <input type="email" id="admin-email-input" placeholder="example@gmail.com" required onkeydown="handleInputEnter(event, 'admin-pin-input')" class="w-full px-3 py-2.5 rounded-xl text-sm sub-surface border border-[var(--border-table)] focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">PIN Akses Bendahara</label>
@@ -128,13 +132,38 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeAdminLoginModal()" class="px-4 py-2 rounded-xl text-xs font-semibold sub-surface">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white">Masuk</button>
+                    <button type="submit" id="btn-submit-login" class="px-5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">Masuk</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL EDIT TRANSAKSI -->
+    <!-- MODAL PREVIEW BUKTI NOTA -->
+    <div id="nota-preview-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden items-center justify-center p-4" onclick="if(event.target===this) closeNotaModal()">
+        <div class="card-surface rounded-2xl max-w-lg w-full p-5 shadow-2xl space-y-3">
+            <div class="flex items-center justify-between border-b border-[var(--border-table)] pb-2.5">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i data-lucide="receipt" class="w-4 h-4 text-emerald-500"></i>
+                    <span id="nota-modal-title">Bukti Nota Transaksi</span>
+                </h3>
+                <button onclick="closeNotaModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center max-h-[65vh]">
+                <img id="nota-modal-img" src="" alt="Bukti Nota" class="max-w-full max-h-[65vh] object-contain">
+            </div>
+            <div class="flex justify-between items-center pt-1">
+                <span id="nota-modal-date" class="text-xs text-[var(--text-muted)]"></span>
+                <a id="nota-modal-download" href="#" download="Bukti_Nota.jpg" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Unduh Gambar</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT TRANSAKSI (TAB 4) -->
     <div id="edit-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
         <div class="card-surface rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-[var(--border-table)] pb-3">
@@ -151,11 +180,11 @@
                 <input type="hidden" id="edit-tx-source">
                 <div>
                     <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Tanggal Setor / Transaksi</label>
-                    <input type="date" id="edit-tx-date" required class="w-full px-3 py-2.5 rounded-xl text-sm sub-surface border border-[var(--border-table)] focus:outline-none">
+                    <input type="date" id="edit-tx-date" required onkeydown="handleInputEnter(event, 'edit-tx-desc')" class="w-full px-3 py-2.5 rounded-xl text-sm sub-surface border border-[var(--border-table)] focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Keterangan / Alasan</label>
-                    <input type="text" id="edit-tx-desc" required class="w-full px-3 py-2.5 rounded-xl text-sm sub-surface border border-[var(--border-table)] focus:outline-none">
+                    <input type="text" id="edit-tx-desc" required onkeydown="handleInputEnter(event, 'edit-tx-amount')" class="w-full px-3 py-2.5 rounded-xl text-sm sub-surface border border-[var(--border-table)] focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Nominal (Rp)</label>
@@ -163,7 +192,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeEditModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold sub-surface">Batal</button>
-                    <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Simpan ke Cloud</button>
+                    <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Simpan ke Google Sheets</button>
                 </div>
             </form>
         </div>
@@ -173,25 +202,28 @@
     <header class="sticky top-0 z-40 card-surface border-b border-[var(--border-table)] backdrop-blur-md bg-opacity-90">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-extrabold text-sm shadow-md">
-                    X-4
-                </div>
+                <a href="https://www.instagram.com/tenfour.crew/" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-extrabold text-xs shadow-md hover:scale-105 transition">
+                    10.4
+                </a>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="font-extrabold text-base sm:text-lg tracking-tight leading-none">Kas X-4</h1>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 border border-emerald-500/20">Online</span>
+                        <a href="https://www.instagram.com/tenfour.crew/" target="_blank" rel="noopener noreferrer" class="font-extrabold text-base sm:text-lg tracking-tight leading-none hover:text-emerald-400 transition flex items-center gap-1">
+                            <span>Kas @tenfour.crew</span>
+                            <i data-lucide="external-link" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        </a>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 border border-emerald-500/20">v10.2</span>
                     </div>
-                    <p class="text-[11px] text-[var(--text-muted)] hidden sm:block mt-0.5">SMA Mater Dei • Google Sheets Live</p>
+                    <p class="text-[11px] text-[var(--text-muted)] hidden sm:block mt-0.5">Rekap Keuangan & Kas Kelas • Live Sync</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <button onclick="fetchFromGAS(true)" title="Klik untuk sinkronisasi ulang" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 text-[11px] font-bold tracking-wide cursor-pointer hover:bg-emerald-500/20 transition">
+                <button onclick="fetchFromGAS(true)" id="status-badge-btn" title="Klik untuk sinkronisasi ulang dari Google Sheets" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 text-[11px] font-bold tracking-wide cursor-pointer hover:bg-emerald-500/20 transition">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>ONLINE</span>
                 </button>
 
-                <button onclick="toggleTheme()" class="p-2 rounded-xl sub-surface border border-[var(--border-table)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
+                <button onclick="toggleTheme()" title="Ganti Tema Light/Dark" class="p-2 rounded-xl sub-surface border border-[var(--border-table)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
                     <i data-lucide="sun" id="icon-sun" class="w-4 h-4 hidden"></i>
                     <i data-lucide="moon" id="icon-moon" class="w-4 h-4"></i>
                 </button>
@@ -234,7 +266,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-muted)] card-surface px-4 py-3 rounded-2xl">
                 <div class="flex items-center gap-2">
                     <i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i>
-                    <span>Mulai Semester: <strong class="text-[var(--text-main)]">20 Jul 2026</strong></span>
+                    <span>Mulai Semester: <strong class="text-[var(--text-main)]">20 Juli 2026</strong></span>
                     <span class="opacity-40">|</span>
                     <span>Tarif Kas: <strong class="text-[var(--text-main)]">Rp 5.000 / minggu</strong></span>
                 </div>
@@ -252,7 +284,7 @@
                         <div class="p-2 rounded-xl bg-blue-500/10 text-blue-500"><i data-lucide="wallet" class="w-4 h-4"></i></div>
                     </div>
                     <p id="stat-uang-sistem" class="text-lg sm:text-2xl font-extrabold text-blue-500">Rp 0</p>
-                    <p class="text-[11px] text-[var(--text-muted)] mt-1">Saldo tercatat aplikasi</p>
+                    <p class="text-[11px] text-[var(--text-muted)] mt-1">Saldo tercatat sistem</p>
                 </div>
                 <div class="card-surface p-4 sm:p-5 rounded-2xl">
                     <div class="flex items-center justify-between mb-2">
@@ -307,9 +339,7 @@
                             <i data-lucide="table" class="w-4 h-4 text-emerald-500"></i>
                             <span>Matriks Keuangan X-4 (28 Siswa + Tanggal Bayar)</span>
                         </h2>
-                        <p class="text-xs text-[var(--text-muted)] mt-0.5">
-                            Tanda <span class="text-emerald-500 font-bold">✓</span> untuk lunas + tgl setor (<code>dd/mm</code>), atau <span class="text-amber-500 font-bold">kuning</span> jika kurang dari Rp 5.000.
-                        </p>
+                        <p class="text-xs text-[var(--text-muted)] mt-0.5">Tanda <span class="text-emerald-500 font-bold">✓</span> untuk lunas + tgl setor (<code>dd/mm</code>), atau <span class="text-amber-500 font-bold">kuning</span> jika kurang dari Rp 5.000.</p>
                     </div>
                     <button onclick="exportMatrixPNG()" class="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
                         <i data-lucide="image" class="w-4 h-4"></i>
@@ -318,7 +348,7 @@
                 </div>
                 <div id="matrix-capture-area" class="p-4 bg-[var(--bg-card)] overflow-x-auto">
                     <div class="mb-3 flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rekap Kas Mingguan Kelas X-4 — SMA Mater Dei</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rekap Kas Mingguan — @tenfour.crew</span>
                         <span id="matrix-export-date" class="text-[11px] text-slate-400"></span>
                     </div>
                     <table class="kas-table text-xs whitespace-nowrap">
@@ -360,8 +390,9 @@
                     <table class="kas-table text-xs sm:text-sm">
                         <thead>
                             <tr class="sub-surface text-[var(--text-muted)] text-[11px] uppercase font-bold">
-                                <th class="py-3 px-4 text-left w-32">Tanggal</th>
+                                <th class="py-3 px-4 text-left w-44">Tanggal</th>
                                 <th class="py-3 px-4 text-left">Keterangan Pengeluaran</th>
+                                <th class="py-3 px-3 text-center w-24">Bukti Nota</th>
                                 <th class="py-3 px-4 text-right w-36">Nominal</th>
                             </tr>
                         </thead>
@@ -381,15 +412,15 @@
             <section class="card-surface rounded-2xl overflow-hidden">
                 <div class="p-4 sm:p-5 border-b border-[var(--border-table)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h2 class="font-bold text-base flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-emerald-500"></i><span>Smart Multi-Input Transaksi</span></h2>
-                        <p class="text-xs text-[var(--text-muted)]">Ketik nomor absen (1-28) untuk mengisi nama otomatis.</p>
+                        <h2 class="font-bold text-base flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-emerald-500"></i><span>Smart Multi-Input Transaksi & Nota</span></h2>
+                        <p class="text-xs text-[var(--text-muted)]">Ketik absen lalu tekan <strong>Enter</strong> untuk lanjut mengisi kolom berikutnya, atau unggah foto nota pengeluaran.</p>
                     </div>
                     <button onclick="addMultiInputRow()" class="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5">
                         <i data-lucide="plus" class="w-4 h-4"></i><span>Tambah Baris</span>
                     </button>
                 </div>
                 <div class="overflow-x-auto p-4">
-                    <table class="kas-table text-xs min-w-[780px]">
+                    <table class="kas-table text-xs min-w-[880px]">
                         <thead>
                             <tr class="sub-surface text-[var(--text-muted)] uppercase text-[11px] font-bold">
                                 <th class="py-2.5 px-2 w-40">Tipe Transaksi</th>
@@ -398,6 +429,7 @@
                                 <th class="py-2.5 px-2 w-44">Nama / Detail</th>
                                 <th class="py-2.5 px-2 w-32">Nominal (Rp)</th>
                                 <th class="py-2.5 px-2">Catatan / Keterangan</th>
+                                <th class="py-2.5 px-2 w-28 text-center">Bukti Nota</th>
                                 <th class="py-2.5 px-2 w-10 text-center">Hapus</th>
                             </tr>
                         </thead>
@@ -417,7 +449,7 @@
                     <div class="flex gap-2">
                         <div class="relative flex-1">
                             <span class="absolute left-3.5 top-2.5 text-sm font-bold text-[var(--text-muted)]">Rp</span>
-                            <input type="number" id="input-saldo-fisik" min="0" step="500" class="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm font-bold sub-surface border border-[var(--border-table)]">
+                            <input type="number" id="input-saldo-fisik" min="0" step="500" onkeydown="if(event.key==='Enter'){event.preventDefault();updateSaldoFisik();}" class="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm font-bold sub-surface border border-[var(--border-table)]">
                         </div>
                         <button onclick="updateSaldoFisik()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold">Update</button>
                     </div>
@@ -451,9 +483,10 @@
                     <table class="kas-table text-xs sm:text-sm">
                         <thead>
                             <tr class="sub-surface text-[var(--text-muted)] text-[11px] uppercase font-bold">
-                                <th class="py-3 px-4 text-left w-32">Tanggal</th>
+                                <th class="py-3 px-4 text-left w-44">Tanggal</th>
                                 <th class="py-3 px-3 text-center w-28">Kategori</th>
                                 <th class="py-3 px-4 text-left">Siswa / Keterangan</th>
+                                <th class="py-3 px-3 text-center w-20">Nota</th>
                                 <th class="py-3 px-4 text-right w-36">Nominal</th>
                                 <th class="py-3 px-3 text-center w-36">Aksi</th>
                             </tr>
@@ -466,12 +499,12 @@
     </main>
 
     <footer class="border-t border-[var(--border-table)] py-4 px-6 text-center text-xs text-[var(--text-muted)]">
-        Kas X-4 SMA Mater Dei • Connected to Google Sheets
+        <a href="https://www.instagram.com/tenfour.crew/" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-500 font-semibold transition">Kas @tenfour.crew</a> • Connected to Google Sheets
     </footer>
 
     <script>
         // =========================================================================
-        // URL GOOGLE APPS SCRIPT SUDAH TERTANAM PERMANEN
+        // 1. KONFIGURASI MASTER & DATA 28 SISWA
         // =========================================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwS0b_lhYS1H78d-ABwLarv5AIvz0EQpf2xMiOLgvDgvWiQ12y1r7sui0udx9LTUdel/exec";
 
@@ -479,6 +512,10 @@
         const START_SEMESTER = new Date("2026-07-20T00:00:00");
         const ALLOWED_ADMINS = ["awiendra55@gmail.com", "wpnarend11@gmail.com", "chelsyangelina5796@gmail.com"];
         const DEFAULT_ADMIN_PIN = "2026";
+        const BULAN_INDO = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
 
         const STUDENTS = [
             { absen: 1, nama: "Alves" }, { absen: 2, nama: "Sena" }, { absen: 3, nama: "Audrey" },
@@ -502,6 +539,9 @@
         let localDenda = [];
         let saldoFisik = 0;
 
+        // =========================================================================
+        // 2. INISIALISASI & PWA MANIFEST
+        // =========================================================================
         window.onload = async function() {
             setupDynamicManifest();
             initTheme();
@@ -514,18 +554,28 @@
 
         function setupDynamicManifest() {
             const manifest = {
-                name: "Kas X-4 SMA Mater Dei",
-                short_name: "Kas X-4",
+                name: "Kas @tenfour.crew",
+                short_name: "@tenfour.crew",
                 start_url: ".",
                 display: "standalone",
                 background_color: "#090d16",
                 theme_color: "#0f172a",
-                icons: [{ src: "https://ui-avatars.com/api/?name=X4&background=059669&color=fff&size=192", sizes: "192x192", type: "image/png" }]
+                icons: [{ src: "https://ui-avatars.com/api/?name=10.4&background=059669&color=fff&size=192", sizes: "192x192", type: "image/png" }]
             };
             const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
             document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
         }
 
+        function calculateCurrentWeek() {
+            const now = new Date();
+            const diffDays = Math.ceil((now.getTime() - START_SEMESTER.getTime()) / (1000 * 60 * 60 * 24));
+            currentWeek = Math.max(1, Math.ceil(diffDays / 7));
+            document.getElementById('badge-current-week').textContent = `Minggu ke-${currentWeek}`;
+        }
+
+        // =========================================================================
+        // 3. SINKRONISASI GOOGLE APPS SCRIPT (GET & POST)
+        // =========================================================================
         function showSyncBanner(show, text = "Menyinkronkan dengan Google Sheets...") {
             const banner = document.getElementById('sync-banner');
             document.getElementById('sync-banner-text').textContent = text;
@@ -552,7 +602,7 @@
             } catch (err) {
                 console.error("GAS Fetch Error:", err);
                 const overlay = document.getElementById('offline-overlay');
-                document.getElementById('offline-reason').textContent = `Gagal mengambil data dari Google Sheets (${err.message}). Pastikan Code.gs sudah menggunakan versi API JSON terbaru.`;
+                document.getElementById('offline-reason').textContent = `Gagal terhubung ke Google Sheets (${err.message}). Pastikan koneksi stabil lalu klik Refresh.`;
                 overlay.classList.remove('hidden');
                 overlay.classList.add('flex');
                 lucide.createIcons();
@@ -571,11 +621,12 @@
                 });
                 const result = await res.json();
                 if (result.status !== 'success') {
-                    throw new Error(result.message || "Gagal menyimpan data");
+                    throw new Error(result.message || "Gagal menyimpan ke Google Sheets");
                 }
                 await fetchFromGAS(false);
                 return true;
             } catch (err) {
+                console.error("GAS Push Error:", err);
                 showToast(`Gagal sinkronisasi: ${err.message}`, "error");
                 return false;
             } finally {
@@ -583,13 +634,9 @@
             }
         }
 
-        function calculateCurrentWeek() {
-            const now = new Date();
-            const diffDays = Math.ceil((now.getTime() - START_SEMESTER.getTime()) / (1000 * 60 * 60 * 24));
-            currentWeek = Math.max(1, Math.ceil(diffDays / 7));
-            document.getElementById('badge-current-week').textContent = `Minggu ke-${currentWeek}`;
-        }
-
+        // =========================================================================
+        // 4. TEMA & AUTENTIKASI ADMIN
+        // =========================================================================
         function initTheme() {
             const savedTheme = localStorage.getItem('kas_x4_theme') || 'dark';
             const htmlEl = document.documentElement;
@@ -624,6 +671,7 @@
             } else {
                 document.getElementById('admin-login-modal').classList.remove('hidden');
                 document.getElementById('admin-login-modal').classList.add('flex');
+                setTimeout(() => document.getElementById('admin-email-input').focus(), 50);
             }
         }
 
@@ -638,7 +686,7 @@
             const pin = document.getElementById('admin-pin-input').value.trim();
 
             if (!ALLOWED_ADMINS.includes(email)) {
-                showToast("Email tidak terdaftar sebagai Admin X-4!", "error");
+                showToast("Email tidak terdaftar sebagai Admin!", "error");
                 return;
             }
             if (pin !== DEFAULT_ADMIN_PIN) {
@@ -670,6 +718,9 @@
             lucide.createIcons();
         }
 
+        // =========================================================================
+        // 5. HELPER FORMATTER & MODAL
+        // =========================================================================
         function switchMainTab(tabId) {
             document.querySelectorAll('.main-tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
@@ -694,26 +745,33 @@
             return `${parts[2]}/${parts[1]}`;
         }
 
-        function getWeekStartDate(weekIndex) {
+        function formatIndoDate(dateStr) {
+            if (!dateStr || dateStr.length < 10) return dateStr || '-';
+            const parts = dateStr.split('-');
+            const day = parseInt(parts[2], 10);
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            const year = parts[0];
+            if (isNaN(day) || monthIdx < 0 || monthIdx > 11) return dateStr;
+            return `${day} ${BULAN_INDO[monthIdx]} ${year}`;
+        }
+
+        function getWeekStartDate(weekNum) {
             const d = new Date(START_SEMESTER.getTime());
-            d.setDate(d.getDate() + ((weekIndex - 1) * 7));
+            d.setDate(d.getDate() + (weekNum - 1) * 7);
             const dd = String(d.getDate()).padStart(2, '0');
             const mm = String(d.getMonth() + 1).padStart(2, '0');
             return `${dd}/${mm}`;
         }
 
-        function getMaxMatrixWeek() {
-            let maxPaidWeeks = currentWeek;
-            for (const s of STUDENTS) {
-                const totalBayar = localTx
-                    .filter(t => t.type === 'masuk' && Number(t.absen) === s.absen)
-                    .reduce((sum, t) => sum + Number(t.amount), 0);
-                const coveredWeeks = Math.ceil(totalBayar / TARIF_MINGGUAN);
-                if (coveredWeeks > maxPaidWeeks) {
-                    maxPaidWeeks = coveredWeeks;
+        function handleInputEnter(e, nextId) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const nextEl = document.getElementById(nextId);
+                if (nextEl) {
+                    nextEl.focus();
+                    if (nextEl.select) nextEl.select();
                 }
             }
-            return Math.max(1, maxPaidWeeks);
         }
 
         function showToast(msg, type = 'success') {
@@ -746,8 +804,22 @@
             confirmCallback = null;
         }
 
-        function getStudentFinancials(absen, targetMaxWeek = null) {
-            const maxWeek = Math.max(currentWeek, Number(targetMaxWeek) || currentWeek);
+        // =========================================================================
+        // 6. LOGIKA KALKULASI KEUANGAN SISWA (TERMASUK PEMBAYARAN PARSIAL < 5K)
+        // =========================================================================
+        function getMaxMatrixWeek() {
+            let maxPaidWeek = currentWeek;
+            STUDENTS.forEach(s => {
+                const total = localTx
+                    .filter(t => t.type === 'masuk' && Number(t.absen) === s.absen)
+                    .reduce((sum, t) => sum + Number(t.amount), 0);
+                const reachedWeek = Math.ceil(total / TARIF_MINGGUAN);
+                if (reachedWeek > maxPaidWeek) maxPaidWeek = reachedWeek;
+            });
+            return maxPaidWeek;
+        }
+
+        function getStudentFinancials(absen, targetWeeks = currentWeek) {
             const student = STUDENTS.find(s => s.absen === absen);
             const studentTx = localTx
                 .filter(t => t.type === 'masuk' && Number(t.absen) === absen)
@@ -758,41 +830,42 @@
             let txIndex = 0;
             let currentTxRemaining = studentTx.length > 0 ? Number(studentTx[0].amount) : 0;
 
-            for (let m = 1; m <= maxWeek; m++) {
-                let needed = TARIF_MINGGUAN;
-                let paidDateForThisWeek = null;
-                let partialPaid = 0;
+            for (let m = 1; m <= targetWeeks; m++) {
+                let paidInWeek = 0;
+                let lastDateInWeek = null;
 
-                while (needed > 0 && txIndex < studentTx.length) {
+                while (paidInWeek < TARIF_MINGGUAN && txIndex < studentTx.length) {
+                    const needed = TARIF_MINGGUAN - paidInWeek;
                     if (currentTxRemaining >= needed) {
-                        partialPaid += needed;
+                        paidInWeek += needed;
                         currentTxRemaining -= needed;
-                        paidDateForThisWeek = studentTx[txIndex].dateStr;
-                        needed = 0;
+                        lastDateInWeek = studentTx[txIndex].dateStr;
                         if (currentTxRemaining === 0) {
                             txIndex++;
                             if (txIndex < studentTx.length) currentTxRemaining = Number(studentTx[txIndex].amount);
                         }
                     } else {
-                        partialPaid += currentTxRemaining;
-                        needed -= currentTxRemaining;
+                        paidInWeek += currentTxRemaining;
+                        lastDateInWeek = studentTx[txIndex].dateStr;
                         txIndex++;
                         currentTxRemaining = txIndex < studentTx.length ? Number(studentTx[txIndex].amount) : 0;
                     }
                 }
 
-                if (needed === 0) {
-                    weekDetails.push({ status: 'paid', paid: true, dateStr: paidDateForThisWeek, amount: TARIF_MINGGUAN });
-                } else if (partialPaid > 0) {
-                    weekDetails.push({ status: 'partial', paid: false, dateStr: paidDateForThisWeek, amount: partialPaid });
+                if (paidInWeek >= TARIF_MINGGUAN) {
+                    weekDetails.push({ status: 'paid', amount: paidInWeek, dateStr: lastDateInWeek });
+                } else if (paidInWeek > 0) {
+                    weekDetails.push({ status: 'partial', amount: paidInWeek, dateStr: lastDateInWeek });
                 } else {
-                    weekDetails.push({ status: 'unpaid', paid: false, dateStr: null, amount: 0 });
+                    weekDetails.push({ status: 'unpaid', amount: 0, dateStr: null });
                 }
             }
 
-            const activeWeekDetails = weekDetails.slice(0, currentWeek);
-            const weeksNunggak = activeWeekDetails.filter(w => w.status !== 'paid').length;
-            const tunggakanNominal = -(Math.max(0, (currentWeek * TARIF_MINGGUAN) - totalBayar));
+            // Tunggakan dihitung berdasarkan selisih kewajiban sampai currentWeek
+            const wajibSampaiSekarang = currentWeek * TARIF_MINGGUAN;
+            const tunggakanNominal = totalBayar >= wajibSampaiSekarang ? 0 : (totalBayar - wajibSampaiSekarang);
+            const weeksNunggak = tunggakanNominal < 0 ? Math.ceil(Math.abs(tunggakanNominal) / TARIF_MINGGUAN) : 0;
+
             const studentDenda = localDenda.filter(d => Number(d.absen) === absen);
             const totalDendaUnpaid = studentDenda.filter(d => d.status === 'Unpaid').reduce((sum, d) => sum + Number(d.amount), 0);
             const totalDendaAll = studentDenda.reduce((sum, d) => sum + Number(d.amount), 0);
@@ -808,6 +881,9 @@
             return { totalKasMasuk, totalKeluar, totalTambahanLunas, uangSistem };
         }
 
+        // =========================================================================
+        // 7. RENDER SEMUA KOMPONEN UI
+        // =========================================================================
         function renderAll() {
             renderStats();
             renderMatrix();
@@ -848,23 +924,25 @@
                 return;
             }
 
-            const fin = getStudentFinancials(found.absen);
-            const isLunas = fin.weeksNunggak === 0;
+            const maxW = getMaxMatrixWeek();
+            const fin = getStudentFinancials(found.absen, maxW);
+            const isLunas = fin.tunggakanNominal === 0;
             const badgeHtml = isLunas
                 ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 text-xs font-bold">Lunas (Aman)</span>`
-                : `<span class="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-500 border border-rose-500/30 text-xs font-bold">Nunggak ${fin.weeksNunggak} Mgg</span>`;
+                : `<span class="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-500 border border-rose-500/30 text-xs font-bold">Kurang ${formatRupiah(Math.abs(fin.tunggakanNominal))}</span>`;
 
             const tunggakanDisplay = fin.tunggakanNominal === 0 ? "Rp 0" : formatRupiah(fin.tunggakanNominal, false);
-            const tunggakanColor = fin.tunggakanNominal === 0 ? "text-emerald-500" : (fin.tunggakanNominal === -5000 ? "text-amber-500" : "text-rose-500");
+            const tunggakanColor = fin.tunggakanNominal === 0 ? "text-emerald-500" : (fin.tunggakanNominal >= -5000 ? "text-amber-500" : "text-rose-500");
 
             const weekChips = fin.weekDetails.map((w, idx) => {
+                const tglM = getWeekStartDate(idx + 1);
                 if (w.status === 'paid') {
-                    return `<span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-500 border border-emerald-500/20 text-[11px] font-semibold">M${idx + 1}: ✓ (${formatShortDate(w.dateStr)})</span>`;
+                    return `<span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-500 border border-emerald-500/20 text-[11px] font-semibold">M${idx + 1} (${tglM}): ✓ (${formatShortDate(w.dateStr)})</span>`;
                 }
                 if (w.status === 'partial') {
-                    return `<span class="px-2 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] font-semibold">M${idx + 1}: ${formatRupiah(w.amount)}</span>`;
+                    return `<span class="px-2 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] font-semibold">M${idx + 1} (${tglM}): ${formatRupiah(w.amount)}</span>`;
                 }
-                return `<span class="px-2 py-1 rounded-lg sub-surface text-[var(--text-muted)] text-[11px]">M${idx + 1}: Belum</span>`;
+                return `<span class="px-2 py-1 rounded-lg sub-surface text-[var(--text-muted)] text-[11px]">M${idx + 1} (${tglM}): Belum</span>`;
             }).join('');
 
             const historyItems = [
@@ -873,7 +951,7 @@
             ].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
             const historyHtml = historyItems.length > 0
-                ? historyItems.map(h => `<div class="flex items-center justify-between py-2 px-3 rounded-lg sub-surface text-xs"><div><span class="font-semibold text-[var(--text-main)]">${h.label}</span><span class="block text-[10px] text-[var(--text-muted)]">Tgl Setor: ${h.date}</span></div><span class="font-bold ${h.color}">${h.amount}</span></div>`).join('')
+                ? historyItems.map(h => `<div class="flex items-center justify-between py-2 px-3 rounded-lg sub-surface text-xs"><div><span class="font-semibold text-[var(--text-main)]">${h.label}</span><span class="block text-[10px] text-[var(--text-muted)]">Tgl Setor: ${formatIndoDate(h.date)}</span></div><span class="font-bold ${h.color}">${h.amount}</span></div>`).join('')
                 : `<p class="text-xs text-[var(--text-muted)] italic">Belum ada riwayat pembayaran.</p>`;
 
             resultContainer.innerHTML = `
@@ -881,7 +959,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-table)] pb-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm">#${found.absen}</div>
-                            <div><h3 class="font-bold text-base">${found.nama}</h3><p class="text-xs text-[var(--text-muted)]">Absen ${found.absen} • Kelas X-4</p></div>
+                            <div><h3 class="font-bold text-base">${found.nama}</h3><p class="text-xs text-[var(--text-muted)]">Absen ${found.absen} • @tenfour.crew</p></div>
                         </div>
                         ${badgeHtml}
                     </div>
@@ -896,16 +974,17 @@
             `;
         }
 
-        function renderMatrix(overrideMaxWeek = null) {
-            const maxWeekToShow = Math.max(currentWeek, Number(overrideMaxWeek) || currentWeek);
+        function renderMatrix(forceMaxWeek = null) {
             const theadRow = document.getElementById('matrix-thead-row');
             const tbody = document.getElementById('matrix-tbody');
+            const maxW = forceMaxWeek || getMaxMatrixWeek();
+
             let weekHeaders = '';
-            for (let m = 1; m <= maxWeekToShow; m++) {
+            for (let m = 1; m <= maxW; m++) {
                 weekHeaders += `
-                    <th class="py-2 px-1.5 text-center min-w-[50px] leading-tight">
+                    <th class="py-2 px-1.5 text-center min-w-[54px] leading-tight">
                         <span class="block">M${m}</span>
-                        <span class="block text-[9px] font-medium opacity-75">${getWeekStartDate(m)}</span>
+                        <span class="block text-[9px] font-normal opacity-75">${getWeekStartDate(m)}</span>
                     </th>
                 `;
             }
@@ -913,14 +992,19 @@
             theadRow.innerHTML = `<th class="py-2.5 px-2.5 text-center w-10">Ab</th><th class="py-2.5 px-3 text-left min-w-[120px]">Nama Siswa</th><th class="py-2.5 px-3 text-right min-w-[80px]">Total</th><th class="py-2.5 px-3 text-right min-w-[85px]">Tunggakan</th>${weekHeaders}`;
 
             tbody.innerHTML = STUDENTS.map(s => {
-                const fin = getStudentFinancials(s.absen, maxWeekToShow);
+                const fin = getStudentFinancials(s.absen, maxW);
                 let tunggakanText = "Rp 0", tunggakanClass = "text-emerald-500 font-bold";
-                if (fin.tunggakanNominal === -5000) { tunggakanText = "-5.000"; tunggakanClass = "text-amber-500 font-bold bg-amber-500/10"; }
-                else if (fin.tunggakanNominal < -5000) { tunggakanText = formatRupiah(fin.tunggakanNominal, false); tunggakanClass = "text-rose-500 font-bold bg-rose-500/10"; }
+                if (fin.tunggakanNominal < 0 && fin.tunggakanNominal >= -5000) {
+                    tunggakanText = formatRupiah(fin.tunggakanNominal, false);
+                    tunggakanClass = "text-amber-500 font-bold bg-amber-500/10";
+                } else if (fin.tunggakanNominal < -5000) {
+                    tunggakanText = formatRupiah(fin.tunggakanNominal, false);
+                    tunggakanClass = "text-rose-500 font-bold bg-rose-500/10";
+                }
 
                 const weekCells = fin.weekDetails.map(w => {
                     if (w.status === 'paid') {
-                        return `<td title="Lunas tgl ${w.dateStr}" class="py-1.5 px-1 text-center bg-emerald-500/10 leading-tight"><span class="block font-bold text-emerald-500 text-xs">✓</span><span class="block text-[9px] font-medium text-emerald-400/90">${formatShortDate(w.dateStr)}</span></td>`;
+                        return `<td title="Lunas tgl ${formatIndoDate(w.dateStr)}" class="py-1.5 px-1 text-center bg-emerald-500/10 leading-tight"><span class="block font-bold text-emerald-500 text-xs">✓</span><span class="block text-[9px] font-medium text-emerald-400/90">${formatShortDate(w.dateStr)}</span></td>`;
                     }
                     if (w.status === 'partial') {
                         return `<td title="Bayar sebagian: ${formatRupiah(w.amount)}" class="py-1.5 px-1 text-center bg-amber-500/20 border-amber-500/40 leading-tight"><span class="block font-bold text-amber-400 text-[10px]">${formatRupiah(w.amount)}</span></td>`;
@@ -936,25 +1020,27 @@
             const captureEl = document.getElementById('matrix-capture-area');
             const exportMaxWeek = getMaxMatrixWeek();
             renderMatrix(exportMaxWeek);
-            document.getElementById('matrix-export-date').textContent = `s.d. Minggu ke-${exportMaxWeek} • Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+            const todayIso = new Date().toISOString().split('T')[0];
+            document.getElementById('matrix-export-date').textContent = `s.d. Minggu ke-${exportMaxWeek} • Dicetak: ${formatIndoDate(todayIso)}`;
             showToast(`Memproses PNG sampai Minggu ke-${exportMaxWeek}...`, "info");
             try {
                 const canvas = await html2canvas(captureEl, {
                     backgroundColor: '#0f172a', scale: 2, useCORS: true,
                     onclone: (clonedDoc) => {
                         const area = clonedDoc.getElementById('matrix-capture-area');
-                        area.style.backgroundColor = '#0f172a'; area.style.color = '#f1f5f9'; area.style.width = 'max-content'; area.style.padding = '20px';
+                        area.style.backgroundColor = '#0f172a';
+                        area.style.color = '#f1f5f9';
+                        area.style.width = 'max-content';
+                        area.style.padding = '20px';
                     }
                 });
                 const link = document.createElement('a');
-                link.download = `Matriks_Kas_X4_M${exportMaxWeek}.png`;
+                link.download = `Matriks_Kas_TenFourCrew_M${exportMaxWeek}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 showToast("Matriks PNG berhasil diunduh!", "success");
             } catch (err) {
                 showToast("Gagal mengekspor gambar PNG.", "error");
-            } finally {
-                renderMatrix(currentWeek);
             }
         }
 
@@ -967,7 +1053,7 @@
                 const isPaid = item.status === 'Paid';
                 const statusBadge = isPaid ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 font-bold text-[11px]">Paid</span>` : `<span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-500 font-bold text-[11px]">Unpaid</span>`;
                 const adminActionCell = isAdminLoggedIn ? `<td class="py-2.5 px-3 text-center"><button onclick="toggleDendaStatus('${item.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold ${isPaid ? 'bg-slate-700 text-slate-200' : 'bg-emerald-600 text-white'}">${isPaid ? 'Batalkan' : 'Lunasi'}</button></td>` : '';
-                return `<tr class="hover:bg-[var(--bg-sub)]/60"><td class="py-2.5 px-3 text-center font-semibold text-[var(--text-muted)]">${item.absen || '-'}</td><td class="py-2.5 px-4 font-semibold">${item.nama || 'Umum'}</td><td class="py-2.5 px-4 text-[var(--text-muted)]">${item.reason} <span class="text-[10px] opacity-60">(${item.dateStr})</span></td><td class="py-2.5 px-4 text-right font-bold text-amber-500">${formatRupiah(item.amount)}</td><td class="py-2.5 px-3 text-center">${statusBadge}</td>${adminActionCell}</tr>`;
+                return `<tr class="hover:bg-[var(--bg-sub)]/60"><td class="py-2.5 px-3 text-center font-semibold text-[var(--text-muted)]">${item.absen || '-'}</td><td class="py-2.5 px-4 font-semibold">${item.nama || 'Umum'}</td><td class="py-2.5 px-4 text-[var(--text-muted)]">${item.reason} <span class="text-[10px] opacity-60">(${formatIndoDate(item.dateStr)})</span></td><td class="py-2.5 px-4 text-right font-bold text-amber-500">${formatRupiah(item.amount)}</td><td class="py-2.5 px-3 text-center">${statusBadge}</td>${adminActionCell}</tr>`;
             }).join('');
         }
 
@@ -982,8 +1068,31 @@
         function renderPengeluaranTable() {
             const tbody = document.getElementById('pengeluaran-tbody');
             const keluarList = localTx.filter(t => t.type === 'keluar').sort((a, b) => (b.dateStr || '').localeCompare(a.dateStr || ''));
-            if (keluarList.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-xs text-[var(--text-muted)]">Belum ada pengeluaran kas.</td></tr>`; return; }
-            tbody.innerHTML = keluarList.map(item => `<tr class="hover:bg-[var(--bg-sub)]/60"><td class="py-2.5 px-4 font-medium text-[var(--text-muted)]">${item.dateStr}</td><td class="py-2.5 px-4 font-semibold">${item.description}</td><td class="py-2.5 px-4 text-right font-bold text-rose-500">-${formatRupiah(item.amount)}</td></tr>`).join('');
+            if (keluarList.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-[var(--text-muted)]">Belum ada pengeluaran kas.</td></tr>`; return; }
+            tbody.innerHTML = keluarList.map(item => {
+                const notaBtn = item.nota
+                    ? `<button onclick="openNotaModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-600 hover:text-white text-[11px] font-semibold transition inline-flex items-center gap-1"><i data-lucide="image" class="w-3 h-3"></i>Lihat</button>`
+                    : `<span class="text-[11px] text-[var(--text-muted)] opacity-50">-</span>`;
+                return `<tr class="hover:bg-[var(--bg-sub)]/60"><td class="py-2.5 px-4 font-medium text-[var(--text-muted)]">${formatIndoDate(item.dateStr)}</td><td class="py-2.5 px-4 font-semibold">${item.description}</td><td class="py-2.5 px-3 text-center">${notaBtn}</td><td class="py-2.5 px-4 text-right font-bold text-rose-500">-${formatRupiah(item.amount)}</td></tr>`;
+            }).join('');
+        }
+
+        function openNotaModal(txId) {
+            const item = localTx.find(t => t.id === txId);
+            if (!item || !item.nota) return;
+            document.getElementById('nota-modal-title').textContent = item.description || "Bukti Nota Transaksi";
+            document.getElementById('nota-modal-date').textContent = `Tanggal: ${formatIndoDate(item.dateStr)} • Nominal: ${formatRupiah(item.amount)}`;
+            document.getElementById('nota-modal-img').src = item.nota;
+            document.getElementById('nota-modal-download').href = item.nota;
+            document.getElementById('nota-modal-download').download = `Nota_${item.dateStr}_${item.id}.jpg`;
+            document.getElementById('nota-preview-modal').classList.remove('hidden');
+            document.getElementById('nota-preview-modal').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeNotaModal() {
+            document.getElementById('nota-preview-modal').classList.add('hidden');
+            document.getElementById('nota-preview-modal').classList.remove('flex');
         }
 
         function renderBukuKasHarian() {
@@ -991,9 +1100,9 @@
             const allEvents = [
                 ...localTx.map(t => {
                     const st = t.absen ? STUDENTS.find(s => s.absen === Number(t.absen)) : null;
-                    return { dateStr: t.dateStr, timestamp: t.timestamp, kind: t.type, title: t.type === 'masuk' ? `Kas Masuk — #${t.absen} ${st ? st.nama : ''}` : `Pengeluaran Kas`, subtitle: t.description, amount: Number(t.amount) };
+                    return { id: t.id, nota: t.nota || '', dateStr: t.dateStr, timestamp: t.timestamp, kind: t.type, title: t.type === 'masuk' ? `Kas Masuk — #${t.absen} ${st ? st.nama : ''}` : `Pengeluaran Kas`, subtitle: t.description, amount: Number(t.amount) };
                 }),
-                ...localDenda.filter(d => d.status === 'Paid').map(d => ({ dateStr: d.dateStr, timestamp: d.timestamp, kind: 'tambahan', title: `Pemasukan Tambahan — ${d.nama || 'Umum'}`, subtitle: d.reason, amount: Number(d.amount) }))
+                ...localDenda.filter(d => d.status === 'Paid').map(d => ({ id: d.id, nota: '', dateStr: d.dateStr, timestamp: d.timestamp, kind: 'tambahan', title: `Pemasukan Tambahan — ${d.nama || 'Umum'}`, subtitle: d.reason, amount: Number(d.amount) }))
             ];
             const grouped = {};
             allEvents.forEach(ev => { if (!grouped[ev.dateStr]) grouped[ev.dateStr] = []; grouped[ev.dateStr].push(ev); });
@@ -1004,23 +1113,27 @@
                 const itemsHtml = grouped[date].map(ev => {
                     let badgeStyle = ev.kind === 'masuk' ? 'text-emerald-500' : (ev.kind === 'keluar' ? 'text-rose-500' : 'text-amber-500');
                     let amountText = ev.kind === 'keluar' ? `-${formatRupiah(ev.amount)}` : `+${formatRupiah(ev.amount)}`;
-                    return `<div class="flex items-center justify-between py-2.5 px-4 border-t border-[var(--border-table)]/60 text-xs sm:text-sm"><div><p class="font-semibold text-[var(--text-main)]">${ev.title}</p><p class="text-xs text-[var(--text-muted)]">${ev.subtitle}</p></div><span class="font-bold ${badgeStyle} whitespace-nowrap ml-3">${amountText}</span></div>`;
+                    let notaChip = ev.nota ? `<button onclick="openNotaModal('${ev.id}')" class="ml-2 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[10px] font-semibold hover:bg-emerald-600 hover:text-white transition">Lihat Nota</button>` : '';
+                    return `<div class="flex items-center justify-between py-2.5 px-4 border-t border-[var(--border-table)]/60 text-xs sm:text-sm"><div><p class="font-semibold text-[var(--text-main)] flex items-center flex-wrap">${ev.title}${notaChip}</p><p class="text-xs text-[var(--text-muted)]">${ev.subtitle}</p></div><span class="font-bold ${badgeStyle} whitespace-nowrap ml-3">${amountText}</span></div>`;
                 }).join('');
-                return `<div class="card-surface rounded-2xl overflow-hidden"><div class="px-4 py-2.5 sub-surface flex items-center justify-between"><span class="text-xs font-bold text-[var(--text-main)] flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-emerald-500"></i>${date}</span><span class="text-[11px] text-[var(--text-muted)]">${grouped[date].length} transaksi</span></div><div>${itemsHtml}</div></div>`;
+                return `<div class="card-surface rounded-2xl overflow-hidden"><div class="px-4 py-2.5 sub-surface flex items-center justify-between"><span class="text-xs font-bold text-[var(--text-main)] flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-emerald-500"></i>${formatIndoDate(date)}</span><span class="text-[11px] text-[var(--text-muted)]">${grouped[date].length} transaksi</span></div><div>${itemsHtml}</div></div>`;
             }).join('');
         }
 
+        // =========================================================================
+        // 8. TAB 3: MULTI-INPUT (NAVIGASI ENTER & UPLOAD NOTA), EXCEL & BACKUP
+        // =========================================================================
         let multiInputRows = [];
         function initMultiInputRows() {
             const today = new Date().toISOString().split('T')[0];
-            multiInputRows = [{ id: 1, type: 'masuk', date: today, absen: '', nama: '', amount: 5000, note: 'Kas Mingguan' }];
+            multiInputRows = [{ id: 1, type: 'masuk', date: today, absen: '', nama: '', amount: 5000, note: 'Kas Mingguan', nota: '' }];
             renderMultiInputTable();
         }
         function addMultiInputRow() {
             const lastRow = multiInputRows[multiInputRows.length - 1];
             const inheritedDate = lastRow ? lastRow.date : new Date().toISOString().split('T')[0];
             const inheritedType = lastRow ? lastRow.type : 'masuk';
-            multiInputRows.push({ id: Date.now() + Math.random(), type: inheritedType, date: inheritedDate, absen: '', nama: '', amount: inheritedType === 'masuk' ? 5000 : '', note: inheritedType === 'masuk' ? 'Kas Mingguan' : '' });
+            multiInputRows.push({ id: Date.now() + Math.random(), type: inheritedType, date: inheritedDate, absen: '', nama: '', amount: inheritedType === 'masuk' ? 5000 : '', note: inheritedType === 'masuk' ? 'Kas Mingguan' : '', nota: '' });
             renderMultiInputTable();
         }
         function removeMultiInputRow(id) {
@@ -1032,18 +1145,106 @@
             const row = multiInputRows.find(r => r.id === id);
             if (!row) return;
             row[field] = value;
-            if (field === 'absen') { const found = STUDENTS.find(s => s.absen === Number(value)); row.nama = found ? found.nama : ''; renderMultiInputTable(); }
-            if (field === 'type') { row.amount = value === 'masuk' ? 5000 : ''; row.note = value === 'masuk' ? 'Kas Mingguan' : ''; renderMultiInputTable(); }
+            if (field === 'absen') {
+                const found = STUDENTS.find(s => s.absen === Number(value));
+                row.nama = found ? found.nama : '';
+                const namaInput = document.getElementById(`row-nama-${id}`);
+                if (namaInput) namaInput.value = row.nama;
+                return;
+            }
+            if (field === 'type') {
+                row.amount = value === 'masuk' ? 5000 : '';
+                row.note = value === 'masuk' ? 'Kas Mingguan' : '';
+                if (value !== 'keluar') row.nota = '';
+                renderMultiInputTable();
+            }
+        }
+        function handleMultiRowKeydown(e, rowIdx, colName) {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            const row = multiInputRows[rowIdx];
+            if (!row) return;
+
+            const focusTarget = (elId) => {
+                const el = document.getElementById(elId);
+                if (el && !el.disabled) {
+                    el.focus();
+                    if (el.select) el.select();
+                    return true;
+                }
+                return false;
+            };
+
+            if (colName === 'date') {
+                if (!focusTarget(`row-absen-${row.id}`)) focusTarget(`row-nama-${row.id}`);
+            } else if (colName === 'absen') {
+                focusTarget(`row-nama-${row.id}`);
+            } else if (colName === 'nama') {
+                focusTarget(`row-amount-${row.id}`);
+            } else if (colName === 'amount') {
+                focusTarget(`row-note-${row.id}`);
+            } else if (colName === 'note') {
+                if (rowIdx < multiInputRows.length - 1) {
+                    const nextRow = multiInputRows[rowIdx + 1];
+                    if (!focusTarget(`row-absen-${nextRow.id}`)) focusTarget(`row-nama-${nextRow.id}`);
+                } else {
+                    addMultiInputRow();
+                    setTimeout(() => {
+                        const newestRow = multiInputRows[multiInputRows.length - 1];
+                        if (newestRow) {
+                            if (!focusTarget(`row-absen-${newestRow.id}`)) focusTarget(`row-nama-${newestRow.id}`);
+                        }
+                    }, 20);
+                }
+            }
+        }
+        function handleNotaUpload(rowId, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 650;
+                    let w = img.width, h = img.height;
+                    if (w > maxDim || h > maxDim) {
+                        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+                    const row = multiInputRows.find(r => r.id === rowId);
+                    if (row) {
+                        row.nota = compressedDataUrl;
+                        renderMultiInputTable();
+                        showToast("Foto nota berhasil dilampirkan!", "success");
+                    }
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
         }
         function renderMultiInputTable() {
-            document.getElementById('multi-input-tbody').innerHTML = multiInputRows.map(row => `
+            document.getElementById('multi-input-tbody').innerHTML = multiInputRows.map((row, idx) => `
                 <tr>
                     <td class="p-1.5"><select onchange="updateMultiRowField(${row.id}, 'type', this.value)" class="w-full px-2 py-2 rounded-lg sub-surface border border-[var(--border-table)] font-semibold"><option value="masuk" ${row.type === 'masuk' ? 'selected' : ''}>Kas Masuk</option><option value="keluar" ${row.type === 'keluar' ? 'selected' : ''}>Pengeluaran</option><option value="tambahan" ${row.type === 'tambahan' ? 'selected' : ''}>Pemasukan Tambahan</option></select></td>
-                    <td class="p-1.5"><input type="date" value="${row.date}" onchange="updateMultiRowField(${row.id}, 'date', this.value)" class="w-full px-2 py-2 rounded-lg sub-surface border border-[var(--border-table)]"></td>
-                    <td class="p-1.5"><input type="number" min="1" max="28" placeholder="1-28" value="${row.absen}" oninput="updateMultiRowField(${row.id}, 'absen', this.value)" ${row.type === 'keluar' ? 'disabled' : ''} class="w-full px-2 py-2 rounded-lg sub-surface border border-[var(--border-table)] text-center font-bold disabled:opacity-40"></td>
-                    <td class="p-1.5"><input type="text" placeholder="${row.type === 'keluar' ? 'Keperluan...' : 'Nama otomatis...'}" value="${row.nama}" onchange="updateMultiRowField(${row.id}, 'nama', this.value)" class="w-full px-2.5 py-2 rounded-lg sub-surface border border-[var(--border-table)] font-medium"></td>
-                    <td class="p-1.5"><input type="number" min="100" step="500" placeholder="5000" value="${row.amount}" onchange="updateMultiRowField(${row.id}, 'amount', this.value)" class="w-full px-2.5 py-2 rounded-lg sub-surface border border-[var(--border-table)] font-bold text-right"></td>
-                    <td class="p-1.5"><input type="text" placeholder="Catatan..." value="${row.note}" onchange="updateMultiRowField(${row.id}, 'note', this.value)" class="w-full px-2.5 py-2 rounded-lg sub-surface border border-[var(--border-table)]"></td>
+                    <td class="p-1.5"><input type="date" id="row-date-${row.id}" value="${row.date}" onkeydown="handleMultiRowKeydown(event, ${idx}, 'date')" onchange="updateMultiRowField(${row.id}, 'date', this.value)" class="w-full px-2 py-2 rounded-lg sub-surface border border-[var(--border-table)]"></td>
+                    <td class="p-1.5"><input type="number" id="row-absen-${row.id}" min="1" max="28" placeholder="1-28" value="${row.absen}" onkeydown="handleMultiRowKeydown(event, ${idx}, 'absen')" oninput="updateMultiRowField(${row.id}, 'absen', this.value)" ${row.type === 'keluar' ? 'disabled' : ''} class="w-full px-2 py-2 rounded-lg sub-surface border border-[var(--border-table)] text-center font-bold disabled:opacity-40"></td>
+                    <td class="p-1.5"><input type="text" id="row-nama-${row.id}" placeholder="${row.type === 'keluar' ? 'Keperluan...' : 'Nama otomatis...'}" value="${row.nama}" onkeydown="handleMultiRowKeydown(event, ${idx}, 'nama')" onchange="updateMultiRowField(${row.id}, 'nama', this.value)" class="w-full px-2.5 py-2 rounded-lg sub-surface border border-[var(--border-table)] font-medium"></td>
+                    <td class="p-1.5"><input type="number" id="row-amount-${row.id}" min="100" step="500" placeholder="5000" value="${row.amount}" onkeydown="handleMultiRowKeydown(event, ${idx}, 'amount')" onchange="updateMultiRowField(${row.id}, 'amount', this.value)" class="w-full px-2.5 py-2 rounded-lg sub-surface border border-[var(--border-table)] font-bold text-right"></td>
+                    <td class="p-1.5"><input type="text" id="row-note-${row.id}" placeholder="Catatan..." value="${row.note}" onkeydown="handleMultiRowKeydown(event, ${idx}, 'note')" onchange="updateMultiRowField(${row.id}, 'note', this.value)" class="w-full px-2.5 py-2 rounded-lg sub-surface border border-[var(--border-table)]"></td>
+                    <td class="p-1.5 text-center">
+                        ${row.type === 'keluar' ? `
+                            <label class="px-2.5 py-1.5 rounded-lg ${row.nota ? 'bg-emerald-600 text-white' : 'sub-surface border border-[var(--border-table)] text-[var(--text-muted)] hover:text-[var(--text-main)]'} text-[11px] font-semibold cursor-pointer inline-flex items-center gap-1 transition">
+                                <i data-lucide="${row.nota ? 'check' : 'camera'}" class="w-3.5 h-3.5"></i>
+                                <span>${row.nota ? 'Ada Nota' : 'Upload'}</span>
+                                <input type="file" accept="image/*" onchange="handleNotaUpload(${row.id}, event)" class="hidden">
+                            </label>
+                        ` : `<span class="text-[11px] text-[var(--text-muted)] opacity-40">-</span>`}
+                    </td>
                     <td class="p-1.5 text-center"><button onclick="removeMultiInputRow(${row.id})" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10"><i data-lucide="x" class="w-4 h-4"></i></button></td>
                 </tr>
             `).join('');
@@ -1059,9 +1260,9 @@
                 if (row.type === 'masuk') {
                     const absenNum = Number(row.absen);
                     if (!absenNum || absenNum < 1 || absenNum > 28) continue;
-                    newTxBatch.push({ id: `tx_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, timestamp: ts, dateStr: row.date, type: 'masuk', absen: absenNum, amount: amt, description: row.note.trim() || 'Kas Mingguan' });
+                    newTxBatch.push({ id: `tx_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, timestamp: ts, dateStr: row.date, type: 'masuk', absen: absenNum, amount: amt, description: row.note.trim() || 'Kas Mingguan', nota: '' });
                 } else if (row.type === 'keluar') {
-                    newTxBatch.push({ id: `tx_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, timestamp: ts, dateStr: row.date, type: 'keluar', absen: null, amount: amt, description: (row.nama ? `${row.nama} - ` : '') + (row.note.trim() || 'Pengeluaran Kas') });
+                    newTxBatch.push({ id: `tx_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, timestamp: ts, dateStr: row.date, type: 'keluar', absen: null, amount: amt, description: (row.nama ? `${row.nama} - ` : '') + (row.note.trim() || 'Pengeluaran Kas'), nota: row.nota || '' });
                 } else if (row.type === 'tambahan') {
                     newDendaBatch.push({ id: `dn_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, timestamp: ts, dateStr: row.date, absen: row.absen ? Number(row.absen) : null, nama: row.nama.trim() || 'Umum', amount: amt, reason: row.note.trim() || 'Pemasukan Tambahan', status: 'Paid' });
                 }
@@ -1087,12 +1288,13 @@
             const stats = calculateGlobalStats();
             const maxWeekExcel = getMaxMatrixWeek();
 
+            // Sheet 1: Matriks_Kas (Detail tanggal bayar & status kurang)
             const sheet1 = STUDENTS.map(s => {
                 const fin = getStudentFinancials(s.absen, maxWeekExcel);
                 const row = { "Absen": s.absen, "Nama Siswa": s.nama, "Total Bayar": fin.totalBayar, "Tunggakan": fin.tunggakanNominal };
                 fin.weekDetails.forEach((w, idx) => {
                     const label = `M${idx + 1} (${getWeekStartDate(idx + 1)})`;
-                    if (w.status === 'paid') row[label] = `Lunas (${w.dateStr})`;
+                    if (w.status === 'paid') row[label] = `Lunas (${formatIndoDate(w.dateStr)})`;
                     else if (w.status === 'partial') row[label] = `Kurang (${formatRupiah(w.amount)})`;
                     else row[label] = "Belum";
                 });
@@ -1100,25 +1302,32 @@
             });
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheet1), "Matriks_Kas");
 
-            const sheetCheckbox = STUDENTS.map(s => {
+            // Sheet 2: Checklist_Boolean (Murni TRUE/FALSE siap ubah jadi Checkbox di Excel/Sheets)
+            const sheetBoolean = STUDENTS.map(s => {
                 const fin = getStudentFinancials(s.absen, maxWeekExcel);
-                const row = { "Absen": s.absen, "Nama Siswa": s.nama, "Total Bayar": fin.totalBayar };
+                const row = { "Absen": s.absen, "Nama Siswa": s.nama };
                 fin.weekDetails.forEach((w, idx) => {
-                    row[`M${idx + 1} (${getWeekStartDate(idx + 1)})`] = w.status === 'paid';
+                    const label = `M${idx + 1} (${getWeekStartDate(idx + 1)})`;
+                    row[label] = w.status === 'paid';
                 });
+                row["Total Bayar"] = fin.totalBayar;
+                row["Tunggakan"] = fin.tunggakanNominal;
                 return row;
             });
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheetCheckbox), "Checklist_Boolean");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheetBoolean), "Checklist_Boolean");
 
+            // Sheet 3: Buku_Kas_Harian
             const sheet2 = [...localTx].sort((a, b) => b.timestamp - a.timestamp).map(t => {
                 const st = t.absen ? STUDENTS.find(s => s.absen === Number(t.absen)) : null;
-                return { "Tanggal": t.dateStr, "Tipe": t.type === 'masuk' ? 'Kas Masuk' : 'Pengeluaran', "Absen": t.absen || '-', "Nama Siswa": st ? st.nama : '-', "Keterangan": t.description, "Nominal": t.type === 'masuk' ? Number(t.amount) : -Number(t.amount) };
+                return { "Tanggal": formatIndoDate(t.dateStr), "Tipe": t.type === 'masuk' ? 'Kas Masuk' : 'Pengeluaran', "Absen": t.absen || '-', "Nama Siswa": st ? st.nama : '-', "Keterangan": t.description, "Ada Nota": t.nota ? "Ya" : "Tidak", "Nominal": t.type === 'masuk' ? Number(t.amount) : -Number(t.amount) };
             });
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheet2.length ? sheet2 : [{ Info: "Kosong" }]), "Buku_Kas_Harian");
 
-            const sheet3 = localDenda.map(d => ({ "Tanggal": d.dateStr, "Absen": d.absen || '-', "Nama": d.nama, "Keterangan / Alasan": d.reason, "Nominal": Number(d.amount), "Status": d.status }));
+            // Sheet 4: Pemasukan_Tambahan
+            const sheet3 = localDenda.map(d => ({ "Tanggal": formatIndoDate(d.dateStr), "Absen": d.absen || '-', "Nama": d.nama, "Keterangan / Alasan": d.reason, "Nominal": Number(d.amount), "Status": d.status }));
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheet3.length ? sheet3 : [{ Info: "Kosong" }]), "Pemasukan_Tambahan");
 
+            // Sheet 5: Ringkasan_Total
             const sheet4 = [
                 { "Kategori": "Total Kas Masuk Siswa", "Nominal (Rp)": stats.totalKasMasuk },
                 { "Kategori": "Total Tambahan Lunas (Paid)", "Nominal (Rp)": stats.totalTambahanLunas },
@@ -1127,15 +1336,16 @@
                 { "Kategori": "Uang Fisik di Laci", "Nominal (Rp)": saldoFisik }
             ];
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheet4), "Ringkasan_Total");
-            XLSX.writeFile(wb, `Laporan_Kas_X4_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast("File Excel (termasuk sheet Boolean Checkbox) diunduh!", "success");
+
+            XLSX.writeFile(wb, `Laporan_Kas_TenFourCrew_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast("File Excel (termasuk Checklist Boolean) diunduh!", "success");
         }
 
         function backupJSON() {
             const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), localTx, localDenda, saldoFisik }, null, 2)], { type: "application/json" });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `Backup_Kas_X4_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `Backup_Kas_TenFourCrew_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             showToast("Backup JSON diunduh!", "success");
         }
@@ -1150,7 +1360,7 @@
                     if (!Array.isArray(parsed.localTx) || !Array.isArray(parsed.localDenda)) throw new Error("Format salah");
                     openConfirmModal("Restore Database JSON?", "Timpa seluruh isi Google Sheets dengan file backup ini?", async () => {
                         const ok = await pushToGAS('restoreAll', { localTx: parsed.localTx, localDenda: parsed.localDenda, saldoFisik: Number(parsed.saldoFisik) || 0 });
-                        if (ok) showToast("Database dipulihkan!", "success");
+                        if (ok) showToast("Database berhasil dipulihkan!", "success");
                     });
                 } catch (err) { showToast("File JSON tidak valid!", "error"); }
                 finally { event.target.value = ""; }
@@ -1158,22 +1368,26 @@
             reader.readAsText(file);
         }
 
+        // =========================================================================
+        // 9. TAB 4: EDIT & REVISI (DATABASE MANAGER)
+        // =========================================================================
         function renderDbManager() {
             const tbody = document.getElementById('db-manager-tbody');
             const combined = [
                 ...localTx.map(t => {
                     const st = t.absen ? STUDENTS.find(s => s.absen === Number(t.absen)) : null;
-                    return { id: t.id, source: 'tx', timestamp: t.timestamp, dateStr: t.dateStr, typeLabel: t.type === 'masuk' ? 'Kas Masuk' : 'Keluar', badgeClass: t.type === 'masuk' ? 'bg-emerald-500/15 text-emerald-500' : 'bg-rose-500/15 text-rose-500', title: t.type === 'masuk' ? `#${t.absen} ${st ? st.nama : ''} — ${t.description}` : t.description, amount: Number(t.amount) };
+                    return { id: t.id, nota: t.nota || '', source: 'tx', timestamp: t.timestamp, dateStr: t.dateStr, typeLabel: t.type === 'masuk' ? 'Kas Masuk' : 'Keluar', badgeClass: t.type === 'masuk' ? 'bg-emerald-500/15 text-emerald-500' : 'bg-rose-500/15 text-rose-500', title: t.type === 'masuk' ? `#${t.absen} ${st ? st.nama : ''} — ${t.description}` : t.description, amount: Number(t.amount) };
                 }),
-                ...localDenda.map(d => ({ id: d.id, source: 'denda', timestamp: d.timestamp, dateStr: d.dateStr, typeLabel: 'Tambahan', badgeClass: 'bg-amber-500/15 text-amber-500', title: `${d.nama} (${d.status}) — ${d.reason}`, amount: Number(d.amount) }))
+                ...localDenda.map(d => ({ id: d.id, nota: '', source: 'denda', timestamp: d.timestamp, dateStr: d.dateStr, typeLabel: 'Tambahan', badgeClass: 'bg-amber-500/15 text-amber-500', title: `${d.nama} (${d.status}) — ${d.reason}`, amount: Number(d.amount) }))
             ].sort((a, b) => b.timestamp - a.timestamp);
 
-            if (combined.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-xs text-[var(--text-muted)]">Database kosong.</td></tr>`; return; }
+            if (combined.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-xs text-[var(--text-muted)]">Database kosong.</td></tr>`; return; }
             tbody.innerHTML = combined.map(item => `
                 <tr class="hover:bg-[var(--bg-sub)]/60">
-                    <td class="py-2.5 px-4 text-[var(--text-muted)] font-medium">${item.dateStr}</td>
+                    <td class="py-2.5 px-4 text-[var(--text-muted)] font-medium">${formatIndoDate(item.dateStr)}</td>
                     <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-md text-[11px] font-bold ${item.badgeClass}">${item.typeLabel}</span></td>
                     <td class="py-2.5 px-4 font-semibold">${item.title}</td>
+                    <td class="py-2.5 px-3 text-center">${item.nota ? `<button onclick="openNotaModal('${item.id}')" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[11px] font-semibold">Lihat</button>` : '-'}</td>
                     <td class="py-2.5 px-4 text-right font-bold">${formatRupiah(item.amount)}</td>
                     <td class="py-2.5 px-3 text-center"><div class="flex items-center justify-center gap-1.5"><button onclick="openEditModal('${item.id}', '${item.source}')" class="px-2.5 py-1 rounded-lg bg-blue-600/15 text-blue-500 text-xs font-semibold">Edit</button><button onclick="deleteDbRecord('${item.id}', '${item.source}')" class="px-2.5 py-1 rounded-lg bg-rose-600/15 text-rose-500 text-xs font-semibold">Hapus</button></div></td>
                 </tr>
@@ -1204,12 +1418,12 @@
             const amount = Number(document.getElementById('edit-tx-amount').value);
             closeEditModal();
             const ok = await pushToGAS('editRecord', { id, source, dateStr, desc, amount });
-            if (ok) showToast("Perubahan disimpan!", "success");
+            if (ok) showToast("Perubahan berhasil disimpan!", "success");
         }
         function deleteDbRecord(id, source) {
             openConfirmModal("Hapus Transaksi?", "Data akan dihapus permanen dari Google Sheets.", async () => {
                 const ok = await pushToGAS('deleteRecord', { id, source });
-                if (ok) showToast("Transaksi dihapus!", "success");
+                if (ok) showToast("Transaksi berhasil dihapus!", "success");
             });
         }
     </script>
